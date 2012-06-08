@@ -39,7 +39,7 @@ bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
     // the binary variables. this includes the routing vars
     for(int i = 0; i < m_vars_binary.size(); i++)
     {
-        var_types[i] = INTEGER;
+        var_types[i] = BINARY;
         n_var++;
     }
 

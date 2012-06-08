@@ -1,0 +1,137 @@
+#include "midpipe.h"
+
+#include <iostream>
+#include "stream.h"
+#include "pressuredropcalculator.h"
+#include "constraint.h"
+#include "pipeconnection.h"
+#include "binaryvariable.h"
+
+using std::cout;
+using std::endl;
+
+MidPipe::MidPipe()
+    : p_connection_constraint(new Constraint(1.0, 1.0, 1.0))
+{
+
+}
+
+MidPipe::~MidPipe()
+{
+    for(int i = 0; i < m_outlet_connections.size(); i++)
+    {
+        delete m_outlet_connections.at(i);
+    }
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// sets the number of the pipe (overloaded from Pipe)
+//-----------------------------------------------------------------------------------------------
+void MidPipe::setNumber(int n)
+{
+    Pipe::setNumber(n);
+
+    p_connection_constraint->setName("Pipe routing constraint for Pipe #" + QString::number(number()));
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// calculates the inlet pressure of the pipe
+//-----------------------------------------------------------------------------------------------
+void MidPipe::calculateInletPressure()
+{
+    cout << "Calculating inlet pressures for PIPE: " << number() << endl;
+
+
+    // calculating the total rate going through the pipe
+    aggregateStreams();
+
+    // checking if the outlet connections are defined
+    if(numberOfOutletConnections() == 0)
+    {
+        cout << endl << "### Runtime Error ###" << endl
+             << "Outlet pipe not set for PIPE: " << number() << endl << endl;
+
+        exit(1);
+    }
+
+    // checking if outlet pipes have the same number of streams
+    for(int k = 0; k < numberOfOutletConnections(); k++)
+    {
+
+        if(numberOfStreams() != outletConnection(k)->pipe()->numberOfStreams())
+        {
+            cout << endl << "### Runtime Error ###" << endl
+                << "Downstream and upstream pipes do not have the same number of time steps..." << endl
+                << "Downstream PIPE: " << number() << ", n = " << numberOfStreams() << endl
+                << "Upstream PIPE: " << outletConnection(k)->pipe()->number() << ", n = " << outletConnection(k)->pipe()->numberOfStreams() << endl << endl;
+
+            exit(1);
+        }
+    }
+
+    // looping through the time steps
+    for(int i = 0; i < numberOfStreams(); i++)
+    {
+        // getting the outlet pressure (calculated as the weighted average of all outlet connections)
+        double p_out = 0;
+        for(int k = 0; k < numberOfOutletConnections(); k++)
+        {
+            p_out += outletConnection(k)->pipe()->stream(i)->pressure()*outletConnection(k)->variable()->value();
+        }
+
+
+        double dp = calculator()->pressureDrop(stream(i), p_out);    // the pressure drop in the pipe
+
+        stream(i)->setPressure(dp + p_out);      // setting the inlet pressure for the time step
+    }
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// gets the fraction of flow from this pipe to an upstream pipe
+//-----------------------------------------------------------------------------------------------
+double MidPipe::flowFraction(Pipe *upstream_pipe, bool *ok)
+{
+    double frac_total = 0.0;
+
+    // looping through the outlet connections
+    for(int i = 0; i < numberOfOutletConnections(); i++)
+    {
+        double frac_direct = 0;
+        // first checking if the upstream pipe is directly connected to this one
+        if(upstream_pipe->number() == outletConnection(i)->pipe()->number())
+        {
+            frac_direct = outletConnection(i)->variable()->value();
+        }
+
+        // then checking if the upstream pipe is indirectly connected to this one (this only applies to MidPipes)
+        double frac_indirect = 0;
+
+        MidPipe *p_mid = dynamic_cast<MidPipe*>(outletConnection(i)->pipe());
+        if(p_mid != 0)
+        {
+            frac_indirect = p_mid->flowFraction(upstream_pipe, ok) * outletConnection(i)->variable()->value();
+        }
+
+        frac_total += frac_direct + frac_indirect;
+    }
+
+    return frac_total;
+}
+
+//-----------------------------------------------------------------------------------------------
+// updates the outlet connections constraint
+//-----------------------------------------------------------------------------------------------
+void MidPipe::updateOutletConnectionConstraint()
+{
+    double c = 0;
+
+    for(int i = 0; i < numberOfOutletConnections(); i++)
+    {
+        c += outletConnection(i)->variable()->value();
+    }
+}

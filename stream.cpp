@@ -23,8 +23,12 @@
 
 #include <iostream>
 
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 Stream::Stream()
     : m_time(0.0),
@@ -135,3 +139,6 @@ const Stream Stream::operator *(const double &rhs) const
 
     return result;
 }
+
+
+} // namespace ResOpt

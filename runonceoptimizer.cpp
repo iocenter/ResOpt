@@ -3,8 +3,13 @@
 #include <iostream>
 #include "runner.h"
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 
 RunonceOptimizer::RunonceOptimizer(Runner *r)
@@ -34,3 +39,6 @@ void RunonceOptimizer::start()
     // launching the runner for one iteration
     runner()->evaluate();
 }
+
+
+} // namespace ResOpt

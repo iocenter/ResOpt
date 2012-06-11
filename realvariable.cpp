@@ -20,6 +20,10 @@
 
 #include "realvariable.h"
 
+namespace ResOpt
+{
+
+
 RealVariable::RealVariable()
 {
 }
@@ -32,3 +36,5 @@ bool RealVariable::isVariable()
     if(max() == value() && min() == value()) return false;
     else return true;
 }
+
+} // namespace ResOpt

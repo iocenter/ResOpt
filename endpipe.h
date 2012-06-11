@@ -3,6 +3,9 @@
 
 #include "pipe.h"
 
+namespace ResOpt
+{
+
 
 class EndPipe : public Pipe
 {
@@ -36,5 +39,8 @@ public:
      */
     double outletPressure() {return m_outletpressure;}
 };
+
+
+} // namespace ResOpt
 
 #endif // ENDPIPE_H

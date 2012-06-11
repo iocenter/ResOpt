@@ -20,7 +20,14 @@
 
 #include "objective.h"
 
+namespace ResOpt
+{
+
+
 Objective::Objective()
     : m_value(0.0)
 {
 }
+
+
+} // namespace ResOpt

@@ -4,6 +4,10 @@
 #include "pressuredropcalculator.h"
 #include "stream.h"
 
+namespace ResOpt
+{
+
+
 using std::cout;
 using std::endl;
 
@@ -33,3 +37,5 @@ void EndPipe::calculateInletPressure()
 
 
 }
+
+} // namespace ResOpt

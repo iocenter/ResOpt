@@ -5,13 +5,18 @@
 
 #include <tr1/memory>
 
+using std::tr1::shared_ptr;
+
+
+namespace ResOpt
+{
+
 class IntVariable;
 class BinaryVariable;
 class PipeConnection;
 class Constraint;
 class Pipe;
 
-using std::tr1::shared_ptr;
 
 class ProductionWell : public Well
 {
@@ -78,5 +83,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // PRODUCTIONWELL_H

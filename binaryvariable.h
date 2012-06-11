@@ -3,6 +3,9 @@
 
 #include "variable.h"
 
+namespace ResOpt
+{
+
 class BinaryVariable : public Variable
 {
 private:
@@ -23,5 +26,8 @@ public:
     double min() {return 0.0;}
     double value() {return m_value;}
 };
+
+} // namespace ResOpt
+
 
 #endif // BINARYVARIABLE_H

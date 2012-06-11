@@ -26,9 +26,15 @@
 #include "beggsbrillcalculator.h"
 #include "gprssimulator.h"
 
+
+
 using std::tr1::shared_ptr;
 using std::cout;
 using std::endl;
+
+
+namespace ResOpt
+{
 
 ModelReader::ModelReader(const QString &driver)
     : m_driver_file(driver)
@@ -1248,3 +1254,6 @@ bool ModelReader::isEmpty(const QStringList &list)
 
     return ok;
 }
+
+
+} // namespace ResOpt

@@ -13,6 +13,10 @@
 #include "realvariable.h"
 #include "stream.h"
 
+namespace ResOpt
+{
+
+
 using std::cout;
 using std::endl;
 
@@ -581,3 +585,6 @@ QStringList GprsSimulator::processLine(const QString& line)
 
     return list;
 }
+
+
+} // namespace ResOpt

@@ -4,11 +4,19 @@
 #include "pipe.h"
 #include <tr1/memory>
 
+
+
+
+using std::tr1::shared_ptr;
+
+namespace ResOpt
+{
+
 class IntVariable;
 class PipeConnection;
 class Constraint;
 
-using std::tr1::shared_ptr;
+
 
 class MidPipe : public Pipe
 {
@@ -59,5 +67,8 @@ public:
 
     shared_ptr<Constraint> outletConnectionConstraint() {return p_connection_constraint;}
 };
+
+} // namespace ResOpt
+
 
 #endif // MIDPIPE_H

@@ -23,6 +23,10 @@
 
 #include "objective.h"
 
+
+namespace ResOpt
+{
+
 /**
  * @brief Class for objectives that maximize oil cumulative production
  *
@@ -46,5 +50,7 @@ public:
     virtual void calculateValue(QVector<Stream*> s);
 
 };
+
+} // namespace ResOpt
 
 #endif // CUMOILOBJECTIVE_H

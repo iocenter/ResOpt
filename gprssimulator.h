@@ -4,7 +4,14 @@
 #include <QStringList>
 #include "reservoirsimulator.h"
 
+
+
+
+namespace ResOpt
+{
+
 class Well;
+
 
 class GprsSimulator : public ReservoirSimulator
 {
@@ -28,5 +35,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // GPRSSIMULATOR_H

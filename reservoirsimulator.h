@@ -3,7 +3,14 @@
 
 #include <QString>
 
+
+
+
+namespace ResOpt
+{
+
 class Model;
+
 
 class ReservoirSimulator
 {
@@ -25,4 +32,7 @@ public:
     const QString& folder() {return m_folder;}
 
 };
+
+} // namespace ResOpt
+
 #endif // RESERVOIRSIMULATOR_H

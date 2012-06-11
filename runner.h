@@ -12,14 +12,22 @@
 #include <QString>
 #include <QFile>
 
+using std::tr1::dynamic_pointer_cast;
+using std::tr1::shared_ptr;
+
+namespace ResOpt
+{
+
 class Model;
 class ReservoirSimulator;
 class ModelReader;
 class Optimizer;
 
-using std::tr1::dynamic_pointer_cast;
-using std::tr1::shared_ptr;
 
+/**
+ * @brief Main execution class.
+ *
+ */
 class Runner
 {
 private:
@@ -38,8 +46,21 @@ public:
     Runner(const QString &driver_file);
     ~Runner();
 
+
+    /**
+     * @brief Initializes the model and optimizer.
+     * @details The Model is first read from the driver file. Then the ReservoirSimulator and Optimizer are initialized.
+     *
+     */
     void initialize();
 
+
+    /**
+     * @brief Starts the Optimizer
+     * @details The function first checks if the Model has been initialized. If not initialize() is called. Then the Optimizer is started
+     *          through Optimizer::start().
+     *
+     */
     void run();
 
 
@@ -68,4 +89,7 @@ public:
 
 };
 
+} // namespace ResOpt
+
 #endif // RUNNER_H
+

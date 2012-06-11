@@ -22,6 +22,12 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+
+
+namespace ResOpt
+{
+
+
 /**
  * @brief Container for rates for a given time step
  *
@@ -134,4 +140,7 @@ public:
     const Stream operator*(const double &rhs) const;
 
 };
+
+} // namespace ResOpt
+
 #endif // STREAM_H

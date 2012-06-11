@@ -21,6 +21,10 @@
 #ifndef WELLCONNECTION_H
 #define WELLCONNECTION_H
 
+namespace ResOpt
+{
+
+
 /**
  * @brief Container class for well connections (perforations)
  *
@@ -70,5 +74,7 @@ public:
     double wellIndex() {return m_wi;}
 
 };
+
+} // namespace ResOpt
 
 #endif // WELLCONNECTION_H

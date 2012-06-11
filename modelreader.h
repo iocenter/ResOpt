@@ -5,6 +5,9 @@
 #include <QStringList>
 #include <QFile>
 
+namespace ResOpt
+{
+
 class Model;
 class Well;
 class ProductionWell;
@@ -13,6 +16,7 @@ class Pipe;
 class MidPipe;
 class Objective;
 class Separator;
+
 
 class ModelReader
 {
@@ -112,5 +116,8 @@ public:
 
 
 };
+
+
+} // namespace ResOpt
 
 #endif // MODELREADER_H

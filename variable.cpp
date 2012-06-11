@@ -20,7 +20,14 @@
 
 #include "variable.h"
 
+namespace ResOpt
+{
+
+
 Variable::Variable()
     : m_name("no_name")
 {
 }
+
+
+} // namespace ResOpt

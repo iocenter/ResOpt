@@ -24,7 +24,12 @@
 #include <QVector>
 
 
+
+namespace ResOpt
+{
+
 class Stream;
+
 
 /**
  * @brief
@@ -74,5 +79,8 @@ public:
 
 
 };
+
+} // namespace ResOpt
+
 
 #endif // OBJECTIVE_H

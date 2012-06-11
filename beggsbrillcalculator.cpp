@@ -4,8 +4,13 @@
 #include "math.h"
 #include "stream.h"
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 BeggsBrillCalculator::BeggsBrillCalculator()
     : m_sg_gas(0.0),
@@ -381,4 +386,6 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
 
 
 }
+
+} // namespace ResOpt
 

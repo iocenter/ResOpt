@@ -26,10 +26,16 @@
 #include <QString>
 #include <tr1/memory>
 
+
+using std::tr1::shared_ptr;
+
+namespace ResOpt
+{
+
 class Constraint;
 class Pipe;
 
-using std::tr1::shared_ptr;
+
 
 /**
  * @brief Container class for separators
@@ -181,5 +187,7 @@ public:
     int numberOfFeedPipes() {return m_feed_pipes.size();}
     Pipe* feedPipe(int i) {return m_feed_pipes.at(i);}
 };
+
+} // namespace ResOpt
 
 #endif // SEPARATOR_H

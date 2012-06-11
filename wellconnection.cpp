@@ -21,6 +21,13 @@
 
 #include "wellconnection.h"
 
+namespace ResOpt
+{
+
+
 WellConnection::WellConnection()
 {
 }
+
+
+} // namespace ResOpt

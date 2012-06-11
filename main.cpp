@@ -24,6 +24,7 @@
 
 #include "runner.h"
 
+using namespace ResOpt;
 using std::cout;
 using std::endl;
 

@@ -4,6 +4,9 @@
 #include "pressuredropcalculator.h"
 
 
+namespace ResOpt
+{
+
 /**
  * @brief Pressure drop calculations after Beggs and Brill, 1973
  *
@@ -92,5 +95,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // BEGGSBRILLCALCULATOR_H

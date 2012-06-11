@@ -9,8 +9,13 @@
 #include "midpipe.h"
 #include "stream.h"
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 
 ProductionWell::ProductionWell()
@@ -148,3 +153,6 @@ double ProductionWell::flowFraction(Pipe *p, bool *ok)
 
     return frac;
 }
+
+
+} // namespace ResOpt

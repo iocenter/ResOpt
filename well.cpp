@@ -27,8 +27,13 @@
 #include "pipe.h"
 #include "constraint.h"
 
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
+
 
 Well::Well()
     : m_bhp_inj(WellControl::QWAT)
@@ -80,3 +85,4 @@ void Well::addControl(WellControl *c)
     m_schedule.push_back(c);
 }
 
+} // namespace ResOpt

@@ -23,9 +23,16 @@
 
 #include <tr1/memory>
 
-class RealVariable;
+
+
 
 using std::tr1::shared_ptr;
+
+namespace ResOpt
+{
+
+class RealVariable;
+
 
 /**
  * @brief Class containing information on one schedule entry for a Well
@@ -106,5 +113,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // WELLCONTROL_H

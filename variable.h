@@ -23,6 +23,10 @@
 
 #include <QString>
 
+namespace ResOpt
+{
+
+
 /**
  * @brief Base class for all varaibles.
  *
@@ -54,5 +58,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // VARIABLE_H

@@ -3,7 +3,11 @@
 
 #include "optimizer.h"
 
+namespace ResOpt
+{
+
 class Runner;
+
 
 class RunonceOptimizer : public Optimizer
 {
@@ -16,5 +20,7 @@ public:
     virtual void start();
 
 };
+
+} // namespace ResOpt
 
 #endif // RUNONCEOPTIMIZER_H

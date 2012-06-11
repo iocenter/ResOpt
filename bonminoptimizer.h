@@ -16,11 +16,17 @@
 #include "BonEcpCuts.hpp"
 #include "BonOaNlpOptim.hpp"
 
-class Runner;
-class BonminInterface;
+
+
 
 using namespace Ipopt;
 using namespace Bonmin;
+
+namespace ResOpt
+{
+
+class Runner;
+class BonminInterface;
 
 
 class BonminOptimizer : public Optimizer
@@ -39,5 +45,7 @@ public:
     virtual void start();
 
 };
+
+} // namespace ResOpt
 
 #endif // BONMINOPTIMIZER_H

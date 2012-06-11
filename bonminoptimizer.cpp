@@ -4,8 +4,13 @@
 
 #include <iostream>
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 
 BonminOptimizer::BonminOptimizer(Runner *r)
@@ -91,3 +96,5 @@ void BonminOptimizer::start()
              <<E.message()<<std::endl;
       }
 }
+
+} // namespace ResOpt

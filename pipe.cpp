@@ -30,6 +30,10 @@
 using std::cout;
 using std::endl;
 
+namespace ResOpt
+{
+
+
 Pipe::Pipe()
     : p_calculator(0)
 {
@@ -339,3 +343,6 @@ bool Pipe::isEmpty(const QStringList &list)
 
     return ok;
 }
+
+
+} // namespace ResOpt

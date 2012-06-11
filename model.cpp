@@ -39,6 +39,12 @@
 using std::cout;
 using std::endl;
 
+
+namespace ResOpt
+{
+
+
+
 Model::Model()
 {
 }
@@ -544,3 +550,5 @@ void Model::updateObjectiveValue()
     // deleting the generated streams
     for(int i = 0; i < field_rates.size(); i++) delete field_rates.at(i);
 }
+
+} // namespace ResOpt

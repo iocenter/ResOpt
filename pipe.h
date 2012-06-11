@@ -25,6 +25,10 @@
 #include <QStringList>
 #include <QVector>
 
+
+namespace ResOpt
+{
+
 class ProductionWell;
 class PressureDropCalculator;
 class Stream;
@@ -234,5 +238,8 @@ public:
 
 
 };
+
+} // namespace ResOpt
+
 
 #endif // PIPE_H

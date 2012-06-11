@@ -20,6 +20,10 @@
 
 #include "wellcontrol.h"
 
+namespace ResOpt
+{
+
+
 WellControl::WellControl()
 {
 }
@@ -30,3 +34,6 @@ WellControl::~WellControl()
 
 
 }
+
+
+} // namespace ResOpt

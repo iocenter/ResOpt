@@ -7,8 +7,13 @@
 #include "pipeconnection.h"
 #include "binaryvariable.h"
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 MidPipe::MidPipe()
     : p_connection_constraint(new Constraint(1.0, 1.0, 1.0))
@@ -135,3 +140,5 @@ void MidPipe::updateOutletConnectionConstraint()
         c += outletConnection(i)->variable()->value();
     }
 }
+
+} // namespace ResOpt

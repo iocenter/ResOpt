@@ -21,6 +21,10 @@
 #include "cumgasobjective.h"
 #include "stream.h"
 
+namespace ResOpt
+{
+
+
 CumgasObjective::CumgasObjective()
 {
 }
@@ -50,3 +54,5 @@ void CumgasObjective::calculateValue(QVector<Stream *> s)
     setValue(cumgas);
 
 }
+
+} // namespace ResOpt

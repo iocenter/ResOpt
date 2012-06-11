@@ -20,6 +20,10 @@
 
 #include "reservoir.h"
 
+namespace ResOpt
+{
+
+
 Reservoir::Reservoir()
     : m_gas_phase(false),
       m_oil_phase(false),
@@ -29,3 +33,5 @@ Reservoir::Reservoir()
       m_den_wat(0.0)
 {
 }
+
+} // namespace ResOpt

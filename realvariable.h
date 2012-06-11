@@ -23,6 +23,10 @@
 
 #include "variable.h"
 
+namespace ResOpt
+{
+
+
 /**
  * @brief A class for contineous (real) variables.
  * @details Countineous variables are normally well control variables, like productions rate or bottomhole pressure
@@ -95,5 +99,7 @@ public:
      */
     double value() {return m_value;}
 };
+
+} // namespace ResOpt
 
 #endif // REALVARIABLE_H

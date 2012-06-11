@@ -20,6 +20,9 @@
 
 #include "intvariable.h"
 
+namespace ResOpt
+{
+
 IntVariable::IntVariable()
 {
 }
@@ -33,3 +36,5 @@ bool IntVariable::isVariable()
     if(max() == value() && min() == value()) return false;
     else return true;
 }
+
+} // namespace ResOpt

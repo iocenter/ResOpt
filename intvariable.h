@@ -24,6 +24,10 @@
 
 #include "variable.h"
 
+
+namespace ResOpt
+{
+
 /**
  * @brief A class of integer type variables.
  *
@@ -94,5 +98,7 @@ public:
     int value() {return m_value;}
 
 };
+
+} // namespace ResOpt
 
 #endif // INTVARIABLE_H

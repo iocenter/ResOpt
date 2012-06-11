@@ -22,6 +22,10 @@
 #include "cumoilobjective.h"
 #include "stream.h"
 
+namespace ResOpt
+{
+
+
 CumoilObjective::CumoilObjective()
 {
 }
@@ -51,3 +55,6 @@ void CumoilObjective::calculateValue(QVector<Stream *> s)
     setValue(cumoil);
 
 }
+
+
+} // namespace ResOpt

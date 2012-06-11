@@ -10,8 +10,14 @@
 #include "constraint.h"
 #include "objective.h"
 
+
+
 using std::cout;
 using std::endl;
+
+
+namespace ResOpt
+{
 
 BonminInterface::BonminInterface(Runner *r)
     : p_runner(r),
@@ -639,3 +645,5 @@ bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
 
     else return false;
 }
+
+} // namespace ResOpt

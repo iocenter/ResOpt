@@ -1,3 +1,4 @@
+
 #include "runner.h"
 
 #include <iostream>
@@ -19,8 +20,14 @@
 // needed for debug
 #include "productionwell.h"
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
+
 
 
 Runner::Runner(const QString &driver_file)
@@ -383,3 +390,5 @@ void Runner::writeIterationToSummary()
     }
 
 }
+
+} // namespace ResOpt

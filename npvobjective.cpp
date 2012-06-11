@@ -24,8 +24,13 @@
 #include <math.h>
 #include <iostream>
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 NpvObjective::NpvObjective()
     : m_dcf(0.0),
@@ -80,3 +85,6 @@ void NpvObjective::calculateValue(QVector<Stream *> s)
 
 
 }
+
+
+} // namespace ResOpt

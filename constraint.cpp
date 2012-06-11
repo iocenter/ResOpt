@@ -21,6 +21,10 @@
 
 #include "constraint.h"
 
+namespace ResOpt
+{
+
+
 Constraint::Constraint()
     : m_value(0.0),
       m_max(0.0),
@@ -37,3 +41,5 @@ Constraint::Constraint(double value, double max, double min)
       m_min(min)
 {
 }
+
+} // namespace ResOpt

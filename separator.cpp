@@ -26,8 +26,13 @@
 #include "stream.h"
 #include "constraint.h"
 
+
+
 using std::cout;
 using std::endl;
+
+namespace ResOpt
+{
 
 Separator::Separator()
 
@@ -83,3 +88,5 @@ void Separator::updateConstraints()
     //cout << "Max wat = " << max_water << endl;
 
 }
+
+} // namespace ResOpt

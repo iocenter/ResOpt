@@ -1,7 +1,12 @@
 #ifndef OPTIMIZER_H
 #define OPTIMIZER_H
 
+
+namespace ResOpt
+{
+
 class Runner;
+
 
 class Optimizer
 {
@@ -23,5 +28,8 @@ public:
 
     bool isInitialized() {return m_initialized;}
 };
+
+} // namespace ResOpt
+
 
 #endif // OPTIMIZER_H

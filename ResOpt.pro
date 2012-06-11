@@ -103,5 +103,4 @@ HEADERS += \
     productionwell.h \
     injectionwell.h \
     pipeconnection.h \
-    counted_ptr.h \
     runonceoptimizer.h

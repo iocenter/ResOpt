@@ -27,8 +27,13 @@
 #include "wellcontrol.h"
 
 
+
+
+namespace ResOpt
+{
 class WellConnection;
 class Stream;
+
 
 /**
  * @brief Container class for Wells
@@ -246,5 +251,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // WELL_H

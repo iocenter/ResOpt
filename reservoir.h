@@ -23,6 +23,10 @@
 
 #include <QString>
 
+namespace ResOpt
+{
+
+
 /**
  * @brief A container class for Reservoirs
  * @details A Reservoir holds information on the grid and fluid properties. This information is located in a file generated
@@ -120,5 +124,7 @@ public:
     bool oilPhase() {return m_oil_phase;}
     bool waterPhase() {return m_wat_phase;}
 };
+
+} // namespace ResOpt
 
 #endif // RESERVOIR_H

@@ -22,7 +22,13 @@
 #ifndef CONSTRAINT_H
 #define CONSTRAINT_H
 
+
+
 #include <QString>
+
+
+namespace ResOpt
+{
 
 /**
  * @brief Container class for constraints
@@ -99,5 +105,7 @@ public:
 
     const QString& name() {return m_name;}
 };
+
+} // namespace ResOpt
 
 #endif // CONSTRAINT_H

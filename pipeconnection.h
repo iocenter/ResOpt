@@ -3,10 +3,15 @@
 
 #include <tr1/memory>
 
+
+using std::tr1::shared_ptr;
+
+namespace ResOpt
+{
 class Pipe;
 class BinaryVariable;
 
-using std::tr1::shared_ptr;
+
 
 class PipeConnection
 {
@@ -31,5 +36,7 @@ public:
     shared_ptr<BinaryVariable> variable() {return p_routing_variable;}
 
 };
+
+} // namespace ResOpt
 
 #endif // PIPECONNECTION_H

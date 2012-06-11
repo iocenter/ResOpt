@@ -23,6 +23,10 @@
 
 #include "objective.h"
 
+
+namespace ResOpt
+{
+
 /**
  * @brief Class for objectives that maximize net present value
  *
@@ -109,5 +113,8 @@ public:
 
 
 };
+
+} // namespace ResOpt
+
 
 #endif // NPVOBJECTIVE_H

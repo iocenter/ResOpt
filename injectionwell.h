@@ -3,6 +3,10 @@
 
 #include "well.h"
 
+namespace ResOpt
+{
+
+
 class InjectionWell : public Well
 {
 public:
@@ -12,5 +16,7 @@ public:
 
     virtual void setAutomaticType() {setType(Well::INJ);}
 };
+
+} // namespace ResOpt
 
 #endif // INJECTIONWELL_H

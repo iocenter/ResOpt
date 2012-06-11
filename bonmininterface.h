@@ -5,14 +5,20 @@
 #include <QVector>
 #include <tr1/memory>
 
+
+
+using namespace Ipopt;
+using namespace Bonmin;
+using std::tr1::shared_ptr;
+
+namespace ResOpt
+{
+
 class Runner;
 class RealVariable;
 class BinaryVariable;
 class Constraint;
 
-using namespace Ipopt;
-using namespace Bonmin;
-using std::tr1::shared_ptr;
 
 class BonminInterface : public TMINLP
 {
@@ -230,5 +236,7 @@ public:
 
 
 };
+
+} // namespace ResOpt
 
 #endif // BONMININTERFACE_H

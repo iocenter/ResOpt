@@ -24,6 +24,13 @@
 #include <QVector>
 #include <tr1/memory>
 
+using std::tr1::shared_ptr;
+
+
+
+
+namespace ResOpt
+{
 
 class Well;
 class Reservoir;
@@ -34,8 +41,6 @@ class IntVariable;
 class RealVariable;
 class BinaryVariable;
 class Constraint;
-
-using std::tr1::shared_ptr;
 
 
 /**
@@ -275,5 +280,7 @@ public:
      */
     Objective* objective() {return p_obj;}
 };
+
+} // namespace ResOpt
 
 #endif // MODEL_H

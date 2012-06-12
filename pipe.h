@@ -197,7 +197,7 @@ public:
      *
      * @return int
      */
-    int number() {return m_number;}
+    int number() const {return m_number;}
 
 
     /**
@@ -205,7 +205,7 @@ public:
      *
      * @return double
      */
-    double inletPressure() {return m_inletpressure;}
+    double inletPressure() const {return m_inletpressure;}
 
 
     /**
@@ -221,9 +221,9 @@ public:
      *
      * @return int
      */
-    int numberOfConnectedWells() {return m_connected_wells.size();}
+    int numberOfConnectedWells() const {return m_connected_wells.size();}
 
-    int numberOfStreams() {return m_streams.size();}
+    int numberOfStreams() const {return m_streams.size();}
 
     Stream* stream(int i) {return m_streams.at(i);}
 

@@ -4,6 +4,7 @@
 
 #include <iostream>
 
+#include <QString>
 
 
 using std::cout;
@@ -27,6 +28,8 @@ void BonminOptimizer::initialize()
 
     // setting up the TMINLP
     p_tminlp = new BonminInterface(runner());
+    p_tminlp->setPerturbationSize(pertrurbationSize());
+
 
 
     // initializing bonmin
@@ -43,6 +46,8 @@ void BonminOptimizer::initialize()
     m_bonmin.readOptionsString("compl_inf_tol 0.1\n");
     m_bonmin.readOptionsString("dual_inf_tol 0.3\n");
     m_bonmin.readOptionsString("constr_viol_tol 0.1\n");
+    QString s_max_iter = "max_iter " + QString::number(maxIterations());
+    m_bonmin.readOptionsString(s_max_iter.toStdString());
 
     //Here we read several option files
     //bonmin.readOptionsFile("Mybonmin.opt");

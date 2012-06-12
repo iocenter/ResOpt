@@ -1,8 +1,30 @@
+/*
+ * This file is part of the ResOpt project.
+ *
+ * Copyright (C) 2011-2012 Aleksander O. Juell <aleksander.juell@ntnu.no>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+
 #include "modelreader.h"
 
 #include <iostream>
 #include <tr1/memory>
 
+#include "runner.h"
 #include "model.h"
 #include "reservoir.h"
 #include "injectionwell.h"
@@ -25,6 +47,9 @@
 #include "stream.h"
 #include "beggsbrillcalculator.h"
 #include "gprssimulator.h"
+
+#include "runonceoptimizer.h"
+#include "bonminoptimizer.h"
 
 
 
@@ -54,7 +79,7 @@ ModelReader::ModelReader(const QString &driver)
 //-----------------------------------------------------------------------------------------------
 // Reads the driver file that defines the optimization problem
 //-----------------------------------------------------------------------------------------------
-Model* ModelReader::readDriverFile()
+Model* ModelReader::readDriverFile(Runner *r)
 {
     Model *p_model = new Model();
 
@@ -79,6 +104,7 @@ Model* ModelReader::readDriverFile()
             else if(list.at(1).startsWith("OBJECTIVE")) p_model->setObjective(readObjective());      // objective
             else if(list.at(1).startsWith("PIPE")) p_model->addPipe(readPipe());                     // pipe
             else if(list.at(1).startsWith("SEPARATOR")) p_model->addSeparator(readSeparator());      // separator
+            else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                            // optimizer
 
         }
 
@@ -1209,6 +1235,75 @@ Separator* ModelReader::readSeparator()
 
     return s;
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Reads the optimizer definition
+//-----------------------------------------------------------------------------------------------
+void ModelReader::readOptimizer(Runner *r)
+{
+    cout << "Reading optimizer definition..." << endl;
+    Optimizer *o = 0;
+
+    QStringList list;
+
+    double l_perturb = 0.0001;
+    int l_max_iter = 1;
+
+    bool ok = true;
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+
+        if(list.at(0).startsWith("TYPE"))                           // getting the type
+        {
+            if(list.at(1).startsWith("BONMIN")) o = new BonminOptimizer(r);
+            else if(list.at(1).startsWith("RUNONCE")) o = new RunonceOptimizer(r);
+        }
+        else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations
+        else if(list.at(0).startsWith("PERTURB")) l_perturb = list.at(1).toDouble(&ok);     // getting the perturbation size
+
+        else
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Not understood in current context." << endl << endl;
+
+                exit(1);
+            }
+        }
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+
+    if(!ok || o == 0)
+    {
+        cout << endl << "### Error detected in input file! ###" << endl
+             << "The optimizer was not defined propperly..." << endl;
+
+        exit(1);
+
+    }
+
+
+    // everything ok, setting to optimizer
+    o->setMaxIterations(l_max_iter);
+    o->setPerturbationSize(l_perturb);
+
+    // setting optimizer to runner
+    r->setOptimizer(o);
+
+}
+
 
 
 

@@ -157,7 +157,7 @@ public:
      *
      * @return Well::well_type
      */
-    Well::well_type type() {return m_type;}
+    Well::well_type type() const {return m_type;}
 
 
     /**
@@ -165,7 +165,7 @@ public:
      *
      * @return QString
      */
-    QString typeAsString()
+    QString typeAsString() const
     {
         if(m_type == Well::PROD) return "P";
         else return "I";
@@ -176,21 +176,21 @@ public:
      *
      * @return QString
      */
-    QString name() {return m_name;}
+    const QString& name() const {return m_name;}
 
     /**
      * @brief Returns the group that the well belongs to
      *
      * @return QString
      */
-    QString group() {return m_group;}
+    const QString& group() const {return m_group;}
 
     /**
      * @brief Returns the BHP limit of the well
      *
      * @return double
      */
-    double bhpLimit() {return m_bhp_limit;}
+    double bhpLimit() const {return m_bhp_limit;}
 
 
     /**
@@ -198,14 +198,14 @@ public:
      *
      * @return WellControl::contol_type
      */
-    WellControl::contol_type bhpInj() {return m_bhp_inj;}
+    WellControl::contol_type bhpInj() const {return m_bhp_inj;}
 
     /**
      * @brief Returns the number of cells that the well is connected to (perforations)
      *
      * @return int
      */
-    int numberOfConnections() {return m_connections.size();}
+    int numberOfConnections() const {return m_connections.size();}
 
     /**
      * @brief Returns the cell number of connection i
@@ -220,7 +220,7 @@ public:
      *
      * @return int
      */
-    int numberOfControls() {return m_schedule.size();}
+    int numberOfControls() const {return m_schedule.size();}
 
     /**
      * @brief Returns WellControl number i in the schedule
@@ -237,7 +237,7 @@ public:
      *
      * @return int
      */
-    int numberOfStreams() {return m_streams.size();}
+    int numberOfStreams() const {return m_streams.size();}
 
 
     /**

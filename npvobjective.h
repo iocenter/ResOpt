@@ -80,25 +80,25 @@ public:
      *
      * @return double
      */
-    double dcf() {return m_dcf;}
+    double dcf() const {return m_dcf;}
     /**
      * @brief Returns the oil price
      *
      * @return double
      */
-    double oilPrice() {return m_price_oil;}
+    double oilPrice() const {return m_price_oil;}
     /**
      * @brief Returns the gas price
      *
      * @return double
      */
-    double gasPrice() {return m_price_gas;}
+    double gasPrice() const {return m_price_gas;}
     /**
      * @brief Returns the water price
      *
      * @return double
      */
-    double waterPrice() {return m_price_water;}
+    double waterPrice() const {return m_price_water;}
 
     // virtuals
 

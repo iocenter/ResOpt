@@ -239,7 +239,7 @@ public:
      *
      * @return int
      */
-    int numberOfWells() {return m_wells.size();}
+    int numberOfWells() const {return m_wells.size();}
 
     /**
      * @brief Returns Pipe number i
@@ -254,7 +254,7 @@ public:
      *
      * @return int
      */
-    int numberOfPipes() {return m_pipes.size();}
+    int numberOfPipes() const {return m_pipes.size();}
 
 
     /**
@@ -270,7 +270,7 @@ public:
      *
      * @return int
      */
-    int numberOfSeparators() {return m_separators.size();}
+    int numberOfSeparators() const {return m_separators.size();}
 
 
     /**

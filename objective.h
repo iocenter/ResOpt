@@ -74,7 +74,7 @@ public:
      *
      * @return double
      */
-    double value() {return m_value;}
+    double value() const {return m_value;}
 
 
 

@@ -137,7 +137,7 @@ public:
      *
      * @return const QString
      */
-    const QString& name() {return m_name;}
+    const QString& name() const {return m_name;}
 
     /**
      * @brief Returns the oil Constraint for the Separator

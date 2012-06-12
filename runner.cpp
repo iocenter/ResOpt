@@ -1,3 +1,23 @@
+/*
+ * This file is part of the ResOpt project.
+ *
+ * Copyright (C) 2011-2012 Aleksander O. Juell <aleksander.juell@ntnu.no>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
 
 #include "runner.h"
 
@@ -33,6 +53,7 @@ namespace ResOpt
 Runner::Runner(const QString &driver_file)
     : p_reader(0),
       p_model(0),
+      p_optimizer(0),
       p_simulator(0),
       p_summary(0),
       m_number_of_runs(0),
@@ -55,7 +76,7 @@ Runner::~Runner()
 void Runner::initialize()
 {
     // reading the driver file and initializing the model
-    p_model = p_reader->readDriverFile();
+    p_model = p_reader->readDriverFile(this);
 
     // reading the pipe pressure drop definition files
     p_model->readPipeFiles();
@@ -73,9 +94,10 @@ void Runner::initialize()
 
 
     cout << "Initializing the optimizer..." << endl;
-    // initializing the optimizer
-    p_optimizer = new BonminOptimizer(this);
-    //p_optimizer = new RunonceOptimizer(this);
+    // if the optimizer has not been set yet, setting it to runonce
+
+    if(p_optimizer == 0) p_optimizer = new RunonceOptimizer(this);
+
     p_optimizer->initialize();
 
     // setting up the summary file

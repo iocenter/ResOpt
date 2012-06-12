@@ -81,21 +81,21 @@ public:
      *
      * @return int
      */
-    int min() {return m_min;}
+    int min() const {return m_min;}
 
     /**
      * @brief Returns the maximum bound for the variable
      *
      * @return int
      */
-    int max() {return m_max;}
+    int max() const {return m_max;}
 
     /**
      * @brief Returns the current value for the variable
      *
      * @return int
      */
-    int value() {return m_value;}
+    int value() const {return m_value;}
 
 };
 

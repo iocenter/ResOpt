@@ -87,23 +87,22 @@ public:
      *
      * @return double
      */
-    double value() {return m_value;}
+    double value() const {return m_value;}
 
     /**
      * @brief Returns the maximum bound for the constraint
      *
      * @return double
      */
-    double max() {return m_max;}
-
+    double max() const {return m_max;}
     /**
      * @brief Returns the minimum bound for the constraint
      *
      * @return double
      */
-    double min() {return m_min;}
+    double min() const {return m_min;}
 
-    const QString& name() {return m_name;}
+    const QString& name() const {return m_name;}
 };
 
 } // namespace ResOpt

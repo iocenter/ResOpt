@@ -39,6 +39,36 @@ Pipe::Pipe()
 {
 }
 
+//-----------------------------------------------------------------------------------------------
+// copy constructor
+//-----------------------------------------------------------------------------------------------
+Pipe::Pipe(const Pipe &p)
+{
+    /*
+    int m_number;                           // the identifier for the pipe
+    QString m_file_name;                    // the file containing the pressure drop table
+    double m_inletpressure;                 // the calculated inlet pressure of the pipe
+    PressureDropCalculator *p_calculator;   // the pressure drop calculator
+
+
+    QVector<Pipe*> m_feed_pipes;                    // pointers to pipes entering this pipe
+    QVector<ProductionWell*> m_feed_wells;                    // pointers to wells entering this pipe directly
+    QVector<ProductionWell*> m_connected_wells;               // pointers to all wells flowing through the pipe
+    QVector<double> m_connected_well_fractions;     // the fractions of flow from the connected wells going through this pipe
+
+    QVector<Stream*> m_streams;         // the streams going through the pipe
+
+
+      */
+
+    // copying basic types
+    m_number = p.m_number;
+    m_file_name = p.m_file_name;
+
+    // the calculator
+    if(p.p_calculator != 0) p_calculator = p.p_calculator->clone();
+}
+
 Pipe::~Pipe()
 {
     if(p_calculator != 0) delete p_calculator;

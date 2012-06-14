@@ -67,7 +67,11 @@ private:
 public:
     BeggsBrillCalculator();
 
+    virtual ~BeggsBrillCalculator();
+
     // virtual functions
+
+    virtual PressureDropCalculator* clone() const {return new BeggsBrillCalculator(*this);}
 
     /**
      * @brief Calculates the pressure drop in the pipe for a given stream and outlet pressure

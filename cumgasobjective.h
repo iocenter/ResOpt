@@ -37,6 +37,8 @@ public:
 
     // virtuals
 
+    virtual Objective* clone() {return new CumgasObjective(*this);}
+
     /**
      * @brief Calculates the cumulative oil produced from the input streams
      *

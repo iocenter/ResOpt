@@ -68,7 +68,9 @@ public:
  *
  */
     Well();
-    ~Well();
+    Well(const Well &w);
+
+    virtual ~Well();
 
     // misc functions
 
@@ -77,6 +79,11 @@ public:
      *
      */
     void deleteStreams();
+
+    // virtual functions
+
+    virtual Well* clone() const = 0;
+    virtual void setAutomaticType() = 0;
 
 
 
@@ -112,7 +119,6 @@ public:
      *
      * @param t
      */
-    virtual void setAutomaticType() {m_type = Well::PROD;}
     void setType(Well::well_type t) {m_type = t;}
 
     /**

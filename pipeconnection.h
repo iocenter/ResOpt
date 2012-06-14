@@ -44,6 +44,7 @@ private:
 
 public:
     PipeConnection();
+    PipeConnection(const PipeConnection &p);
     ~PipeConnection();
 
     // set functions
@@ -52,7 +53,7 @@ public:
     void setVariable(shared_ptr<BinaryVariable> v) {p_routing_variable = v;}
 
     // get functions
-    int pipeNumber() {return m_pipe_number;}
+    int pipeNumber() const {return m_pipe_number;}
     Pipe* pipe() {return p_pipe;}
     shared_ptr<BinaryVariable> variable() {return p_routing_variable;}
 

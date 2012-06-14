@@ -83,10 +83,15 @@ private:
 
 public:
     Pipe();
-    ~Pipe();
+    Pipe(const Pipe &p);
+
+
+    virtual ~Pipe();
 
 
     // virtual functions
+
+    virtual Pipe* clone() = 0;
 
 
 

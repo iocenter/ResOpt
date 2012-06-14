@@ -89,15 +89,8 @@ private:
 
 
 public:
-/**
- * @brief
- *
- */
     Model();
-    /**
-     * @brief
-     *
-     */
+    Model(const Model &m);
     ~Model();
 
 
@@ -224,7 +217,7 @@ public:
      *
      * @return Reservoir
      */
-    Reservoir* reservoir() {return p_reservoir;}
+    Reservoir* reservoir() const {return p_reservoir;}
 
     /**
      * @brief Returns well number i
@@ -232,7 +225,7 @@ public:
      * @param i
      * @return Well
      */
-    Well* well(int i) {return m_wells.at(i);}
+    Well* well(int i) const {return m_wells.at(i);}
 
     /**
      * @brief Returns the total number of wells defined in the model
@@ -247,7 +240,7 @@ public:
      * @param i
      * @return Pipe
      */
-    Pipe* pipe(int i) {return m_pipes.at(i);}
+    Pipe* pipe(int i) const {return m_pipes.at(i);}
 
     /**
      * @brief Returns the total number of pipes defined in the model

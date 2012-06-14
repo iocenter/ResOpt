@@ -32,6 +32,20 @@ PipeConnection::PipeConnection()
 {
 }
 
+//-----------------------------------------------------------------------------------------------
+// copy constructor
+//-----------------------------------------------------------------------------------------------
+PipeConnection::PipeConnection(const PipeConnection &p)
+{
+
+    // copying basic types
+    m_pipe_number = p.m_pipe_number;
+    p_pipe = 0; // this should refer to a new pipe in the new model...
+
+    // copying the variable
+    setVariable(shared_ptr<BinaryVariable>(new BinaryVariable(*p.p_routing_variable)));
+}
+
 PipeConnection::~PipeConnection()
 {
 

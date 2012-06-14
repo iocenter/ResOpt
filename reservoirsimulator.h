@@ -41,6 +41,10 @@ private:
 public:
     ReservoirSimulator();
 
+    ReservoirSimulator(const ReservoirSimulator &r);
+
+    virtual ReservoirSimulator* clone() const = 0;
+
 
     virtual bool generateInputFiles(Model *m) = 0;
     virtual bool launchSimulator() = 0;

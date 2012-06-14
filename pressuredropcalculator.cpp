@@ -29,5 +29,7 @@ PressureDropCalculator::PressureDropCalculator()
 {
 }
 
+PressureDropCalculator::~PressureDropCalculator()
+{}
 
 } // namespace ResOpt

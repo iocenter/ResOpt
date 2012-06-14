@@ -28,4 +28,9 @@ namespace ResOpt
 ReservoirSimulator::ReservoirSimulator()
 {}
 
+ReservoirSimulator::ReservoirSimulator(const ReservoirSimulator &r)
+{
+    m_folder = r.m_folder;
+}
+
 } // namespace ResOpt

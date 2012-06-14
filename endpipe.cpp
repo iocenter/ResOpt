@@ -37,6 +37,15 @@ EndPipe::EndPipe()
 {
 }
 
+EndPipe::EndPipe(const EndPipe &p)
+    : Pipe(p)
+{
+    m_outletpressure = p.m_outletpressure;
+
+}
+
+EndPipe::~EndPipe()
+{}
 
 //-----------------------------------------------------------------------------------------------
 // calculates the inlet pressure of the pipe

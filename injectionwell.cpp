@@ -29,4 +29,14 @@ InjectionWell::InjectionWell()
 {
 }
 
+InjectionWell::InjectionWell(const InjectionWell &w)
+    : Well(w)
+{
+}
+
+
+InjectionWell::~InjectionWell()
+{
+}
+
 } // namespace ResOpt

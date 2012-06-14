@@ -49,6 +49,41 @@ Model::Model()
 {
 }
 
+//-----------------------------------------------------------------------------------------------
+// Copy constructor
+//-----------------------------------------------------------------------------------------------
+Model::Model(const Model &m)
+{
+
+    // copying the reservoir
+    p_reservoir = new Reservoir(*m.reservoir());
+
+    // copying the wells
+    for(int i = 0; i < m.numberOfWells(); i++)
+    {
+        m_wells.push_back(m.well(i)->clone());
+    }
+
+    // copying the pipes
+    for(int i = 0; i < m.numberOfPipes(); i++)
+    {
+        m_pipes.push_back(m.pipe(i)->clone());
+    }
+
+    // copying the separators
+    for(int i = 0; i < m.numberOfSeparators(); i++)
+    {
+        m_separators.push_back(new Separator(*m.m_separators.at(i)));
+    }
+
+    // copying the objective
+    p_obj = m.p_obj->clone();
+
+    // now it is time to connect the pipes and separators
+
+}
+
+
 Model::~Model()
 {
     if(p_reservoir != 0) delete p_reservoir;

@@ -47,6 +47,25 @@ ProductionWell::ProductionWell()
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// copy constructor
+//-----------------------------------------------------------------------------------------------
+ProductionWell::ProductionWell(const ProductionWell &w)
+    : Well(w)
+{
+
+    // copying the constraints
+    p_bhp_contraint = shared_ptr<Constraint>(new Constraint(*w.p_bhp_contraint));
+    p_connection_constraint = shared_ptr<Constraint>(new Constraint(*w.p_connection_constraint));
+
+    // copying the pipe connections
+    for(int i = 0; i < w.numberOfPipeConnections(); i++)
+    {
+        m_pipe_connections.push_back(new PipeConnection(*w.m_pipe_connections.at(i)));
+    }
+}
+
+
 ProductionWell::~ProductionWell()
 {
     for(int i = 0; i < numberOfPipeConnections(); i++)

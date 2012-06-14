@@ -19,6 +19,7 @@
  */
 
 #include "wellcontrol.h"
+#include "realvariable.h"
 
 namespace ResOpt
 {
@@ -26,6 +27,24 @@ namespace ResOpt
 
 WellControl::WellControl()
 {
+}
+
+
+WellControl::WellControl(const WellControl &c)
+{
+    /*
+    shared_ptr<RealVariable> p_control_var;        // variable containing current set point
+    WellControl::contol_type m_type;    // type of well control
+    double m_end_time;                      // stop time
+    */
+
+    // copying basic types
+    m_type = c.m_type;
+    m_end_time = c.m_end_time;
+
+    // copying the variable
+
+    setControlVar(shared_ptr<RealVariable>(new RealVariable(*c.p_control_var)));
 }
 
 

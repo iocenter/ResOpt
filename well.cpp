@@ -43,6 +43,38 @@ Well::Well()
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// copy constructor
+//-----------------------------------------------------------------------------------------------
+Well::Well(const Well &w)
+{
+
+    // copying basic types
+    m_type = w.m_type;
+    m_name = w.m_name;
+    m_group = w.m_group;
+    m_bhp_limit = w.m_bhp_limit;
+    m_bhp_inj = w.m_bhp_inj;
+
+    // copying connections
+    for(int i = 0; i < w.numberOfConnections(); i++)
+    {
+        m_connections.push_back(new WellConnection(*w.m_connections.at(i)));
+    }
+
+    // copying controls
+    for(int i = 0; i < w.numberOfControls(); i++)
+    {
+        m_schedule.push_back(new WellControl(*w.m_schedule.at(i)));
+    }
+
+    // copying streams
+    for(int i = 0; i < w.numberOfStreams(); i++)
+    {
+        m_streams.push_back(new Stream(*w.m_streams.at(i)));
+    }
+}
+
 
 Well::~Well()
 {

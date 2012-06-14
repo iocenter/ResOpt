@@ -62,6 +62,8 @@ public:
  */
     WellControl();
 
+    WellControl(const WellControl &c);
+
     ~WellControl();
 
     // set functions
@@ -102,14 +104,14 @@ public:
      *
      * @return WellControl::contol_type
      */
-    WellControl::contol_type type() {return m_type;}
+    WellControl::contol_type type() const {return m_type;}
 
     /**
      * @brief Returns the end time
      *
      * @return double
      */
-    double endTime() {return m_end_time;}
+    double endTime() const {return m_end_time;}
 
 
 };

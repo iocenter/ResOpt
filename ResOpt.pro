@@ -69,7 +69,10 @@ SOURCES += main.cpp \
     productionwell.cpp \
     injectionwell.cpp \
     pipeconnection.cpp \
-    runonceoptimizer.cpp
+    runonceoptimizer.cpp \
+    launcher.cpp \
+    case.cpp \
+    casequeue.cpp
 
 HEADERS += \
     well.h \
@@ -103,4 +106,7 @@ HEADERS += \
     productionwell.h \
     injectionwell.h \
     pipeconnection.h \
-    runonceoptimizer.h
+    runonceoptimizer.h \
+    launcher.h \
+    case.h \
+    casequeue.h

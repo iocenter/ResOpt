@@ -49,9 +49,13 @@ private:
 
 public:
     MidPipe();
-    ~MidPipe();
+    MidPipe(const MidPipe &p);
+
+    virtual ~MidPipe();
 
     // virtual functions
+
+    virtual Pipe* clone() {return new MidPipe(*this);}
 
     virtual void calculateInletPressure();
 

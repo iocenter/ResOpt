@@ -32,8 +32,12 @@ class InjectionWell : public Well
 {
 public:
     InjectionWell();
+    InjectionWell(const InjectionWell &w);
+
+    virtual ~InjectionWell();
 
     // virtual functions
+    virtual Well* clone() const {return new InjectionWell(*this);}
 
     virtual void setAutomaticType() {setType(Well::INJ);}
 };

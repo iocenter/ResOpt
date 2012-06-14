@@ -35,8 +35,13 @@ private:
 
 public:
     EndPipe();
+    EndPipe(const EndPipe &p);
+
+    virtual ~EndPipe();
+
 
     // virtual functions
+    virtual Pipe* clone() {return new EndPipe(*this);}
 
     virtual void calculateInletPressure();
 

@@ -46,6 +46,8 @@ public:
  */
     NpvObjective();
 
+    virtual Objective* clone() {return new NpvObjective(*this);}
+
     // set functions
 
     /**

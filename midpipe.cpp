@@ -42,6 +42,20 @@ MidPipe::MidPipe()
 
 }
 
+MidPipe::MidPipe(const MidPipe &p)
+    : Pipe(p)
+{
+    // copying the pipe connections
+    for(int i = 0; i < p.numberOfOutletConnections(); i++)
+    {
+        m_outlet_connections.push_back(new PipeConnection(*p.m_outlet_connections.at(i)));
+    }
+
+    // copying the constraint
+    p_connection_constraint = shared_ptr<Constraint>(new Constraint(*p.p_connection_constraint));
+
+}
+
 MidPipe::~MidPipe()
 {
     for(int i = 0; i < m_outlet_connections.size(); i++)

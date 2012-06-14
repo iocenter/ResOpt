@@ -64,14 +64,14 @@ public:
      *
      * @return int
      */
-    int cell() {return m_cell;}
+    int cell() const {return m_cell;}
 
     /**
      * @brief Returns the well index for the connection
      *
      * @return double
      */
-    double wellIndex() {return m_wi;}
+    double wellIndex() const {return m_wi;}
 
 };
 

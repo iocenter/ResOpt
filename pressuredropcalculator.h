@@ -31,6 +31,9 @@ class PressureDropCalculator
 {
 public:
     PressureDropCalculator();
+    virtual ~PressureDropCalculator();
+
+    virtual PressureDropCalculator* clone() const = 0;
 
     virtual double pressureDrop(Stream *s, double p_outlet) = 0;
 };

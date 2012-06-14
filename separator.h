@@ -62,6 +62,7 @@ public:
  *
  */
     Separator();
+    Separator(const Separator &s);
 
     // misc functions
 
@@ -173,7 +174,7 @@ public:
      *
      * @return int
      */
-    int numberOfFeedPipeNumbers() {return m_feed_pipe_numbers.size();}
+    int numberOfFeedPipeNumbers() const {return m_feed_pipe_numbers.size();}
 
 
     /**
@@ -182,9 +183,9 @@ public:
      * @param i
      * @return int
      */
-    int feedPipeNumber(int i) {return m_feed_pipe_numbers.at(i);}
+    int feedPipeNumber(int i) const {return m_feed_pipe_numbers.at(i);}
 
-    int numberOfFeedPipes() {return m_feed_pipes.size();}
+    int numberOfFeedPipes() const {return m_feed_pipes.size();}
     Pipe* feedPipe(int i) {return m_feed_pipes.at(i);}
 };
 

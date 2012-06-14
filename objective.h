@@ -49,6 +49,8 @@ public:
 
     // virtual functions
 
+    virtual Objective* clone() = 0;
+
     /**
      * @brief Calculates the objective value based on a vector of streams.
      * @details The function calculates and stores the objective value. To retreive the calculated value, use value(). This

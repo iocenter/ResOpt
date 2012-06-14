@@ -33,6 +33,7 @@ class Optimizer
 {
 private:
     int m_max_iter;
+    int m_parallel_runs;
     double m_perturbation_size;
 
     Runner *p_runner;
@@ -49,14 +50,14 @@ public:
     Runner* runner() {return p_runner;}
 
     // set functions
-    void setMaxIterations(int i) {m_max_iter = i;}
-
+    void setMaxIterations(int i) {m_max_iter = i;} 
+    void setParallelRuns(int i) {m_parallel_runs = i;}
     void setPerturbationSize(double p) {m_perturbation_size = p;}
-
     void setInitialized(bool i) {m_initialized = i;}
 
     // get functions
     int maxIterations() const {return m_max_iter;}
+    int parallelRuns() const {return m_parallel_runs;}
     double pertrurbationSize() const {return m_perturbation_size;}
 
     bool isInitialized() const {return m_initialized;}

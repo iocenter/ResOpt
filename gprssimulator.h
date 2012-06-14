@@ -48,7 +48,11 @@ private:
 public:
     GprsSimulator();
 
+    GprsSimulator(const GprsSimulator &g);
+
     // virtual functions
+
+    virtual ReservoirSimulator* clone() const {return new GprsSimulator(*this);}
 
     virtual bool generateInputFiles(Model *m);
     virtual bool launchSimulator();

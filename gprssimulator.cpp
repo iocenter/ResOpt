@@ -45,6 +45,11 @@ GprsSimulator::GprsSimulator()
 {
 }
 
+GprsSimulator::GprsSimulator(const GprsSimulator &g)
+    : ReservoirSimulator(g)
+{
+}
+
 //-----------------------------------------------------------------------------------------------
 // generates the main input file
 //-----------------------------------------------------------------------------------------------

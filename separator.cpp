@@ -39,6 +39,27 @@ Separator::Separator()
 {
 }
 
+Separator::Separator(const Separator &s)
+{
+
+    // copying basic types
+    m_name = s.m_name;
+
+    for(int i = 0; i < s.numberOfFeedPipeNumbers(); i++)
+    {
+        m_feed_pipe_numbers.push_back(s.feedPipeNumber(i));
+    }
+
+    // copying constraints
+
+    if(s.p_oil != 0) p_oil = shared_ptr<Constraint>(new Constraint(*s.p_oil));
+    if(s.p_gas != 0) p_gas = shared_ptr<Constraint>(new Constraint(*s.p_gas));
+    if(s.p_water != 0) p_water = shared_ptr<Constraint>(new Constraint(*s.p_water));
+    if(s.p_liquid != 0) p_liquid = shared_ptr<Constraint>(new Constraint(*s.p_liquid));
+
+    // nothing should be done for the feed pipes, they must be resolved from the model
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // update constraints

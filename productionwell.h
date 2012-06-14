@@ -51,7 +51,11 @@ private:
 
 public:
     ProductionWell();
-    ~ProductionWell();
+    ProductionWell(const ProductionWell &w);
+
+    virtual ~ProductionWell();
+
+    virtual Well* clone() const {return new ProductionWell(*this);}
 
     // overloaded functions
     void setName(const QString &n);
@@ -98,7 +102,7 @@ public:
 
     shared_ptr<Constraint> pipeConnectionConstraint() {return p_connection_constraint;}
 
-    int numberOfPipeConnections() {return m_pipe_connections.size();}
+    int numberOfPipeConnections() const {return m_pipe_connections.size();}
     PipeConnection* pipeConnection(int i) {return m_pipe_connections.at(i);}
 
 

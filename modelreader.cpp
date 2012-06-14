@@ -23,6 +23,7 @@
 
 #include <iostream>
 #include <tr1/memory>
+#include <QThread>
 
 #include "runner.h"
 #include "model.h"
@@ -1249,6 +1250,7 @@ void ModelReader::readOptimizer(Runner *r)
 
     double l_perturb = 0.0001;
     int l_max_iter = 1;
+    int l_parallel_runs = 1;
 
     bool ok = true;
 
@@ -1266,6 +1268,21 @@ void ModelReader::readOptimizer(Runner *r)
         }
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations
         else if(list.at(0).startsWith("PERTURB")) l_perturb = list.at(1).toDouble(&ok);     // getting the perturbation size
+        else if(list.at(0).startsWith("PARALLEL"))                                           // getting the number of parallel runs
+        {
+            if(list.at(1).startsWith("IDEAL"))              // find the ideal number of parallel runs
+            {
+                l_parallel_runs = QThread::idealThreadCount();
+                cout << "Using IDEAL number of parallel runs = " << l_parallel_runs << endl;
+            }
+            else
+            {
+                l_parallel_runs = list.at(1).toInt(&ok);   // user specified number
+                cout << "Using user-specified number of parallel runs = " << l_parallel_runs << endl;
+            }
+            // checking that the number of parallel runs is at least 1
+            if(l_parallel_runs < 1) l_parallel_runs = 1;
+        }
 
         else
         {
@@ -1297,6 +1314,7 @@ void ModelReader::readOptimizer(Runner *r)
 
     // everything ok, setting to optimizer
     o->setMaxIterations(l_max_iter);
+    o->setParallelRuns(l_parallel_runs);
     o->setPerturbationSize(l_perturb);
 
     // setting optimizer to runner

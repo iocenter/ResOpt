@@ -46,6 +46,9 @@ BeggsBrillCalculator::BeggsBrillCalculator()
 {
 }
 
+BeggsBrillCalculator::~BeggsBrillCalculator()
+{}
+
 //-----------------------------------------------------------------------------------------------
 // calculates the superficial gas velocity (vsg)
 //-----------------------------------------------------------------------------------------------

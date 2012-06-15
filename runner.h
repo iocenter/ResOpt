@@ -32,6 +32,10 @@
 
 #include <QString>
 #include <QFile>
+#include <QVector>
+#include <QObject>
+
+class QThread;
 
 using std::tr1::dynamic_pointer_cast;
 using std::tr1::shared_ptr;
@@ -43,15 +47,23 @@ class Model;
 class ReservoirSimulator;
 class ModelReader;
 class Optimizer;
+class Launcher;
+class CaseQueue;
+
 
 
 /**
  * @brief Main execution class.
  *
  */
-class Runner
+class Runner : public QObject
 {
+    Q_OBJECT
 private:
+    QVector<Launcher*> m_launchers;
+    QVector<bool> m_launcher_running;
+    QVector<QThread*> m_threads;
+
     ModelReader *p_reader;
     Model *p_model;
     ReservoirSimulator *p_simulator;
@@ -61,10 +73,12 @@ private:
     int m_number_of_runs;
     bool m_up_to_date;
 
+    CaseQueue *p_cases;
+
 
 
 public:
-    Runner(const QString &driver_file);
+    explicit Runner(const QString &driver_file, QObject *parent = 0);
     ~Runner();
 
 
@@ -76,13 +90,6 @@ public:
     void initialize();
 
 
-    /**
-     * @brief Starts the Optimizer
-     * @details The function first checks if the Model has been initialized. If not initialize() is called. Then the Optimizer is started
-     *          through Optimizer::start().
-     *
-     */
-    void run();
 
 
     /**
@@ -96,7 +103,19 @@ public:
      */
     bool evaluate();
 
+
+
+    /**
+     * @brief Writes the problem definition to the summary file
+     * @details A list of all the variables and constraints are printed to the summary file.
+     */
     void writeProblemDefToSummary();
+
+
+    /**
+     * @brief Writes the results from the current run of the Model to the summary file
+     * @details The variable, constraints and objective values are printed as a new line to the summary file.
+     */
     void writeIterationToSummary();
 
     // set functions
@@ -109,6 +128,32 @@ public:
     Model* model() {return p_model;}
 
     bool isUpToDate() {return m_up_to_date;}
+
+public slots:
+    void onLauncherFinished(Launcher *l);
+
+    /**
+     * @brief Starts the Optimizer
+     * @details The function first checks if the Model has been initialized. If not initialize() is called. Then the Optimizer is started
+     *          through Optimizer::start().
+     *
+     */
+    void run();
+
+
+    /**
+     * @brief Evaluates a list of cases
+     *
+     * @param cases
+     */
+    void evaluate(CaseQueue *cases);
+
+
+
+
+signals:
+    void optimizationFinished();
+    void casesFinished();
 
 };
 

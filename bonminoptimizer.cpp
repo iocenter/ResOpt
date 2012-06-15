@@ -100,6 +100,9 @@ void BonminOptimizer::start()
              <<std::endl
              <<E.message()<<std::endl;
       }
+
+      // letting the runner know the optimization has finished
+      emit finished();
 }
 
 } // namespace ResOpt

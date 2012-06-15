@@ -428,7 +428,7 @@ void Model::readPipeFiles()
 //-----------------------------------------------------------------------------------------------
 // Collects all the binary variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<BinaryVariable> > Model::binaryVariables()
+QVector<shared_ptr<BinaryVariable> >& Model::binaryVariables()
 {
 
 
@@ -480,7 +480,7 @@ QVector<shared_ptr<BinaryVariable> > Model::binaryVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the real variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<RealVariable> > Model::realVariables()
+QVector<shared_ptr<RealVariable> >& Model::realVariables()
 {
 
     if(m_vars_real.size() == 0)
@@ -505,7 +505,7 @@ QVector<shared_ptr<RealVariable> > Model::realVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the constraints
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<Constraint> > Model::constraints()
+QVector<shared_ptr<Constraint> >& Model::constraints()
 {
     if(m_cons.size() == 0)
     {

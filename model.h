@@ -139,7 +139,7 @@ public:
      *
      * @return QVector<BinaryVariable *>
      */
-    QVector<shared_ptr<BinaryVariable> > binaryVariables();
+    QVector<shared_ptr<BinaryVariable> >& binaryVariables();
 
     /**
      * @brief Returns a vector containing all the real variables defined within the model.
@@ -147,7 +147,7 @@ public:
      *
      * @return QVector<RealVariable *>
      */
-    QVector<shared_ptr<RealVariable> > realVariables();
+    QVector<shared_ptr<RealVariable> >& realVariables();
 
 
     /**
@@ -156,7 +156,7 @@ public:
      *
      * @return QVector<Constraint *>
      */
-    QVector<shared_ptr<Constraint> > constraints();
+    QVector<shared_ptr<Constraint> >& constraints();
 
 
     /**

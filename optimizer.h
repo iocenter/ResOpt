@@ -21,27 +21,33 @@
 #ifndef OPTIMIZER_H
 #define OPTIMIZER_H
 
+#include <QObject>
+
 
 namespace ResOpt
 {
 
 
 class Runner;
+class CaseQueue;
 
 
-class Optimizer
+class Optimizer : public QObject
 {
+    Q_OBJECT
 private:
+    Runner *p_runner;
+
     int m_max_iter;
     int m_parallel_runs;
     double m_perturbation_size;
 
-    Runner *p_runner;
+
 
     bool m_initialized;
 
 public:
-    Optimizer(Runner *r);
+    explicit Optimizer(Runner *r);
 
     virtual void initialize() = 0;
 
@@ -61,6 +67,20 @@ public:
     double pertrurbationSize() const {return m_perturbation_size;}
 
     bool isInitialized() const {return m_initialized;}
+
+signals:
+    void finished();
+
+public slots:
+
+    /**
+     * @brief Sends a list of cases to the Runner for evaluation.
+     * @details The cases are populated with results (constraint and objective values) by the runner, and can be processed by the optimizer
+     *
+     * @param cases
+     */
+    void requestCases(CaseQueue *cases);
+
 };
 
 } // namespace ResOpt

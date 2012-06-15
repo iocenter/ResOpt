@@ -8,6 +8,7 @@ namespace ResOpt
 
 class Model;
 class ReservoirSimulator;
+class Case;
 
 class Launcher : public QObject
 {
@@ -16,8 +17,12 @@ private:
     Model *p_model;
     ReservoirSimulator *p_simulator;
 
+
+
 public:
     explicit Launcher(QObject *parent = 0);
+
+    bool initialize();
 
     // set functions
     void setModel(Model *m) {p_model = m;}
@@ -28,10 +33,11 @@ public:
     ReservoirSimulator* reservoirSimulator() {return p_simulator;}
     
 signals:
-    void finished();
+    void finished(Launcher *source);
+
 
 public slots:
-    void evaluate();
+    void evaluate(Case *c);
     
 };
 

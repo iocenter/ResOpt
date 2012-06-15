@@ -59,6 +59,9 @@ void RunonceOptimizer::start()
 
     // launching the runner for one iteration
     runner()->evaluate();
+
+    // letting the runner know that the optimization has finished
+    emit finished();
 }
 
 

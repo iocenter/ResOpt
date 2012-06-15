@@ -23,7 +23,9 @@
 
 #include <iostream>
 #include <QTextStream>
+#include <QThread>
 
+#include "launcher.h"
 #include "modelreader.h"
 #include "model.h"
 #include "gprssimulator.h"
@@ -36,6 +38,8 @@
 #include "binaryvariable.h"
 #include "realvariable.h"
 #include "constraint.h"
+#include "casequeue.h"
+#include "case.h"
 
 // needed for debug
 #include "productionwell.h"
@@ -50,8 +54,9 @@ namespace ResOpt
 
 
 
-Runner::Runner(const QString &driver_file)
-    : p_reader(0),
+Runner::Runner(const QString &driver_file, QObject *parent)
+    : QObject(parent),
+      p_reader(0),
       p_model(0),
       p_optimizer(0),
       p_simulator(0),
@@ -68,6 +73,11 @@ Runner::~Runner()
     if(p_simulator != 0) delete p_simulator;
     if(p_reader != 0) delete p_reader;
     if(p_optimizer != 0) delete p_optimizer;
+
+    for(int i = 0; i < m_launchers.size(); ++i) delete m_launchers.at(i);
+
+
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -103,6 +113,55 @@ void Runner::initialize()
     // setting up the summary file
     setSummaryFile("run_summary.out");
     writeProblemDefToSummary();
+
+    /////// new multi thread ////////
+
+    // setting up the launchers and asociated threads
+    for(int i = 0; i < p_optimizer->parallelRuns(); ++i)
+    {
+        // creating a launcher
+        Launcher *l = new Launcher();
+
+        // copying the base model to the launcher
+        l->setModel(new Model(*model()));
+
+        // setting up the reservoir simulator
+        ReservoirSimulator *r = new GprsSimulator();
+        r->setFolder("output/" + QString::number(i));
+
+        l->setReservoirSimulator(r);
+
+        // initializing the launcher
+        if(!l->initialize())
+        {
+            // something went wrong with initialization
+
+            cout << endl << "### Runtime Error ###" << endl
+                << "Could not initialize the launcher..." << endl << endl;
+
+            exit(1);
+        }
+
+        // connecting signals and slots
+        connect(l, SIGNAL(finished(Launcher*)), this, SLOT(onLauncherFinished(Launcher*)));
+
+
+        // creating the thread where the launcher shouild live
+        QThread *t = new QThread();
+
+        // moving the launcher to the thread
+        l->moveToThread(t);
+
+        // adding launcher and thread to the vectors
+        m_launchers.push_back(l);
+        m_launcher_running.push_back(false);
+        m_threads.push_back(t);
+
+        // starting the thread
+        t->start();
+
+    }
+
 
     cout << "Done initializing the model..." << endl;
 
@@ -264,6 +323,34 @@ bool Runner::evaluate()
     return ok;
 }
 
+//-----------------------------------------------------------------------------------------------
+// Running a set of cases for the optimizer
+//-----------------------------------------------------------------------------------------------
+void Runner::evaluate(CaseQueue *cases)
+{
+    // updating the case queue
+    p_cases = cases;
+
+    // checking that none of the launchers are working
+
+    // sending out the first batch of cases to the launchers
+
+    for(int i = 0; i < m_launchers.size(); ++i)
+    {
+        Case *c = p_cases->next();
+        if(c != 0)
+        {
+            m_launcher_running.replace(i, true);
+            m_launchers.at(i)->evaluate(c);
+        }
+        else break;
+
+    }
+
+
+    //emit casesFinished();
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // Initializes the summary file
@@ -410,6 +497,54 @@ void Runner::writeIterationToSummary()
         p_summary->flush();
 
     }
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// This function is called whenever a Launcher emits finished
+//-----------------------------------------------------------------------------------------------
+void Runner::onLauncherFinished(Launcher *l)
+{
+    // check if there are more cases to run
+    Case *c = p_cases->next();
+
+    if(c != 0)
+    {
+        // sending the case to the launcher
+        l->evaluate(c);
+    }
+    else
+    {
+        // setting the status of this launcher to not running
+        int place = 0;
+
+        // finding which launcher this is
+        for(int i = 0; i < m_launchers.size(); ++i)
+        {
+            if(l == m_launchers.at(i))
+            {
+                place = i;
+                break;
+            }
+        }
+
+        m_launcher_running.replace(place, false);
+
+        // checking if any launchers are still running
+        bool all_finished = true;
+        for(int i = 0; i < m_launcher_running.size(); ++i)
+        {
+            if(m_launcher_running.at(i))
+            {
+                all_finished = false;
+                break;
+            }
+        }
+
+        // if all launchers are finished, letting the optimizer know
+        if(all_finished) emit casesFinished();
+    }
+
 
 }
 

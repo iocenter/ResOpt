@@ -18,7 +18,7 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include <QtCore/QCoreApplication>
+#include <QtCore>
 #include <iostream>
 
 
@@ -31,29 +31,30 @@ using std::endl;
 
 int main(int argc, char *argv[])
 {
-    // QCoreApplication a(argc, argv);
+    QCoreApplication a(argc, argv);
 
     Runner *r = 0;
 
     if(argc == 2)
     {
         r = new Runner(argv[1]);
-        r->run();
+        QObject::connect(r,SIGNAL(optimizationFinished()), &a, SLOT(quit()));
+        QTimer::singleShot(0, r, SLOT(run()));
     }
     else if(argc == 1)
     {
         r = new Runner("driver.dat");
-        r->run();
+        QObject::connect(r,SIGNAL(optimizationFinished()), &a, SLOT(quit()));
+        QTimer::singleShot(0, r, SLOT(run()));
 
     }
     else
     {
         cout << "Wrong input arguments!" << endl
              << "Correct usage: .\\ResOpt driver_file" << endl;
+        a.exit(1);
     }
 
-    if(r != 0) delete r;
-
     
-    return 0;
+    return a.exec();
 }

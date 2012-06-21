@@ -79,7 +79,7 @@ public slots:
      *
      * @param cases
      */
-    void requestCases(CaseQueue *cases);
+    void runCases(CaseQueue *cases);
 
 };
 

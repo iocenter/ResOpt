@@ -22,6 +22,7 @@
 #ifndef STREAM_H
 #define STREAM_H
 
+#include <QVector>
 
 
 namespace ResOpt
@@ -54,6 +55,14 @@ public:
     // misc functions
 
     void printToCout();
+
+
+    /**
+     * @brief Sets the values of this stream to the average values of the input vector
+     *
+     * @param input
+     */
+    void avg(const QVector<Stream*> &input, double t_start);
 
     // set functions
 

@@ -24,12 +24,15 @@
 #include <iostream>
 #include <QVector>
 
+#include "bonminoptimizer.h"
 #include "runner.h"
 #include "model.h"
 #include "realvariable.h"
 #include "binaryvariable.h"
 #include "constraint.h"
 #include "objective.h"
+#include "case.h"
+#include "casequeue.h"
 
 
 
@@ -40,13 +43,15 @@ using std::endl;
 namespace ResOpt
 {
 
-BonminInterface::BonminInterface(Runner *r)
-    : p_runner(r),
-      m_pertubation(0.001)
+BonminInterface::BonminInterface(BonminOptimizer *o)
+    : p_optimizer(o),
+      p_case_last(0),
+      p_case_gradients(0)
+
 {
-    m_vars_binary = p_runner->model()->binaryVariables();
-    m_vars_real = p_runner->model()->realVariables();
-    m_cons = p_runner->model()->constraints();
+    m_vars_binary = p_optimizer->runner()->model()->binaryVariables();
+    m_vars_real = p_optimizer->runner()->model()->realVariables();
+    m_cons = p_optimizer->runner()->model()->constraints();
 }
 
 
@@ -221,35 +226,35 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
 {
-    cout << "Evaluating the function for bonmin..." << endl;
+    //cout << "Evaluating the function for bonmin..." << endl;
 
     // checking if this is a new set of variable values
     if(newVariableValues(n, x))
     {
-        // updating the variable values
-        int n_var = 0;
+        // deleting the old case
+        if(p_case_last != 0) delete p_case_last;
+        p_case_last = 0;
 
-        // real variables
-        for(int i = 0; i < m_vars_real.size(); i++)
-        {
-            m_vars_real.at(i)->setValue(x[n_var]);
-            n_var++;
-        }
+        // creating a new case
+        Case *case_new = generateCase(n, x);
 
-        // binary variables
-        for(int i = 0; i < m_vars_binary.size(); i++)
-        {
-            m_vars_binary.at(i)->setValue(x[n_var]);
-            n_var++;
-        }
+        // adding the case to a queue
+        CaseQueue *case_queue = new CaseQueue();
+        case_queue->push_back(case_new);
 
-        // evaluating the model
-        p_runner->evaluate();
+        // sending the new case to the runner
+        p_optimizer->runCases(case_queue);
+
+        // setting the case as the last case
+        p_case_last = case_new;
+
 
     }
 
     // getting the value of the objective (negative since bonmin is doing minimization)
-    obj_value = -p_runner->model()->objective()->value();
+    obj_value = -p_case_last->objectiveValue();
+
+    //cout << "f = " << obj_value << endl;
 
 
     return true;
@@ -260,18 +265,22 @@ bool BonminInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_v
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
-    cout << "Evaluating the gradient for bonmin..." << endl;
+   // cout << "Evaluating the gradient for bonmin..." << endl;
 
     // first checking if gradients are allready calculated
     if(!gradientsAreUpdated(n,x))
     {
+        cout << "need to calculate new gradients..." << endl;
         calculateGradients(n,x);
+        cout << "done calculating new gradients..." << endl;
     }
 
     // copying the calculated gradients to BonMin
     for(int i = 0; i < n; i++)
     {
         grad_f[i] = m_grad_f.at(i);
+
+       // cout << "grad_f[" << i << "] = " << grad_f[i] << endl;
     }
 
     return true;
@@ -283,37 +292,39 @@ bool BonminInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* 
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
 {
-    cout << "Evaluating the constraints for bonmin..." << endl;
+    //cout << "Evaluating the constraints for bonmin..." << endl;
 
     // checking if this is a new set of variable values
     if(newVariableValues(n, x))
     {
-        // updating the variable values
-        int n_var = 0;
+        // deleting the old case
+        if(p_case_last != 0) delete p_case_last;
+        p_case_last = 0;
 
-        // real variables
-        for(int i = 0; i < m_vars_real.size(); i++)
-        {
-            m_vars_real.at(i)->setValue(x[n_var]);
-            n_var++;
-        }
+        // creating a new case
+        Case *case_new = generateCase(n, x);
 
-        // binary variables
-        for(int i = 0; i < m_vars_binary.size(); i++)
-        {
-            m_vars_binary.at(i)->setValue(x[n_var]);
-            n_var++;
-        }
+        // adding the case to a queue
+        CaseQueue *case_queue = new CaseQueue();
+        case_queue->push_back(case_new);
 
-        // evaluating the model
-        p_runner->evaluate();
+        // sending the new case to the runner
+        p_optimizer->runCases(case_queue);
+
+        // setting the case as the last case
+        p_case_last = case_new;
 
     }
 
+    // checking that the number of constraints in the cas corresponds to m
+    assert(m == p_case_last->numberOfConstraints());
+
     // getting the value of the constraints
-    for(int i = 0; i < m_cons.size(); i++)
+    for(int i = 0; i < p_case_last->numberOfConstraints(); ++i)
     {
-        g[i] = m_cons.at(i)->value();
+        g[i] = p_case_last->constraintValue(i);
+
+        //cout << "g[" << i << "] = " << g[i] << endl;
     }
 
     return true;
@@ -346,7 +357,7 @@ bool BonminInterface::eval_jac_g(Index n, const Number* x, bool new_x,
     }
     else    // the structure is already set, getting the values
     {
-        cout << "Evaluating the jacobian for bonmin..." << endl;
+        //cout << "Evaluating the jacobian for bonmin..." << endl;
 
         // checking if gradients are calculated
         if(!gradientsAreUpdated(n,x))
@@ -387,7 +398,31 @@ bool BonminInterface::eval_h(Index n, const Number* x, bool new_x,
 void BonminInterface::finalize_solution(TMINLP::SolverReturn status,
                                Index n, const Number* x, Number obj_value)
 {
+
+
+    cout << "IPOPT returned a status indicating ";
+
+    if ( status == Ipopt::SUCCESS ) cout << "SUCCESS";
+    else if ( status == Ipopt::MAXITER_EXCEEDED ) cout << "MAXITER_EXCEEDED";
+    else if ( status == Ipopt::CPUTIME_EXCEEDED ) cout << "CPUTIME_EXCEEDED";
+    else if ( status == Ipopt::STOP_AT_TINY_STEP ) cout << "STOP_AT_TINY_STEP";
+    else if ( status == Ipopt::STOP_AT_ACCEPTABLE_POINT ) cout << "STOP_AT_ACCEPTABLE_POINT";
+    else if ( status == Ipopt::LOCAL_INFEASIBILITY ) cout << "LOCAL_INFEASIBILITY";
+    else if ( status == Ipopt::USER_REQUESTED_STOP ) cout << "USER_REQUESTED_STOP";
+    else if ( status == Ipopt::FEASIBLE_POINT_FOUND ) cout << "FEASIBLE_POINT_FOUND";
+    else if ( status == Ipopt::DIVERGING_ITERATES ) cout << "DIVERGING_ITERATES";
+    else if ( status == Ipopt::RESTORATION_FAILURE ) cout << "RESTORATION_FAILURE";
+    else if ( status == Ipopt::ERROR_IN_STEP_COMPUTATION ) cout << "ERROR_IN_STEP_COMPUTATION";
+    else if ( status == Ipopt::INVALID_NUMBER_DETECTED ) cout << "INVALID_NUMBER_DETECTED";
+    else if ( status == Ipopt::TOO_FEW_DEGREES_OF_FREEDOM ) cout << "TOO_FEW_DEGREES_OF_FREEDOM";
+    else if ( status == Ipopt::INVALID_OPTION ) cout << "INVALID_OPTION";
+    else if ( status == Ipopt::OUT_OF_MEMORY ) cout << "OUT_OF_MEMORY";
+    else if ( status == Ipopt::INTERNAL_ERROR ) cout << "INTERNAL_ERROR";
+    else cout << "UNKNOWN_ERROR";
+
+    cout << endl;
 }
+
 
 //-----------------------------------------------------------------------------------------------
 // Checks if the x values are the same as the current model values for the variables
@@ -396,90 +431,72 @@ bool BonminInterface::newVariableValues(Index n, const Number *x)
 {
     bool x_new = false;
 
-    // checking if the model is up to date
-    if(!p_runner->isUpToDate()) return true;
+    // checking if the last case has been set up
+    if(p_case_last == 0) return true;
 
+    // checking that the number of variables in the case correspons to n
+    int n_var_case = p_case_last->numberOfRealVariables() + p_case_last->numberOfBinaryVariables();
+    if(n != n_var_case) return false;
+
+    // checking if the real variables are the same
     int n_var = 0;
 
-    // checking the real variables
-    for(int i = 0; i < m_vars_real.size(); i++)
+    for(int i = 0; i < p_case_last->numberOfRealVariables(); ++i)
     {
-        if(x[n_var] != m_vars_real.at(i)->value())
+        if(x[n_var] != p_case_last->realVariableValue(i))
         {
             x_new = true;
             break;
         }
-        n_var++;
 
+        ++n_var;
     }
 
     // checking the binary variables, if nothing new was detected with the real vars
     if(!x_new)
     {
-        for(int i = 0; i < m_vars_binary.size(); i++)
+        for(int i = 0; i < p_case_last->numberOfBinaryVariables(); ++i)
         {
-            if(x[n_var] != m_vars_binary.at(i)->value())
+            if(x[n_var] != p_case_last->binaryVariableValue(i))
             {
                 x_new = true;
                 break;
             }
-            n_var++;
 
+            ++n_var;
         }
-
-
     }
+
 
     return x_new;
 }
 
 //-----------------------------------------------------------------------------------------------
-// Calculates the perturbated value of a real variable
+// Calculates the perturbated value  a variable
 //-----------------------------------------------------------------------------------------------
-double BonminInterface::getPerturbationReal(shared_ptr<RealVariable> var)
+double BonminInterface::perturbedVariableValue(double value, double max, double min)
 {
-    double span = var->max() - var->min();
-    double l_slack = var->value() - var->min();
-    double u_slack = var->max() - var->value();
     double x_perturbed;
 
-    if ( u_slack >= l_slack )
-    {
-        x_perturbed = var->value() + m_pertubation*span;
+    double span = max - min;
+    double l_slack = value - min;
+    double u_slack = max - value;
 
+    if(u_slack >= l_slack)
+    {
+        x_perturbed = value + p_optimizer->pertrurbationSize() * span;
+        if(x_perturbed > max) x_perturbed = max;
     }
     else
     {
-        x_perturbed = var->value() - m_pertubation*span;
+        x_perturbed = value - p_optimizer->pertrurbationSize() * span;
+        if(x_perturbed < min) x_perturbed = min;
     }
 
     return x_perturbed;
 
 }
 
-//-----------------------------------------------------------------------------------------------
-// Calculates the perturbated value of a binary variable
-//-----------------------------------------------------------------------------------------------
-int BonminInterface::getPerturbationBinary(shared_ptr<BinaryVariable> var)
-{
-    double span = var->max() - var->min();
-    double l_slack = var->value() - var->min();
-    double u_slack = var->max() - var->value();
-    double x_perturbed;
-
-    if ( u_slack >= l_slack )
-    {
-        x_perturbed = var->value() + m_pertubation*span;
-
-    }
-    else
-    {
-        x_perturbed = var->value() - m_pertubation*span;
-    }
-
-    return x_perturbed;
-
-}
 
 //-----------------------------------------------------------------------------------------------
 // Calculates the gradients
@@ -493,135 +510,146 @@ void BonminInterface::calculateGradients(Index n, const Number *x)
     int n_jac = (m_vars_binary.size() + m_vars_real.size())*m_cons.size();
     if(m_jac_g.size() != n_jac) m_jac_g = QVector<double>(n_jac);
 
-    // checking if x vectors have correct size
-    if(m_x_real.size() != m_vars_real.size()) m_x_real = QVector<double>(m_vars_real.size());
-    if(m_x_binary.size() != m_vars_binary.size()) m_x_binary = QVector<int>(m_vars_binary.size());
-
 
     // checking if these are new variable values
     if(newVariableValues(n, x))
     {
-        // updating the variable values
-        int n_var = 0;
+        // deleting the old case
+        if(p_case_last != 0) delete p_case_last;
+        p_case_last = 0;
 
-        // real variables
-        for(int i = 0; i < m_vars_real.size(); i++)
-        {
-            m_vars_real.at(i)->setValue(x[n_var]);
-            n_var++;
-        }
+        Case *case_new = generateCase(n,x);
 
-        // binary variables
-        for(int i = 0; i < m_vars_binary.size(); i++)
-        {
-            m_vars_binary.at(i)->setValue(x[n_var]);
-            n_var++;
-        }
 
-        // evaluating the model
-        p_runner->evaluate();
+        // adding the case to a queue
+        CaseQueue *case_queue = new CaseQueue();
+        case_queue->push_back(case_new);
+
+        // sending the new case to the runner
+        p_optimizer->runCases(case_queue);
+
+        // setting the case as the last case
+        p_case_last  = case_new;
+
+        // deleting the case queue
+        delete case_queue;
 
     }
 
-    // getting the value of the objective for the base
-    double f_base = -p_runner->model()->objective()->value();
-
-    // getting the values for the constraints for the base
-    QVector<double> c_base;
-    for(int i = 0; i < m_cons.size(); i++) c_base.push_back(m_cons.at(i)->value());
+    // deleting the old gradients case, copying the last case
+    if(p_case_gradients != 0) delete p_case_gradients;
+    p_case_gradients = new Case(*p_case_last, true);
 
 
-    // starting to do pertubations on real variables
-    int n_var = 0;
-    for(int i = 0; i < m_vars_real.size(); i++)
+    // setting up the case queue with all the perturbations
+    CaseQueue *case_queue = new CaseQueue();
+
+    // adding the real variable perturbations
+    for(int i = 0; i < m_vars_real.size(); ++i)
     {
-        shared_ptr<RealVariable> v = m_vars_real.at(i);
+        // calculating the perturbed value of the variable
+        double x_perturbed = perturbedVariableValue(p_case_gradients->realVariableValue(i), m_vars_real.at(i)->max(), m_vars_real.at(i)->min());
 
-        // storing the base value of the variable
-        double x_base = v->value();
+        // setting up a new case
+        Case *case_perturbed = new Case(*p_case_gradients);
 
-        // updating the variable value
-        v->setValue(getPerturbationReal(v));
+        // changing the value of the variable to the perturbe value
+        case_perturbed->setRealVariableValue(i, x_perturbed);
 
-        // evaluating the model
-        p_runner->evaluate();
+        // adding the case to the queue
+        case_queue->push_back(case_perturbed);
+    }
 
-        // extracting the new objective value
-        double f_perturbed = -p_runner->model()->objective()->value();
+    // adding the binary variable perturbations
+    for(int i = 0; i < m_vars_binary.size(); ++i)
+    {
+        // calculating the perturbed value of the variable
+        double x_perturbed = perturbedVariableValue(p_case_gradients->binaryVariableValue(i), m_vars_binary.at(i)->max(), m_vars_binary.at(i)->min());
+
+        // setting up a new case
+        Case *case_perturbed = new Case(*p_case_gradients);
+
+        // changing the value of the variable to the perturbe value
+        case_perturbed->setBinaryVariableValue(i, x_perturbed);
+
+        // adding the case to the queue
+        case_queue->push_back(case_perturbed);
+    }
+
+    // sending the cases to the runner for evaluation
+    p_optimizer->runCases(case_queue);
+
+
+
+    int n_var = 0;
+
+    // calculating the gradients of the real variables
+    for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
+    {
+        // calculating the perturbation size of the variable
+        double dx = p_case_gradients->realVariableValue(i) - case_queue->at(n_var)->realVariableValue(i);
 
         // calculating the gradient of the objective
-        m_grad_f.replace(n_var, (f_base - f_perturbed) / (x_base - v->value()));
+        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
 
-        // extracting the new constraint values
-        QVector<double> c_perturbed;
-        for(int j = 0; j < m_cons.size(); j++) c_perturbed.push_back(m_cons.at(j)->value());
+        //cout << "x_base = " << p_case_gradients->realVariableValue(i) << endl;
+        //cout << "x_pert = " << case_queue->at(n_var)->realVariableValue(i) << endl;
+        //cout << "f_base = " << p_case_gradients->objectiveValue() << endl;
+        //cout << "f_pert = " << case_queue->at(n_var)->objectiveValue() << endl;
+
+        //cout << "df/dx" << n_var << " = " << dfdx << endl;
+
+        // setting the value to the objective gradient vector
+        m_grad_f.replace(n_var, dfdx);
+
 
         // calculating the gradients of the constraints
-        int entry = n_var*m_cons.size();
-        for(int j = 0; j < m_cons.size(); j++)
+        int entry = n_var*p_case_gradients->numberOfConstraints();
+        for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
         {
-            double dcdx = (c_base.at(j) - c_perturbed.at(j)) / (x_base - v->value());
+            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
             m_jac_g.replace(entry, dcdx);
-            entry++;
+            ++entry;
 
 
         }
 
-        // restoring the base value of the variable
-        v->setValue(x_base);
 
-        // updating x vectors for this point
-        m_x_real.replace(i, x_base);
-
-        n_var++;
-
+        ++n_var;
     }
 
-    // starting to do perturbations on binary variables
-    for(int i = 0; i < m_vars_binary.size(); i++)
+    // calculating the gradients of the binary variables
+    for(int i = 0; i < p_case_gradients->numberOfBinaryVariables(); ++i)
     {
-        shared_ptr<BinaryVariable> v = m_vars_binary.at(i);
+        // calculating the perturbation size of the variable
+        double dx = p_case_gradients->binaryVariableValue(i) - case_queue->at(n_var)->binaryVariableValue(i);
 
-        // storing the base value of the variable
-        int x_base = v->value();
+        // calculating the gradient of the objective
+        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
 
-        // updating the variable value
-        v->setValue(getPerturbationBinary(v));
+        // setting the value to the objective gradient vector
+        m_grad_f.replace(n_var, dfdx);
 
-        // evaluating the model
-        p_runner->evaluate();
-
-        // extracting the new objective value
-        double f_perturbed = p_runner->model()->objective()->value();
-
-        // calculating the gradient
-        m_grad_f.replace(n_var, (f_base - f_perturbed) / (x_base - v->value()));
-
-        // extracting the new constraint values
-        QVector<double> c_perturbed;
-        for(int j = 0; j < m_cons.size(); j++) c_perturbed.push_back(m_cons.at(j)->value());
 
         // calculating the gradients of the constraints
-        int entry = n_var*m_cons.size();
-        for(int j = 0; j < m_cons.size(); j++)
+        int entry = n_var*p_case_gradients->numberOfConstraints();
+        for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
         {
-            double dcdx = (c_base.at(j) - c_perturbed.at(j)) / (x_base - v->value());
+            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
             m_jac_g.replace(entry, dcdx);
-            entry++;
+            ++entry;
 
 
         }
 
-        // restoring the base value of the variable
-        v->setValue(x_base);
 
-        // updating x vectors for this point
-        m_x_binary.replace(i, x_base);
-
-
-        n_var++;
-
+        ++n_var;
     }
+
+    // deleting the perturbed cases
+    for(int i = 0; i < case_queue->size(); ++i) delete case_queue->at(i);
+    delete case_queue;
+
 
 
 }
@@ -631,35 +659,40 @@ void BonminInterface::calculateGradients(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
 {
-    if(m_x_real.size() == m_vars_real.size() && m_x_binary.size() == m_vars_binary.size()) //checking if the x vectors are initialized
+
+    // fist checking if the gradients case has been initialized
+    if(p_case_gradients == 0) return false;
+
+    if(p_case_gradients->numberOfRealVariables() == m_vars_real.size() && p_case_gradients->numberOfBinaryVariables() == m_vars_binary.size()) //checking if the gradient case is initialized
     {
-        // checking if the variable values are the same as the x vectors
+        // checking if the variable values are the same as the gradients case
         int n_var = 0;
         bool new_x = false;
 
         // real variables
-        for(int i = 0; i < m_vars_real.size(); i++)
+        for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
         {
-            if(x[n_var] != m_vars_real.at(i)->value())
+            if(x[n_var] != p_case_gradients->realVariableValue(i))
             {
                 new_x = true;
                 break;
             }
-            n_var++;
+            ++n_var;
         }
+
         if(new_x) return new_x;
 
         // binary variables
-        for(int i = 0; i < m_vars_binary.size(); i++)
+        for(int i = 0; i < p_case_gradients->numberOfBinaryVariables(); ++i)
         {
-            if(x[n_var] != m_vars_binary.at(i)->value())
+            if(x[n_var] != p_case_gradients->binaryVariableValue(i))
             {
                 new_x = true;
                 break;
             }
 
 
-            n_var++;
+            ++n_var;
         }
 
         return new_x;
@@ -667,6 +700,39 @@ bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
     }
 
     else return false;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Generates a Case based on the values in x
+//-----------------------------------------------------------------------------------------------
+Case* BonminInterface::generateCase(Index n, const Number *x)
+{
+    // checking that the problem has the right dimensions
+    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+
+    // creating a new case
+    Case *case_new = new Case();
+
+    // updating the variable values
+    int n_var = 0;
+
+    // real variables
+    for(int i = 0; i < m_vars_real.size(); i++)
+    {
+        case_new->addRealVariableValue(x[n_var]);
+        ++n_var;
+    }
+
+    // binary variables
+    for(int i = 0; i < m_vars_binary.size(); i++)
+    {
+        case_new->addBinaryVariableValue(x[n_var]);
+        ++n_var;
+    }
+
+    return case_new;
+
+
 }
 
 } // namespace ResOpt

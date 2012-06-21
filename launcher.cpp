@@ -29,7 +29,7 @@ bool Launcher::initialize()
         // resolving separator connections
         p_model->resolveSeparatorConnections();
 
-        // resolving the pipe routing
+        // resolving the pipe routing (this must be done before each launch of the model)
         p_model->resolvePipeRouting();
 
         return true;

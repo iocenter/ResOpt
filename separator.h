@@ -47,14 +47,21 @@ private:
 
     QString m_name;
 
-    shared_ptr<Constraint> p_oil; /**< TODO */
-    shared_ptr<Constraint> p_gas; /**< TODO */
-    shared_ptr<Constraint> p_water; /**< TODO */
-    shared_ptr<Constraint> p_liquid; /**< TODO */
+    double m_max_oil;
+    double m_max_gas;
+    double m_max_water;
+    double m_max_liquid;
+
+    QVector<shared_ptr<Constraint> > m_cons_oil;
+    QVector<shared_ptr<Constraint> > m_cons_gas;
+    QVector<shared_ptr<Constraint> > m_cons_water;
+    QVector<shared_ptr<Constraint> > m_cons_liquid;
+
 
     QVector<Pipe*> m_feed_pipes; /**< TODO */
     QVector<int> m_feed_pipe_numbers;
 
+    QVector<double> m_schedule;
 
 public:
 /**
@@ -65,6 +72,8 @@ public:
     Separator(const Separator &s);
 
     // misc functions
+
+    void setupConstraints(const QVector<double> &master_schedule);
 
 
     /**
@@ -107,28 +116,28 @@ public:
      *
      * @param c
      */
-    void setOilConstraint(shared_ptr<Constraint> c) {p_oil = c;}
+    void setMaxOil(double m) {m_max_oil = m;}
 
     /**
      * @brief Sets the gas Constraint for the Separator
      *
      * @param c
      */
-    void setGasConstraint(shared_ptr<Constraint> c) {p_gas = c;}
+    void setMaxGas(double m) {m_max_gas = m;}
 
     /**
      * @brief Sets the water Constraint for the Separator
      *
      * @param c
      */
-    void setWaterConstraint(shared_ptr<Constraint> c) {p_water = c;}
+    void setMaxWater(double m) {m_max_water = m;}
 
     /**
      * @brief Sets the total liquid Constraint for the Separator
      *
      * @param c
      */
-    void setLiquidConstraint(shared_ptr<Constraint> c) {p_liquid = c;}
+    void setMaxLiquid(double m) {m_max_liquid = m;}
 
     // get functions
 
@@ -145,28 +154,28 @@ public:
      *
      * @return Constraint
      */
-    shared_ptr<Constraint> oilConstraint() {return p_oil;}
+    QVector<shared_ptr<Constraint> > oilConstraints() {return m_cons_oil;}
 
     /**
      * @brief Returns the gas Constraint for the Separator
      *
      * @return Constraint
      */
-    shared_ptr<Constraint> gasConstraint() {return p_gas;}
+    QVector<shared_ptr<Constraint> > gasConstraints() {return m_cons_gas;}
 
     /**
      * @brief Returns the water Constraint for the Separator
      *
      * @return Constraint
      */
-    shared_ptr<Constraint> waterConstraint() {return p_water;}
+    QVector<shared_ptr<Constraint> > waterConstraints() {return m_cons_water;}
 
     /**
      * @brief Returns the total liquid Constraint for the Separator
      *
      * @return Constraint
      */
-    shared_ptr<Constraint> liquidConstraint() {return p_liquid;}
+    QVector<shared_ptr<Constraint> > liquidConstraints() {return m_cons_liquid;}
 
 
     /**

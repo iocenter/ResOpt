@@ -24,6 +24,7 @@
 #include <iostream>
 #include <QTextStream>
 #include <QThread>
+#include <QDir>
 
 #include "launcher.h"
 #include "modelreader.h"
@@ -32,6 +33,7 @@
 #include "stream.h"
 #include "pressuredropcalculator.h"
 #include "pipe.h"
+#include "reservoir.h"
 #include "bonminoptimizer.h"
 #include "runonceoptimizer.h"
 #include "objective.h"
@@ -85,17 +87,31 @@ Runner::~Runner()
 //-----------------------------------------------------------------------------------------------
 void Runner::initialize()
 {
-    // reading the driver file and initializing the model
+    // reading the driver file
     p_model = p_reader->readDriverFile(this);
 
     // reading the pipe pressure drop definition files
     p_model->readPipeFiles();
 
+
+
+    // validating the model
+    if(!p_model->validate())
+    {
+        cout << "### Model failed to validate ###" << endl;
+        exit(1);
+    }
+
     // resolving separator connections
     p_model->resolveSeparatorConnections();
 
-    // resolving the pipe routing (this must be done before each launch of the model)
+    // resolving the pipe routing
     p_model->resolvePipeRouting();
+
+
+    // initializing the model (setting up constraints)
+    p_model->initialize();
+
 
     cout << "Initializing the reservoir simulator..." << endl;
     // initializing the reservoir simulator
@@ -114,11 +130,41 @@ void Runner::initialize()
     setSummaryFile("run_summary.out");
     writeProblemDefToSummary();
 
-    /////// new multi thread ////////
 
+    // setting up the launchers
+    initializeLaunchers();
+
+
+
+    cout << "Done initializing the model..." << endl;
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// initializes the launchers used for parallel runs
+//-----------------------------------------------------------------------------------------------
+void Runner::initializeLaunchers()
+{
     // setting up the launchers and asociated threads
     for(int i = 0; i < p_optimizer->parallelRuns(); ++i)
     {
+        cout << "initializing launcher #" << i+1 << endl;
+
+
+
+        // copying the reservoir description file to the results folder for this launcher
+        QString folder_str = "output/" + QString::number(i+1);
+
+        QString res_file_new = folder_str + "/" + p_model->reservoir()->file();
+
+        // checking if the folder exists
+        QDir dir(".");
+        if(!dir.exists(folder_str)) dir.mkdir(folder_str);          // creating the sub folder if it does not exist
+        QFile::remove(res_file_new);                                // deleting old version if exists
+        QFile::copy(p_model->reservoir()->file(), res_file_new);    // copies the reservoir file to the sub folder
+
+
         // creating a launcher
         Launcher *l = new Launcher();
 
@@ -127,9 +173,11 @@ void Runner::initialize()
 
         // setting up the reservoir simulator
         ReservoirSimulator *r = new GprsSimulator();
-        r->setFolder("output/" + QString::number(i));
+        r->setFolder(folder_str);       // setting the folder for the simulator
 
-        l->setReservoirSimulator(r);
+        l->setReservoirSimulator(r);    // assigning the simulator to the launcher
+
+
 
         // initializing the launcher
         if(!l->initialize())
@@ -161,13 +209,7 @@ void Runner::initialize()
         t->start();
 
     }
-
-
-    cout << "Done initializing the model..." << endl;
-
-
 }
-
 
 //-----------------------------------------------------------------------------------------------
 // Main control loop
@@ -318,7 +360,7 @@ bool Runner::evaluate()
     m_up_to_date = true;
 
     // writing to summary file
-    writeIterationToSummary();
+    //writeIterationToSummary();
 
     return ok;
 }
@@ -341,7 +383,16 @@ void Runner::evaluate(CaseQueue *cases)
         if(c != 0)
         {
             m_launcher_running.replace(i, true);
-            m_launchers.at(i)->evaluate(c);
+
+            // connecting the launcher
+            connect(this, SIGNAL(sendCase(Case*)), m_launchers.at(i), SLOT(evaluate(Case*)));
+
+            // sending the case to the launcher
+            emit sendCase(c);
+
+            // disconnecting the launcher
+            disconnect(this, SIGNAL(sendCase(Case*)), m_launchers.at(i), SLOT(evaluate(Case*)));
+
         }
         else break;
 
@@ -464,35 +515,47 @@ void Runner::writeProblemDefToSummary()
 //-----------------------------------------------------------------------------------------------
 // Writes the results from the current iteration to the summary file
 //-----------------------------------------------------------------------------------------------
-void Runner::writeIterationToSummary()
+void Runner::writeCasesToSummary()
 {
     if(p_summary != 0)
     {
         QTextStream out(p_summary);
 
-        out << m_number_of_runs << "\t" << p_model->objective()->value() << "\t";
+        // looping through the cases, writing to sumary
 
-        QVector<shared_ptr<BinaryVariable> >  binary_vars = p_model->binaryVariables();
-        QVector<shared_ptr<RealVariable> > real_vars = p_model->realVariables();
-        QVector<shared_ptr<Constraint> > cons = p_model->constraints();
-
-        for(int i = 0; i < real_vars.size(); i++)
+        for(int i = 0; i < p_cases->size(); ++i)
         {
-            out << real_vars.at(i)->value() << "\t";
+            Case *c = p_cases->at(i);
+
+            out << m_number_of_runs << "\t" << c->objectiveValue() << "\t";
+
+            // real variables
+            for(int j = 0; j < c->numberOfRealVariables(); ++j)
+            {
+                out << c->realVariableValue(j) << "\t";
+            }
+
+            // binary variables
+            for(int j = 0; j < c->numberOfBinaryVariables(); ++j)
+            {
+                out << c->binaryVariableValue(j) << "\t";
+            }
+
+            // constraints
+            for(int j = 0; j < c->numberOfConstraints(); ++j)
+            {
+                out << c->constraintValue(j) << "\t";
+            }
+
+            out << "\n";
+
+            ++m_number_of_runs;
+
         }
 
-        for(int i = 0; i < binary_vars.size(); i++)
-        {
-            out << binary_vars.at(i)->value() << "\t";
-        }
-
-        for(int i = 0; i < cons.size(); i++)
-        {
-            out << cons.at(i)->value() << "\t";
-        }
 
 
-        out << "\n";
+
 
         p_summary->flush();
 
@@ -505,17 +568,23 @@ void Runner::writeIterationToSummary()
 //-----------------------------------------------------------------------------------------------
 void Runner::onLauncherFinished(Launcher *l)
 {
+
     // check if there are more cases to run
     Case *c = p_cases->next();
 
-    if(c != 0)
+    if(c != 0)      // found a new case, sending it to the launcher
     {
+        // connecting the launcher
+        connect(this, SIGNAL(sendCase(Case*)), l, SLOT(evaluate(Case*)));
+
         // sending the case to the launcher
-        l->evaluate(c);
+        emit sendCase(c);
+
+        // disconnecting the launcher
+        disconnect(this, SIGNAL(sendCase(Case*)), l, SLOT(evaluate(Case*)));
     }
-    else
+    else    // no more cases, checking if all launchers have finished
     {
-        // setting the status of this launcher to not running
         int place = 0;
 
         // finding which launcher this is
@@ -528,13 +597,14 @@ void Runner::onLauncherFinished(Launcher *l)
             }
         }
 
+        // setting the status of this launcher to not running
         m_launcher_running.replace(place, false);
 
         // checking if any launchers are still running
         bool all_finished = true;
         for(int i = 0; i < m_launcher_running.size(); ++i)
         {
-            if(m_launcher_running.at(i))
+            if(m_launcher_running.at(i))    // found a launcher that is still running
             {
                 all_finished = false;
                 break;
@@ -542,7 +612,12 @@ void Runner::onLauncherFinished(Launcher *l)
         }
 
         // if all launchers are finished, letting the optimizer know
-        if(all_finished) emit casesFinished();
+        if(all_finished)
+        {
+            writeCasesToSummary();
+            emit casesFinished();
+        }
+
     }
 
 

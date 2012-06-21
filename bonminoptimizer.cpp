@@ -27,8 +27,8 @@ void BonminOptimizer::initialize()
 
 
     // setting up the TMINLP
-    p_tminlp = new BonminInterface(runner());
-    p_tminlp->setPerturbationSize(pertrurbationSize());
+    p_tminlp = new BonminInterface(this);
+
 
 
 
@@ -46,12 +46,14 @@ void BonminOptimizer::initialize()
     m_bonmin.readOptionsString("compl_inf_tol 0.1\n");
     m_bonmin.readOptionsString("dual_inf_tol 0.3\n");
     m_bonmin.readOptionsString("constr_viol_tol 0.1\n");
-    QString s_max_iter = "max_iter " + QString::number(maxIterations());
+    QString s_max_iter = "max_iter " + QString::number(maxIterations()) + "\n";
     m_bonmin.readOptionsString(s_max_iter.toStdString());
+    m_bonmin.readOptionsString("output_file ipopt.out\n");
+    m_bonmin.readOptionsString("bonmin.file_solution yes\n");
 
     //Here we read several option files
     //bonmin.readOptionsFile("Mybonmin.opt");
-    m_bonmin.readOptionsFile("bonmin.opt");
+    //m_bonmin.readOptionsFile("bonmin.opt");
     m_bonmin.readOptionsFile();// This reads the default file "bonmin.opt"
 
 
@@ -100,6 +102,7 @@ void BonminOptimizer::start()
              <<std::endl
              <<E.message()<<std::endl;
       }
+
 
       // letting the runner know the optimization has finished
       emit finished();

@@ -470,11 +470,17 @@ bool GprsSimulator::launchSimulator()
 
     gprs.waitForFinished(-1);
 
+    // checking the exit code
+
+    int exit_code = gprs.exitCode();
+
+
+
     //cout << QString(gprs.readAll()).toAscii().data() << endl;
 
 
 
-    cout << "GPRS finished..." << endl;
+    cout << "GPRS finished with exit code = " << exit_code << endl;
 
 
 
@@ -551,6 +557,8 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
 
     int n_streams = 0;
 
+    QVector<Stream*> raw_output;    // output streams from the simulator, this must be averaged
+
 
     while(!input.atEnd() && ok)
     {
@@ -579,7 +587,7 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
                 s->setOilRate(nums.at(4));
                 s->setWaterRate(nums.at(5));
 
-                w->addStream(s);
+                raw_output.push_back(s);
                 n_streams++;
 
             }
@@ -587,10 +595,71 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
 
     }
 
-    cout << "Added " << n_streams << " streams to the well..." << endl;
+    cout << "Read " << n_streams << " streams from the simulator..." << endl;
 
 
+    // now averaging the raw streams according to the control schedule
 
+    int current_place = 0;
+    double t_start = 0;
+
+    for(int i = 0; i < w->numberOfControls(); ++i)
+    {
+
+        // creating a subset of the raw data for averaging
+        QVector<Stream*> raw_subset;
+        while(current_place < raw_output.size() && raw_output.at(current_place)->time() <= w->control(i)->endTime())
+        {
+            raw_subset.push_back(raw_output.at(current_place));
+            ++current_place;
+        }
+
+        // making an average stream
+        Stream *avg_s = new Stream();
+
+        // checking if the raw subset contains any data (if not, the simulator probably didnt converge and quit before it was time)
+        if(raw_subset.size() > 0)
+        {
+            // checking that the last stream in the subset corresponds to the end time of the control
+            if(raw_subset.at(raw_subset.size()-1)->time() < w->control(i)->endTime())
+            {
+                // adding an empty stream for the remainder of the time
+                Stream *s_add = new Stream();
+                s_add->setGasRate(0);
+                s_add->setOilRate(0);
+                s_add->setWaterRate(0);
+                s_add->setPressure(0);
+                s_add->setTime(w->control(i)->endTime());
+
+                raw_subset.push_back(s_add);
+
+                cout << "Adding an empty stream for remainder of control time, the simulator probably didnt converge..." << endl;
+            }
+            avg_s->avg(raw_subset, t_start);
+        cout << "Created an average stream of " << raw_subset.size() << " raw streams for time " << t_start << " to " << w->control(i)->endTime() << endl;
+
+        }
+        else
+        {
+            // didnt find any info from the simulator, just making an empty stream
+            avg_s->setGasRate(0);
+            avg_s->setOilRate(0);
+            avg_s->setWaterRate(0);
+            avg_s->setPressure(0);
+            avg_s->setTime(w->control(i)->endTime());
+
+            cout << "Adding an empty stream for the entire control time = " << w->control(i)->endTime() << ", the simulator probably didnt converge" << endl;
+
+
+        }
+        // adding it to the well
+        w->addStream(avg_s);
+
+        t_start = w->control(i)->endTime();
+    }
+
+    // deleting the raw output
+    for(int i = 0; i < raw_output.size(); ++i) delete raw_output.at(i);
 
 
     return ok;

@@ -54,7 +54,8 @@ private:
     QVector<Well*> m_wells; /**< TODO */
     QVector<Pipe*> m_pipes;
     QVector<Separator*> m_separators;
-    Objective *p_obj; /**< TODO */
+    Objective *p_obj;
+    QVector<double> m_master_schedule;
 
     QVector<shared_ptr<RealVariable> > m_vars_real;     // vector containing all real variables
     QVector<shared_ptr<BinaryVariable> > m_vars_binary;
@@ -95,6 +96,24 @@ public:
 
 
     /**
+     * @brief Makes sure that the Model is set up propperly.
+     * @details This function should be called before the Model is used for anything. It checks that all the sub parts of the Model
+     *          are defined, that the master schedule corresponds to the schedule of all the wells, etc.
+     *
+     * @return bool
+     */
+    bool validate();
+
+
+    /**
+     * @brief Initializes the model.
+     * @detials This function sets up the constraints associated with production wells and separators, and connects the pipe network
+     *          to the wells and separators. The function must be called before the model is used for anything.
+     *
+     */
+    void initialize();
+
+    /**
      * @brief Checks the current routing of wells and pipes, and connects them correctly.
      * @details Wells and Pipes may have an OUTLETPIPE defined. This is either a fixed number, or a routing variable.
      *          This function tries to resolve the current value of the OUTLETPIPE to a NUMBER assigned to a Pipe.
@@ -105,20 +124,23 @@ public:
 
 
     /**
-     * @brief Calculates the pressure drops in all the pipes
-     *
-     * @return bool
-     */
-    bool calculatePipePressures();
-
-
-    /**
      * @brief Translates the input PIPE numbers given in the driver file to pointers to Pipes.
      * @details This functions should only be called once, before the optimization starts. The input pipes to a given separator are fixed.
      *
      * @return bool
      */
     bool resolveSeparatorConnections();
+
+
+
+
+    /**
+     * @brief Calculates the pressure drops in all the pipes
+     *
+     * @return bool
+     */
+    bool calculatePipePressures();
+
 
 
 
@@ -173,7 +195,13 @@ public:
     bool updateConstraints();
 
 
+
+
+
     // set functions
+
+    void setMasterSchedule(const QVector<double> &schedule) {m_master_schedule = schedule;}
+
     /**
      * @brief Sets the Reservoir
      *
@@ -188,6 +216,9 @@ public:
     void setObjective(Objective *o) {p_obj = o;}
 
     // add functions
+
+
+
     /**
      * @brief Adds a Well to the model
      *
@@ -212,6 +243,10 @@ public:
     void addSeparator(Separator *s) {m_separators.push_back(s);}
 
     // get functions
+
+    int numberOfMasterScheduleTimes() const {return m_master_schedule.size();}
+    double masterScheduleTime(int i) const {return m_master_schedule.at(i);}
+
     /**
      * @brief Returns the Reservoir
      *

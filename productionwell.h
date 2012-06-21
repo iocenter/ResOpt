@@ -42,7 +42,7 @@ class Pipe;
 class ProductionWell : public Well
 {
 private:
-    shared_ptr<Constraint> p_bhp_contraint;                    // constraint used to check if the bhp pressure of the well is feasible
+    QVector<shared_ptr<Constraint> > m_bhp_constraints;         // vector of bhp constraints
 
     QVector<PipeConnection*> m_pipe_connections;    // vector of all pipes that could be connected to the well
     shared_ptr<Constraint> p_connection_constraint;            // constraint that makes sure that the sum of flow to pipes = 1
@@ -66,6 +66,9 @@ public:
      *          and the constraint is set out of bounds.
      *
      */
+
+    void setupConstraints();
+
     void updateBhpConstraint();
 
     void updatePipeConnectionConstraint();
@@ -98,7 +101,8 @@ public:
      *
      * @return Constraint
      */
-    shared_ptr<Constraint> bhpConstraint() {return p_bhp_contraint;}
+    shared_ptr<Constraint> bhpConstraint(int i) {return m_bhp_constraints.at(i);}
+    int numberOfBhpConstraints() const {return m_bhp_constraints.size();}
 
     shared_ptr<Constraint> pipeConnectionConstraint() {return p_connection_constraint;}
 

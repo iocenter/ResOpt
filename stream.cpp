@@ -39,6 +39,39 @@ Stream::Stream()
 {
 }
 
+//-----------------------------------------------------------------------------------------------
+// Sets the values of this stream to the average of the vector
+//-----------------------------------------------------------------------------------------------
+void Stream::avg(const QVector<Stream *> &input, double t_start)
+{
+    // setting the time to the time of the last stream
+    m_time = input.at(input.size() -1)->time();
+
+    double ts_start = t_start;
+
+    // calculating cumulatives
+    double cum_gas = 0;
+    double cum_oil = 0;
+    double cum_water = 0;
+    double cum_pres = 0;
+    for(int i = 0; i < input.size(); ++i)
+    {
+        cum_gas += input.at(i)->gasRate() * (input.at(i)->time() - ts_start);
+        cum_oil += input.at(i)->oilRate() * (input.at(i)->time() - ts_start);
+        cum_water += input.at(i)->waterRate() * (input.at(i)->time() - ts_start);
+        cum_pres += input.at(i)->pressure() * (input.at(i)->time() - ts_start);
+
+        ts_start = input.at(i)->time();
+    }
+
+    // setting the average rates to this stream
+    double time_span = m_time - t_start;
+    m_gas_rate = cum_gas / time_span;
+    m_oil_rate = cum_oil / time_span;
+    m_water_rate = cum_water / time_span;
+    m_pressure = cum_pres / time_span;
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // Prints the stream info to cout

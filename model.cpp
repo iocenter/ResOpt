@@ -95,6 +95,105 @@ Model::~Model()
 
 
 //-----------------------------------------------------------------------------------------------
+// Validates the Model
+//-----------------------------------------------------------------------------------------------
+bool Model::validate()
+{
+    bool ok = true;
+
+    // first checking that the reservoir is defined
+    if(p_reservoir == 0)
+    {
+        cout << endl << "###  Model Validation Error  ###" << endl
+             << "No RESERVOIR defined..." << endl << endl;
+
+        ok = false;
+    }
+
+    // checking that at least one well is defined
+    if(numberOfWells() == 0)
+    {
+        cout << endl << "###  Model Validation Error  ###" << endl
+             << "No WELL defined..." << endl << endl;
+        ok = false;
+    }
+
+    // checking that at least one pipe is defined
+    if(numberOfPipes() == 0)
+    {
+        cout << endl << "###  Model Validation Error  ###" << endl
+             << "No PIPE defined..." << endl << endl;
+        ok = false;
+    }
+
+    // checking that the master schedule at least containts one entry
+    if(numberOfMasterScheduleTimes() < 1)
+    {
+        cout << endl << "###  Model Validation Error  ###" << endl
+             << "MASTERSCHEDULE does not containt any entries..." << endl << endl;
+        ok = false;
+    }
+
+    // checking that the master schedule corresponds to all well schedules
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        // first checking that the schedules have the same size
+        if(well(i)->numberOfControls() != numberOfMasterScheduleTimes())
+        {
+            cout << endl << "###  Model Validation Error  ###" << endl
+                 << "Well: " << well(i)->name().toAscii().data() << endl
+                 << "Does not have the same number of SHEDULE entries as the MASTERSCHEDULE..." << endl << endl;
+            ok = false;
+            break;
+        }
+        else
+        {
+            // checking that each time entry in the well is the same as in the master schedule
+            for(int j = 0; j < numberOfMasterScheduleTimes(); ++j)
+            {
+                if(well(i)->control(j)->endTime() != masterScheduleTime(j))
+                {
+
+                    cout << endl << "###  Model Validation Error  ###" << endl
+                         << "Well: " << well(i)->name().toAscii().data() << endl
+                         << "SHEDULE entry: " << well(i)->control(j)->endTime() << endl
+                         << "Is not found in the MASTERSCHEDULE..." << endl << endl;
+                    ok = false;
+                    break;
+
+
+                }
+            } // master schedule entries
+        }
+
+    }
+
+    return ok;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the model, sets up constraints
+//-----------------------------------------------------------------------------------------------
+void Model::initialize()
+{
+
+    // setting up the constraints for production wells
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+        if(prod_well != 0) prod_well->setupConstraints();
+    }
+
+    // setting up the constraints for the separators
+
+    for(int i = 0; i < numberOfSeparators(); ++i)
+    {
+        separator(i)->setupConstraints(m_master_schedule);
+    }
+}
+
+//-----------------------------------------------------------------------------------------------
 // Connects wells and pipes to the outlets
 //-----------------------------------------------------------------------------------------------
 bool Model::resolvePipeRouting()
@@ -516,7 +615,10 @@ QVector<shared_ptr<Constraint> >& Model::constraints()
             // checking if this is a production well
             ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
 
-            if(prod_well != 0) m_cons.push_back(prod_well->bhpConstraint());
+            if(prod_well != 0)
+            {
+                for(int i = 0; i < prod_well->numberOfBhpConstraints(); ++i) m_cons.push_back(prod_well->bhpConstraint(i));
+            }
         }
 
         // getting the well pipe connection constraints
@@ -544,11 +646,11 @@ QVector<shared_ptr<Constraint> >& Model::constraints()
         {
             Separator *sep = separator(i);
 
-            // only adding constraints if defined
-            if(sep->gasConstraint() != 0) m_cons.push_back(sep->gasConstraint());
-            if(sep->oilConstraint() != 0) m_cons.push_back(sep->oilConstraint());
-            if(sep->waterConstraint() != 0) m_cons.push_back(sep->waterConstraint());
-            if(sep->liquidConstraint() != 0) m_cons.push_back(sep->liquidConstraint());
+            m_cons += sep->gasConstraints();
+            m_cons += sep->oilConstraints();
+            m_cons += sep->waterConstraints();
+            m_cons += sep->liquidConstraints();
+
         }
     }
 

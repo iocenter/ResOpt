@@ -100,12 +100,13 @@ Model* ModelReader::readDriverFile(Runner *r)
 
         if(list.at(0).startsWith("START")) // the start of a new well or reservoir
         {
-            if(list.at(1).startsWith("RESERVOIR")) p_model->setReservoir(readReservoir());           // reservoir
-            else if(list.at(1).startsWith("WELL")) p_model->addWell(readWell());                     // new well
-            else if(list.at(1).startsWith("OBJECTIVE")) p_model->setObjective(readObjective());      // objective
-            else if(list.at(1).startsWith("PIPE")) p_model->addPipe(readPipe());                     // pipe
-            else if(list.at(1).startsWith("SEPARATOR")) p_model->addSeparator(readSeparator());      // separator
-            else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                            // optimizer
+            if(list.at(1).startsWith("RESERVOIR")) p_model->setReservoir(readReservoir());                      // reservoir
+            else if(list.at(1).startsWith("WELL")) p_model->addWell(readWell());                                // new well
+            else if(list.at(1).startsWith("OBJECTIVE")) p_model->setObjective(readObjective());                 // objective
+            else if(list.at(1).startsWith("PIPE")) p_model->addPipe(readPipe());                                // pipe
+            else if(list.at(1).startsWith("SEPARATOR")) p_model->addSeparator(readSeparator());                 // separator
+            else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                                       // optimizer
+            else if(list.at(1).startsWith("MASTERSCHEDULE")) p_model->setMasterSchedule(readMasterSchedule());  // master schedule
 
         }
 
@@ -147,6 +148,71 @@ Model* ModelReader::readDriverFile(Runner *r)
 
 
     return p_model;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Reads the master schedule part of the driver file
+//-----------------------------------------------------------------------------------------------
+QVector<double> ModelReader::readMasterSchedule()
+{
+    cout << "Reading master schedule..." << endl;
+
+    QStringList list;
+
+    QVector<double> l_schedule;
+
+    bool ok = true;
+
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+        if(!isEmpty(list))
+        {
+            l_schedule.push_back(list.at(0).toDouble(&ok));
+
+        }
+
+        if(!ok) break;
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    // checking if the numbers were read ok
+    if(!ok)
+    {
+        cout << endl << "### Error detected in input file! ###" << endl
+             << "MASTERSCHEDULE is not in the right format..."
+             << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+        exit(1);
+    }
+
+    // checking that the schedule is in ascending order
+    for(int i = 1; i < l_schedule.size(); ++i)
+    {
+        if(l_schedule.at(i-1) >= l_schedule.at(i))
+        {
+            cout << endl << "### Error detected in input file! ###" << endl
+                 << "MASTERSCHEDULE is not in ascending order..."
+                 << l_schedule.at(i-1) << " >= " << l_schedule.at(i) << endl << endl;
+
+            exit(1);
+
+
+        }
+    }
+
+    // everything ok
+
+    return l_schedule;
+
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -1047,21 +1113,17 @@ Separator* ModelReader::readSeparator()
         }
         else if(list.at(0).startsWith("WATER"))                     // getting water constraint
         {
-            if(list.size() == 3)    // ok format
+            if(list.size() == 2)    // ok format
             {
-                bool ok_max = true, ok_min = true;
+                bool ok_max = true;
 
                 double max = list.at(1).toDouble(&ok_max);
-                double min = list.at(2).toDouble(&ok_min);
 
-                if(ok_max && ok_min)    // got the numbers ok
+
+                if(ok_max)    // got the number
                 {
-                    shared_ptr<Constraint> c_wat(new Constraint());
-                    c_wat->setMax(max);
-                    c_wat->setMin(min);
-                    c_wat->setName("Water production constraint for separator: " + s->name());
 
-                    s->setWaterConstraint(c_wat);
+                    s->setMaxWater(max);
 
                     consr_added = true;
                 }
@@ -1081,21 +1143,16 @@ Separator* ModelReader::readSeparator()
         }
         else if(list.at(0).startsWith("GAS"))                     // getting gas constraint
         {
-            if(list.size() == 3)    // ok format
+            if(list.size() == 2)    // ok format
             {
-                bool ok_max = true, ok_min = true;
+                bool ok_max = true;
 
                 double max = list.at(1).toDouble(&ok_max);
-                double min = list.at(2).toDouble(&ok_min);
 
-                if(ok_max && ok_min)    // got the numbers ok
+                if(ok_max)    // got the numbers ok
                 {
-                    shared_ptr<Constraint> c_gas(new Constraint());
-                    c_gas->setMax(max);
-                    c_gas->setMin(min);
-                    c_gas->setName("Gas production constraint for separator: " + s->name());
 
-                    s->setGasConstraint(c_gas);
+                    s->setMaxGas(max);
 
                     consr_added = true;
                 }
@@ -1115,21 +1172,17 @@ Separator* ModelReader::readSeparator()
         }
         else if(list.at(0).startsWith("OIL"))                     // getting oil constraint
         {
-            if(list.size() == 3)    // ok format
+            if(list.size() == 2)    // ok format
             {
-                bool ok_max = true, ok_min = true;
+                bool ok_max = true;
 
                 double max = list.at(1).toDouble(&ok_max);
-                double min = list.at(2).toDouble(&ok_min);
 
-                if(ok_max && ok_min)    // got the numbers ok
+
+                if(ok_max)    // got the numbers ok
                 {
-                    shared_ptr<Constraint> c_oil(new Constraint());
-                    c_oil->setMax(max);
-                    c_oil->setMin(min);
-                    c_oil->setName("Oil production constraint for separator: " + s->name());
 
-                    s->setOilConstraint(c_oil);
+                    s->setMaxOil(max);
 
                     consr_added = true;
                 }
@@ -1149,21 +1202,17 @@ Separator* ModelReader::readSeparator()
         }
         else if(list.at(0).startsWith("LIQ"))                     // getting liquid constraint
         {
-            if(list.size() == 3)    // ok format
+            if(list.size() == 2)    // ok format
             {
-                bool ok_max = true, ok_min = true;
+                bool ok_max = true;
 
                 double max = list.at(1).toDouble(&ok_max);
-                double min = list.at(2).toDouble(&ok_min);
 
-                if(ok_max && ok_min)    // got the numbers ok
+
+                if(ok_max)    // got the numbers ok
                 {
-                    shared_ptr<Constraint> c_liq(new Constraint());
-                    c_liq->setMax(max);
-                    c_liq->setMin(min);
-                    c_liq->setName("Total liquid production constraint for separator: " + s->name());
 
-                    s->setLiquidConstraint(c_liq);
+                    s->setMaxLiquid(max);
 
                     consr_added = true;
                 }

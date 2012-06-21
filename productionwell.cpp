@@ -39,10 +39,7 @@ namespace ResOpt
 {
 
 
-ProductionWell::ProductionWell()
-    : p_bhp_contraint(new Constraint(0.5, 1.0, 0.0)),
-      p_connection_constraint(new Constraint(1.0, 1.0, 1.0))
-
+ProductionWell::ProductionWell()    
 {
 
 }
@@ -55,7 +52,14 @@ ProductionWell::ProductionWell(const ProductionWell &w)
 {
 
     // copying the constraints
-    p_bhp_contraint = shared_ptr<Constraint>(new Constraint(*w.p_bhp_contraint));
+
+    // the bhp constraints
+    for(int i = 0; i < w.numberOfBhpConstraints(); ++i)
+    {
+        m_bhp_constraints.push_back(shared_ptr<Constraint>(new Constraint(*w.m_bhp_constraints.at(i))));
+    }
+
+    // the connection constraint
     p_connection_constraint = shared_ptr<Constraint>(new Constraint(*w.p_connection_constraint));
 
     // copying the pipe connections
@@ -74,14 +78,37 @@ ProductionWell::~ProductionWell()
     }
 }
 
+//-----------------------------------------------------------------------------------------------
+// sets up the constraints asociated with the well
+//-----------------------------------------------------------------------------------------------
+void ProductionWell::setupConstraints()
+{
+    // the bhp constraints
+
+    // first clearing
+    m_bhp_constraints.clear();
+
+    // then adding
+    for(int i = 0; i < numberOfControls(); ++i)
+    {
+        shared_ptr<Constraint> bhp_con = shared_ptr<Constraint>(new Constraint(0.5, 1.0, 0.0));
+        bhp_con->setName("Bottomhole pressure constraint for well: " + name() + " for time = " + QString::number(control(i)->endTime()));
+        m_bhp_constraints.push_back(bhp_con);
+    }
+
+    // the connection (routing) constraint
+    p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 1.0));
+    p_connection_constraint->setName("Pipe routing constraint for well: " + name());
+
+
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // sets the name of the well (overloaded from Well)
 //-----------------------------------------------------------------------------------------------
 void ProductionWell::setName(const QString &n)
 {
-    p_bhp_contraint->setName("Bottomhole pressure constraint for well: " + n);
-    p_connection_constraint->setName("Pipe routing constraint for well: " + n);
 
     Well::setName(n);
 
@@ -94,33 +121,35 @@ void ProductionWell::updateBhpConstraint()
 {
     cout << "Updating the BHP constraint for well " << name().toAscii().data() << endl;
 
-    // finding the pipe connection with the highes fraction
-    Pipe *p = 0;
-    double frac = -1.0;
-    for(int i = 0; i < numberOfPipeConnections(); i++)
+
+    // checking that all the connected pipes have the same number of streams as the well
+    for(int i = 0; i < numberOfPipeConnections(); ++i)
     {
-        if(frac < pipeConnection(i)->variable()->value())
+        Pipe *p = pipeConnection(i)->pipe();
+        if(numberOfStreams() != p->numberOfStreams())
         {
-            frac = pipeConnection(i)->variable()->value();
-            p = pipeConnection(i)->pipe();
+            cout << endl << "### Runtime Error ###" << endl
+                 << "Well and pipe do not have the same number of time steps..." << endl
+                 << "WELL: " << name().toAscii().data() << ", N = " << numberOfStreams() << endl
+                 << "PIPE: " << p->number() << endl << ", N = " << p->numberOfStreams() << endl;
+
+            exit(1);
+
         }
     }
 
-    // checking if the pipe and well has the same number of streams
-    if(numberOfStreams() != p->numberOfStreams())
+    // checking that the number of streams is equal to the number of bhp constraints
+    if(numberOfStreams() != numberOfBhpConstraints())
     {
         cout << endl << "### Runtime Error ###" << endl
-             << "Well and pipe do not have the same number of time steps..." << endl
-             << "WELL: " << name().toAscii().data() << ", N = " << numberOfStreams() << endl
-             << "PIPE: " << p->number() << endl << ", N = " << p->numberOfStreams() << endl;
+             << "WELL: " << name().toAscii().data() <<  endl
+             << "Does not have the same number of streams and bhp constraints... " << endl;
 
         exit(1);
-
     }
 
-    // looping through the time steps to find the time steps that violates the constraint the most
 
-    double c = 1.0;
+    // looping through the streams, updating the constraints
     for(int i = 0; i < numberOfStreams(); i++)
     {
         // the constraint is calculated as:
@@ -128,20 +157,32 @@ void ProductionWell::updateBhpConstraint()
         //
         // when the pipe pressure is higher than the bhp, the constraint is violated, and c < 0
 
-        double c_ts = (stream(i)->pressure() - p->stream(i)->pressure()) / stream(i)->pressure();
+        // calculating the weighted average pressure
+        double p_in = 0;
+        double tot_frac = 0;
+        for(int j = 0; j < numberOfPipeConnections(); ++j)
+        {
+            p_in += pipeConnection(j)->variable()->value() * pipeConnection(j)->pipe()->stream(i)->pressure();
+            tot_frac += pipeConnection(j)->variable()->value();
+        }
+        p_in = p_in / tot_frac;
 
-        // if the current time step violates more, update
-        if(c_ts < c) c = c_ts;
+        // calculating constraint value
+        double c_ts = (stream(i)->pressure() - p_in) / stream(i)->pressure();
+
+        // updating the value of the constraint for this time
+        bhpConstraint(i)->setValue(c_ts);
+
+
+        // printing if violating
+        if(c_ts < 0)
+        {
+            cout << "BHP constraint for Well " << name().toAscii().data() << " is violated at time = " << stream(i)->time() << ", c = " << c_ts << endl;
+        }
+
     }
 
-    // updating the value of the constraint
-    bhpConstraint()->setValue(c);
 
-    // printing if violating
-    if(c < 0)
-    {
-        cout << "BHP constraint for Well " << name().toAscii().data() << " is violated, c = " << c << endl;
-    }
 
 
 }

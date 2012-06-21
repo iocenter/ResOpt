@@ -49,6 +49,7 @@ class ModelReader;
 class Optimizer;
 class Launcher;
 class CaseQueue;
+class Case;
 
 
 
@@ -74,6 +75,8 @@ private:
     bool m_up_to_date;
 
     CaseQueue *p_cases;
+
+    void initializeLaunchers();
 
 
 
@@ -116,7 +119,7 @@ public:
      * @brief Writes the results from the current run of the Model to the summary file
      * @details The variable, constraints and objective values are printed as a new line to the summary file.
      */
-    void writeIterationToSummary();
+    void writeCasesToSummary();
 
     // set functions
 
@@ -154,6 +157,7 @@ public slots:
 signals:
     void optimizationFinished();
     void casesFinished();
+    void sendCase(Case *c);
 
 };
 

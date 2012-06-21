@@ -39,12 +39,14 @@ class Runner;
 class RealVariable;
 class BinaryVariable;
 class Constraint;
-
+class BonminOptimizer;
+class Case;
+class CaseQueue;
 
 class BonminInterface : public TMINLP
 {
 private:
-    Runner *p_runner;
+    BonminOptimizer *p_optimizer;
 
     QVector<shared_ptr<RealVariable> > m_vars_real;
     QVector<shared_ptr<BinaryVariable> > m_vars_binary;
@@ -52,10 +54,21 @@ private:
 
     QVector<double> m_grad_f;   // calculated values for df/dx
     QVector<double> m_jac_g;    // calculated values for dc/dx
-    QVector<double> m_x_real;   // the variable values where the gradents were calculated
-    QVector<int> m_x_binary;
+    Case *p_case_last;          // the last case that was run
+    Case *p_case_gradients;     // case containing variable values where the gradient and jacobian was calculated
 
-    double m_pertubation;
+
+
+    /**
+     * @brief Generates a Case based on the values in x.
+     *
+     * @param n
+     * @param x
+     * @return Case
+     */
+    Case* generateCase(Index n, const Number *x);
+
+
 
 
     /**
@@ -65,17 +78,14 @@ private:
      * @return bool
      */
     bool newVariableValues(Index n, const Number *x);
-    double getPerturbationReal(shared_ptr<RealVariable> var);
-    int getPerturbationBinary(shared_ptr<BinaryVariable> var);
+    double perturbedVariableValue(double value, double max, double min);
     void calculateGradients(Index n, const Number *x);
     bool gradientsAreUpdated(Index n, const Number *x);
 
 public:
-    BonminInterface(Runner *r);
+    BonminInterface(BonminOptimizer *o);
 
 
-    // set functions
-    void setPerturbationSize(double p) {m_pertubation = p;}
 
     // overloaded functions specific to a TMINLP
 

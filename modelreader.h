@@ -25,6 +25,7 @@
 #include <QString>
 #include <QStringList>
 #include <QFile>
+#include <QVector>
 
 namespace ResOpt
 {
@@ -48,6 +49,14 @@ private:
     QStringList processLine(const QString& line);
     bool isEmpty(const QStringList &list);
 
+
+    /**
+     * @brief Reads the MASTERSCHEDULE part of the driver file
+     *
+     * @return QVector<double>
+     */
+    QVector<double> readMasterSchedule();
+
     /**
      * @brief Reads a RESERVOIR section of the driver file.
      * @details Generates a Reservoir object based on the information in the driver file.
@@ -56,6 +65,7 @@ private:
      * @return Reservoir Pointer to the generated Reservoir
      */
     Reservoir* readReservoir();
+
 
 
     /**

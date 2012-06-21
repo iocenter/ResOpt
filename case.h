@@ -6,6 +6,7 @@
 namespace ResOpt
 {
 
+class Model;
 
 class Case
 {
@@ -18,6 +19,8 @@ private:
 
 public:
     Case();
+    Case(Model *m); // constructs a case based on the current variable values in the model
+    Case(const Case &c, bool cpy_output = false);    // only copies obj and con if cpy_output = true
 
     // add functions
     void addRealVariableValue(double v) {m_real_var_values.push_back(v);}
@@ -27,6 +30,8 @@ public:
 
     // set functions
     void setObjectiveValue(double v) {m_objective_value = v;}
+    void setRealVariableValue(int i, double v) {m_real_var_values.replace(i,v);}
+    void setBinaryVariableValue(int i, double v) {m_binary_var_values.replace(i,v);}
 
     // get functions
     int numberOfRealVariables() const {return m_real_var_values.size();}

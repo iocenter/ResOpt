@@ -40,6 +40,7 @@ class QThread;
 using std::tr1::dynamic_pointer_cast;
 using std::tr1::shared_ptr;
 
+
 namespace ResOpt
 {
 
@@ -95,16 +96,6 @@ public:
 
 
 
-    /**
-     * @brief Runs the reservoir simulator on the current model.
-     * @details This function is called by the optimizer at each iteration to evaluate objective and constraint values.
-     *          First the simulator input files are generated. Then the simulator is launched, and output from the run is read. Then
-     *          the pipe network pressures are calculated, and constraint values on separators and well BHPs are calculated. The Model
-     *          is updated with the results from the run. These results can be read by the optimizer.
-     *
-     * @return bool
-     */
-    bool evaluate();
 
 
 
@@ -145,7 +136,12 @@ public slots:
 
 
     /**
-     * @brief Evaluates a list of cases
+     * @brief Evaluates a list of cases.
+     * @details This function is called by an Optimizer, or another class that needs to evaluate the Model.
+     *          The cases in the queue is distrubuted among the Launchers for model evaluation. When a Launcher finishes the evaluation,
+     *          it emits a signal that is connected to the onLauncherFinished() slot. Further distrubution of cases is take from there. When
+     *          calling this function, it should be done within an event loop. The event loop should wait for the casesFinished() signal before
+     *          proceeding.
      *
      * @param cases
      */

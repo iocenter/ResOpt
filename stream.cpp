@@ -39,6 +39,14 @@ Stream::Stream()
 {
 }
 
+Stream::Stream(double t, double qo, double qg, double qw, double p)
+    : m_time(t),
+      m_oil_rate(qo),
+      m_water_rate(qw),
+      m_gas_rate(qg),
+      m_pressure(p)
+{}
+
 //-----------------------------------------------------------------------------------------------
 // Sets the values of this stream to the average of the vector
 //-----------------------------------------------------------------------------------------------

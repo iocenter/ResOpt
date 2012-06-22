@@ -45,25 +45,16 @@ class Pipe
 private:
     int m_number;                           // the identifier for the pipe
     QString m_file_name;                    // the file containing the pressure drop table
-    double m_inletpressure;                 // the calculated inlet pressure of the pipe
     PressureDropCalculator *p_calculator;   // the pressure drop calculator
 
 
     QVector<Pipe*> m_feed_pipes;                    // pointers to pipes entering this pipe
     QVector<ProductionWell*> m_feed_wells;                    // pointers to wells entering this pipe directly
-    QVector<ProductionWell*> m_connected_wells;               // pointers to all wells flowing through the pipe
-    QVector<double> m_connected_well_fractions;     // the fractions of flow from the connected wells going through this pipe
 
     QVector<Stream*> m_streams;         // the streams going through the pipe
     QVector<double> m_schedule;         // a copy of the master schedule set in the model
 
 
-
-    /**
-     * @brief Calculats the fraction of flow going through the pipe for all the connected wells
-     *
-     */
-    void calculateConnectedWellFractions();
 
     /**
      * @brief
@@ -117,11 +108,6 @@ public:
     void calculateBranchInletPressures();
 
 
-    /**
-     * @brief Collects all the wells connected to the pipe, directly and indirectly.
-     *
-     */
-    QVector<ProductionWell*> findConnectedWells();
 
 
     /**
@@ -132,15 +118,6 @@ public:
 
 
 
-
-    /**
-     * @brief Sums up all the streams from the connected wells to form the total rates going through the pipe
-     *
-     */
-    void aggregateStreams();
-
-
-
     /**
      * @brief Reads the input file containing the pressure drop tables for this pipe segment
      *
@@ -148,7 +125,25 @@ public:
     void readInputFile();
 
 
+
+    /**
+     * @brief Resests the rates and pressures in all the streams to zero
+     *
+     */
+    void emptyStreams();
+
+
     // add functions
+
+
+    /**
+     * @brief Adds s to Stream i
+     *
+     * @param i
+     * @param s
+     * @return bool
+     */
+    bool addToStream(int i, const Stream &s);
 
     /**
      * @brief Adds a Pipe as a feed stream to this Pipe.
@@ -187,13 +182,6 @@ public:
     void setFileName(const QString &s) {m_file_name = s;}
 
 
-    /**
-     * @brief Sets the inlet pressure of the pipe. This pressure should be calculated by calculateInletPressure().
-     *
-     * @param p
-     */
-    void setInletPressure(double p) {m_inletpressure = p;}
-
 
     // get functions
 
@@ -205,13 +193,6 @@ public:
     int number() const {return m_number;}
 
 
-    /**
-     * @brief Returns the calculated inlet pressure of the Pipe
-     *
-     * @return double
-     */
-    double inletPressure() const {return m_inletpressure;}
-
 
     /**
      * @brief Returns the pressure drop calculator for this Pipe
@@ -221,25 +202,10 @@ public:
     PressureDropCalculator* calculator() {return p_calculator;}
 
 
-    /**
-     * @brief Returns the number of wells that flow through the pipe
-     *
-     * @return int
-     */
-    int numberOfConnectedWells() const {return m_connected_wells.size();}
-
     int numberOfStreams() const {return m_streams.size();}
 
     Stream* stream(int i) {return m_streams.at(i);}
 
-
-    /**
-     * @brief Returns the connected well i
-     *
-     * @param i
-     * @return Well
-     */
-    ProductionWell* connectedWell(int i) {return m_connected_wells.at(i);}
 
 
 };

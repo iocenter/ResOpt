@@ -26,7 +26,7 @@
 #include <QThread>
 
 #include "runner.h"
-#include "model.h"
+#include "coupledmodel.h"
 #include "reservoir.h"
 #include "injectionwell.h"
 #include "productionwell.h"
@@ -82,7 +82,7 @@ ModelReader::ModelReader(const QString &driver)
 //-----------------------------------------------------------------------------------------------
 Model* ModelReader::readDriverFile(Runner *r)
 {
-    Model *p_model = new Model();
+    Model *p_model = new CoupledModel();
 
     cout << "****  Reading driver file: " << m_driver_file.fileName().toAscii().data() << "  ****" << endl;
 

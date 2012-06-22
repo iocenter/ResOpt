@@ -30,6 +30,7 @@ namespace ResOpt
 
 class Runner;
 class CaseQueue;
+class Case;
 
 
 class Optimizer : public QObject
@@ -65,10 +66,14 @@ public:
     int maxIterations() const {return m_max_iter;}
     int parallelRuns() const {return m_parallel_runs;}
     double pertrurbationSize() const {return m_perturbation_size;}
-
     bool isInitialized() const {return m_initialized;}
 
 signals:
+
+    /**
+     * @brief Signal that should be emitted when the optimizer finishes.
+     *
+     */
     void finished();
 
 public slots:
@@ -80,6 +85,15 @@ public slots:
      * @param cases
      */
     void runCases(CaseQueue *cases);
+
+
+    /**
+     * @brief Overloaded function.
+     * @details This function creates a CaseQueue consisting of a single Case, c, and sends it to runCases().
+     *
+     * @param c
+     */
+    void runCase(Case *c);
 
 };
 

@@ -87,6 +87,8 @@ bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_types)
 {
+    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+
     // the real (contineous) variables. this includes the well control variables
     int n_var = 0;
     for(int i = 0; i < m_vars_real.size(); i++)
@@ -155,6 +157,8 @@ bool BonminInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
 bool BonminInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
                              Index m, Number* g_l, Number* g_u)
 {
+    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+    assert(m == m_cons.size());
 
     int n_var = 0;  // variable index used by the optimizer (first real, then int)
 
@@ -195,6 +199,14 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
                                 Index m, bool init_lambda,
                                 Number* lambda)
 {
+    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+
+    // only expect to initialize x
+    assert(init_x);
+    assert(!init_z);
+    assert(!init_lambda);
+
+
     cout << "Giving bonmin the starting point..." << endl;
 
     int n_var = 0;  // variable index used by the optimizer (first real, then binary)
@@ -226,6 +238,7 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
 {
+
     //cout << "Evaluating the function for bonmin..." << endl;
 
     // checking if this is a new set of variable values

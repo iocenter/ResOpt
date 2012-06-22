@@ -18,6 +18,166 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+
+/*!@mainpage ResOpt Documentation
+
+\section sec_intro Introduction
+
+This is the documentation for the Reservoir Optimization Framework (ResOpt). ResOpt is a framework for model integration and optimization.
+The core functionallity of ResOpt is to connect a reservoir simulator to a simple pipe network, and to do optimization on the resulting model.
+
+
+\section sec_running Running the framework
+
+ResOpt is run from the command line like this:
+
+@code
+ResOpt 'driver file'
+@endcode
+
+\section sec_ex Example driver file
+
+@code
+!-------------------------------------------------------------------
+! Driver file for ResOpt
+!-------------------------------------------------------------------
+
+!---------------- Optimization Algorithm ---------------------------
+START OPTIMIZER
+ TYPE RUNONCE  !BONMIN, RUNONCE
+ ITERATIONS 60
+ PERTURBATION 0.05
+ PARALLELRUNS 1 !integer, or "IDEAL" for the ideal number of parallel runs on this machine
+END OPTIMIZER
+
+!----------------- Reservoir Definition ----------------------------
+START RESERVOIR
+ NAME RES1
+ FILE res_spe1.in
+ TIME 3650
+ PHASES 1 1 1             ! gas oil water
+ DENS 0.06054 49.1 64.79  ! gas oil water
+END RESERVOIR
+
+!------------------- Master Schedule -------------------------------
+START MASTERSCHEDULE
+ 100
+ 300
+ 3650
+END MASTERSCHEDULE
+
+!-------------------- Well: prod1 ----------------------------------
+START WELL
+ NAME prod1
+ TYPE P
+ GROUP grp1
+ BHPLIMIT 100  ! Only used when well is on rate control
+
+ START OUTLETPIPES
+! pipe#  fraction
+  1      1.0
+  2      0.0
+ END OUTLETPIPES
+
+
+
+ START CONNECTIONS
+  299  9410
+ END CONNECTIONS
+
+ START SCHEDULE
+! t_end  value   max   min     type
+  100    2000    2100  1800    BHP !BHP, GAS, OIL, WAT
+  300    1950    2100  1800    BHP
+  3650   1900    2100  1800    BHP
+ END SCHEDULE
+END WELL
+
+!-------------------- Well: inj1 -----------------------------------
+START WELL
+ NAME inj1
+ TYPE I
+ GROUP grp1
+ BHPLIMIT 1000000       ! Only used when well is on rate control
+ BHPINJ GAS           ! Only used for injectors, the injected phase when well is on BHP control (WATER, GAS)
+
+
+ START CONNECTIONS
+  0  100000
+ END CONNECTIONS
+
+ START SCHEDULE
+! t_end  value    max     min     type
+  100     5000    8000    1000    BHP
+  300     5000    8000    1000    BHP
+  3650    5000    8000    1000    BHP
+ END SCHEDULE
+END WELL
+
+
+!------------------- Objective definition -------------------------
+START OBJECTIVE
+ TYPE CUMOIL  !NPV, CUMOIL, CUMGAS
+
+ ! these keywords are only needed for NPV:
+ DCF 10
+ OILPRICE   100
+ GASPRICE     5
+ WATERPRICE -10
+END OBJECTIVE
+
+!----------------------- Pipe 1 -----------------------------------
+START PIPE
+ NUMBER 1
+ FILE pipe1.dat
+
+ START OUTLETPIPES
+! pipe#  fraction
+  3      1.0
+ END OUTLETPIPES
+
+END PIPE
+
+!----------------------- Pipe 1 -----------------------------------
+START PIPE
+ NUMBER 2
+ FILE pipe2.dat
+
+ START OUTLETPIPES
+! pipe#  fraction
+  3      1.0
+ END OUTLETPIPES
+
+END PIPE
+
+!----------------------- Pipe 2 -----------------------------------
+START PIPE
+ NUMBER 3
+ FILE pipe3.dat
+
+ OUTLETPRESSURE 200
+END PIPE
+
+!------------------- Separator: sep1 ------------------------------
+START CAPACITY
+ NAME cap1
+
+ PIPES 3
+
+ WATER 10000
+ GAS   1e6
+! OIL   1000
+! LIQ   10000
+
+END CAPACITY
+
+EOF
+
+@endcode
+
+*/
+
+
 #include <QtCore>
 #include <iostream>
 
@@ -27,6 +187,7 @@
 using namespace ResOpt;
 using std::cout;
 using std::endl;
+
 
 
 int main(int argc, char *argv[])

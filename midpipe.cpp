@@ -78,21 +78,31 @@ void MidPipe::setNumber(int n)
 
 
 //-----------------------------------------------------------------------------------------------
+// checks if any of the outlet connections are midpipes
+//-----------------------------------------------------------------------------------------------
+bool MidPipe::midpipeConnectedUpstream()
+{
+    for(int i = 0; i < numberOfOutletConnections(); ++i)
+    {
+        MidPipe *p = dynamic_cast<MidPipe*>(outletConnection(i)->pipe());
+        if(p != 0) return true;
+    }
+
+    return false;
+}
+
+//-----------------------------------------------------------------------------------------------
 // calculates the inlet pressure of the pipe
 //-----------------------------------------------------------------------------------------------
 void MidPipe::calculateInletPressure()
 {
     cout << "Calculating inlet pressures for PIPE: " << number() << endl;
 
-
-    // calculating the total rate going through the pipe
-    aggregateStreams();
-
     // checking if the outlet connections are defined
     if(numberOfOutletConnections() == 0)
     {
         cout << endl << "### Runtime Error ###" << endl
-             << "Outlet pipe not set for PIPE: " << number() << endl << endl;
+             << "NO Outlet pipe set for PIPE: " << number() << endl << endl;
 
         exit(1);
     }
@@ -117,10 +127,14 @@ void MidPipe::calculateInletPressure()
     {
         // getting the outlet pressure (calculated as the weighted average of all outlet connections)
         double p_out = 0;
+        double frac = 0;
         for(int k = 0; k < numberOfOutletConnections(); k++)
         {
+            frac += outletConnection(k)->variable()->value();
             p_out += outletConnection(k)->pipe()->stream(i)->pressure()*outletConnection(k)->variable()->value();
         }
+
+        p_out = p_out / frac;
 
 
         double dp = calculator()->pressureDrop(stream(i), p_out);    // the pressure drop in the pipe

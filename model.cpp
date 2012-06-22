@@ -385,7 +385,7 @@ bool Model::calculatePipePressures()
         for(int i = 0; i < end_pipes.size(); i++)
         {
             // finding the connected wells for this branch
-            end_pipes.at(i)->findConnectedWells();
+            //end_pipes.at(i)->findConnectedWells();
 
             // calculating the inlet pressures for the end pipes, and the branch of pipes connected
             end_pipes.at(i)->calculateBranchInletPressures();

@@ -1,5 +1,6 @@
 #include "optimizer.h"
 #include "runner.h"
+#include "casequeue.h"
 #include <QEventLoop>
 
 #include <iostream>
@@ -23,6 +24,9 @@ Optimizer::Optimizer(Runner *r)
     connect(this, SIGNAL(finished()), p_runner, SIGNAL(optimizationFinished()));
 }
 
+//-----------------------------------------------------------------------------------------------
+// sends off a queue of cases to the runner for evaluation
+//-----------------------------------------------------------------------------------------------
 void Optimizer::runCases(CaseQueue *cases)
 {
     // creating an event loop that waits for all the cases to finish in the runner
@@ -37,5 +41,25 @@ void Optimizer::runCases(CaseQueue *cases)
     // waiting for the runner to finish
     loop.exec();
 }
+
+//-----------------------------------------------------------------------------------------------
+// sends a single case to the runner for evaluation
+//-----------------------------------------------------------------------------------------------
+void Optimizer::runCase(Case *c)
+{
+    // making a queue
+    CaseQueue *queue = new CaseQueue();
+
+    // adding the case
+    queue->push_back(c);
+
+    // running the queue
+    runCases(queue);
+
+    // deleting the queue
+    delete queue;
+    queue = 0;
+}
+
 
 } // namespace ResOpt

@@ -66,6 +66,14 @@ public:
 
     void updateOutletConnectionConstraint();
 
+
+    /**
+     * @brief Checks if any of the outlet connections are MidPipe.
+     *
+     * @return bool
+     */
+    bool midpipeConnectedUpstream();
+
     // add functions
 
     void addOutletConnection(PipeConnection *c) {m_outlet_connections.push_back(c);}

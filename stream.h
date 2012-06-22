@@ -51,6 +51,7 @@ public:
  *
  */
     Stream();
+    Stream(double t, double qo, double qg, double qw, double p);
 
     // misc functions
 

@@ -94,6 +94,12 @@ public:
     Model(const Model &m);
     ~Model();
 
+    // virtual functions
+    virtual void updateStreams() = 0;
+    virtual Model* clone() const = 0;
+
+
+    // misc functions
 
     /**
      * @brief Makes sure that the Model is set up propperly.
@@ -130,6 +136,10 @@ public:
      * @return bool
      */
     bool resolveCapacityConnections();
+
+
+
+
 
 
 

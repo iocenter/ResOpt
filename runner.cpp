@@ -55,16 +55,16 @@ namespace ResOpt
 {
 
 
-
 Runner::Runner(const QString &driver_file, QObject *parent)
     : QObject(parent),
       p_reader(0),
       p_model(0),
-      p_optimizer(0),
       p_simulator(0),
+      p_optimizer(0),
       p_summary(0),
       m_number_of_runs(0),
-      m_up_to_date(false)
+      m_up_to_date(false),
+      p_cases(0)
 {
     p_reader = new ModelReader(driver_file);
 }
@@ -169,7 +169,7 @@ void Runner::initializeLaunchers()
         Launcher *l = new Launcher();
 
         // copying the base model to the launcher
-        l->setModel(new Model(*model()));
+        l->setModel(model()->clone());
 
         // setting up the reservoir simulator
         ReservoirSimulator *r = new GprsSimulator();
@@ -332,51 +332,18 @@ void Runner::run()
 
 
 //-----------------------------------------------------------------------------------------------
-// Running the model, calculating results
-//-----------------------------------------------------------------------------------------------
-bool Runner::evaluate()
-{
-    bool ok = true;
-    m_number_of_runs += 1;
-
-    cout << endl << "***** Starting new iteration *****" << endl << endl;
-
-    // running the reservoir simulator
-    p_simulator->generateInputFiles(p_model);   // generating input based on the current Model
-    p_simulator->launchSimulator();             // running the simulator
-    p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
-
-
-    // calculating pressures in the Pipe network
-    p_model->calculatePipePressures();
-
-    // updating the constraints (this must be done after the pressure calc)
-    p_model->updateConstraints();
-
-    // updating the objective
-    p_model->updateObjectiveValue();
-
-    // changing the status to up to date
-    m_up_to_date = true;
-
-    // writing to summary file
-    //writeIterationToSummary();
-
-    return ok;
-}
-
-//-----------------------------------------------------------------------------------------------
 // Running a set of cases for the optimizer
 //-----------------------------------------------------------------------------------------------
 void Runner::evaluate(CaseQueue *cases)
 {
+    // TODO: checking that none of the launchers are working
+
+
     // updating the case queue
     p_cases = cases;
 
-    // checking that none of the launchers are working
 
     // sending out the first batch of cases to the launchers
-
     for(int i = 0; i < m_launchers.size(); ++i)
     {
         Case *c = p_cases->next();
@@ -394,12 +361,11 @@ void Runner::evaluate(CaseQueue *cases)
             disconnect(this, SIGNAL(sendCase(Case*)), m_launchers.at(i), SLOT(evaluate(Case*)));
 
         }
-        else break;
+        else break; // no more cases to run
 
     }
 
 
-    //emit casesFinished();
 
 }
 

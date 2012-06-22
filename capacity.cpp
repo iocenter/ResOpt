@@ -210,6 +210,11 @@ void Capacity::updateConstraints()
                 s += *feedPipe(j)->stream(i);   // adding feed pipe rate to the separator rate
             }
 
+            cout << "Flow through separator for t = " << s.time() << endl;
+            cout << "oil = " << s.oilRate() << endl;
+            cout << "gas = " << s.gasRate() << endl;
+            cout << "water = " << s.waterRate() << endl;
+
 
             // setting new values if the cons are defined
             if(m_max_oil >= 0) m_cons_oil.at(i)->setValue(s.oilRate());

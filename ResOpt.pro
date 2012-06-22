@@ -72,7 +72,9 @@ SOURCES += main.cpp \
     launcher.cpp \
     case.cpp \
     casequeue.cpp \
-    capacity.cpp
+    capacity.cpp \
+    cost.cpp \
+    coupledmodel.cpp
 
 HEADERS += \
     well.h \
@@ -109,4 +111,6 @@ HEADERS += \
     launcher.h \
     case.h \
     casequeue.h \
-    capacity.h
+    capacity.h \
+    cost.h \
+    coupledmodel.h

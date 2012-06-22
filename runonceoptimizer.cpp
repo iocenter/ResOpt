@@ -72,11 +72,24 @@ void RunonceOptimizer::start()
 {
     cout << "Starting RUN_ONCE..." << endl;
 
+    // creating a case for the current values in the model
+    CaseQueue *cases = new CaseQueue();
+
+    cases->push_back(new Case(runner()->model()));  // this creates a case with the varaible values currently in the model.
+
+
+    // launching the runner on the case
+    runCases(cases);
+
+
+    delete cases;
+
     // testing out the gradients code
 
+    /*
     calculateGradients();
 
-    /*
+
 
     // creating a case for the current values in the model
     CaseQueue *cases = new CaseQueue();

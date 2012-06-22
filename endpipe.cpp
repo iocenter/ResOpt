@@ -54,8 +54,6 @@ void EndPipe::calculateInletPressure()
 {
     cout << "Calculating inlet pressures for PIPE: " << number() << endl;
 
-    // calculating the total rate going through the pipe
-    aggregateStreams();
 
     // looping through the time steps
     for(int i = 0; i < numberOfStreams(); i++)

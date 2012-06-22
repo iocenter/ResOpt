@@ -26,6 +26,7 @@
 #include "stream.h"
 #include "pipe.h"
 #include "constraint.h"
+#include "wellcontrol.h"
 
 
 using std::cout;
@@ -69,9 +70,12 @@ Well::Well(const Well &w)
     }
 
     // copying streams
+    m_streams.clear();
+    m_streams.resize(w.m_streams.size());
+
     for(int i = 0; i < w.numberOfStreams(); i++)
     {
-        m_streams.push_back(new Stream(*w.m_streams.at(i)));
+        m_streams.replace(i, new Stream(*w.m_streams.at(i)));
     }
 }
 
@@ -97,15 +101,37 @@ Well::~Well()
 }
 
 //-----------------------------------------------------------------------------------------------
-// deletes all the streams
+// Initializes the well, setting up the streams
 //-----------------------------------------------------------------------------------------------
-void Well::deleteStreams()
+void Well::initialize()
 {
-    // deleting the objects
-    for(int i = 0; i < m_streams.size(); i++) delete m_streams.at(i);
-
-    // dereferencing
     m_streams.clear();
+
+    for(int i = 0; i < m_schedule.size(); ++i) m_streams.push_back(new Stream());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// sets the Stream for interval i
+//-----------------------------------------------------------------------------------------------
+bool Well::setStream(int i, Stream *s)
+{
+
+    // first checking that the stream vector is set up correctly
+    if(i >= m_streams.size() || i < 0) return false;
+
+    // then checking that the number of streams correspond to the number of schedule entries
+    if(m_streams.size() != m_schedule.size()) return false;
+
+    // then checking that the time of the stream corresponds to the time of the shecdule entry
+    if(s->time() != m_schedule.at(i)->endTime()) return false;
+
+    // everything seems to be ok, setting the stream
+    delete m_streams.at(i);
+    m_streams.replace(i, s);
+
+
+    return true;
 }
 
 

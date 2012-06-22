@@ -27,7 +27,7 @@ bool Launcher::initialize()
     if(p_model != 0 && p_simulator != 0)
     {
         // resolving separator connections
-        p_model->resolveSeparatorConnections();
+        p_model->resolveCapacityConnections();
 
         // resolving the pipe routing (this must be done before each launch of the model)
         p_model->resolvePipeRouting();

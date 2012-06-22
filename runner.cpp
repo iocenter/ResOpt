@@ -103,13 +103,13 @@ void Runner::initialize()
     }
 
     // resolving separator connections
-    p_model->resolveSeparatorConnections();
+    p_model->resolveCapacityConnections();
 
     // resolving the pipe routing
     p_model->resolvePipeRouting();
 
 
-    // initializing the model (setting up constraints)
+    // initializing the model (setting up constraints and streams)
     p_model->initialize();
 
 
@@ -441,7 +441,7 @@ void Runner::writeProblemDefToSummary()
         out << "MODEL DESCRIPTION:" << "\n";
         out << "Number of wells      = " << p_model->numberOfWells() << "\n";
         out << "Number of pipes      = " << p_model->numberOfPipes() << "\n";
-        out << "Number of separators = " << p_model->numberOfSeparators() << "\n\n";
+        out << "Number of separators = " << p_model->numberOfCapacities() << "\n\n";
 
 
         QVector<shared_ptr<BinaryVariable> >  binary_vars = p_model->binaryVariables();

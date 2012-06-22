@@ -47,7 +47,6 @@ SOURCES += main.cpp \
     model.cpp \
     pipe.cpp \
     stream.cpp \
-    separator.cpp \
     constraint.cpp \
     wellconnection.cpp \
     objective.cpp \
@@ -72,7 +71,8 @@ SOURCES += main.cpp \
     runonceoptimizer.cpp \
     launcher.cpp \
     case.cpp \
-    casequeue.cpp
+    casequeue.cpp \
+    capacity.cpp
 
 HEADERS += \
     well.h \
@@ -84,7 +84,6 @@ HEADERS += \
     model.h \
     pipe.h \
     stream.h \
-    separator.h \
     constraint.h \
     wellconnection.h \
     objective.h \
@@ -109,4 +108,5 @@ HEADERS += \
     runonceoptimizer.h \
     launcher.h \
     case.h \
-    casequeue.h
+    casequeue.h \
+    capacity.h

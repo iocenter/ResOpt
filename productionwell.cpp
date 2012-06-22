@@ -67,6 +67,8 @@ ProductionWell::ProductionWell(const ProductionWell &w)
     {
         m_pipe_connections.push_back(new PipeConnection(*w.m_pipe_connections.at(i)));
     }
+
+
 }
 
 

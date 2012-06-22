@@ -19,7 +19,7 @@
  */
 
 
-#include "separator.h"
+#include "capacity.h"
 
 #include <iostream>
 #include "pipe.h"
@@ -34,7 +34,7 @@ using std::endl;
 namespace ResOpt
 {
 
-Separator::Separator()
+Capacity::Capacity()
     : m_max_oil(-1.0),
       m_max_gas(-1.0),
       m_max_water(-1.0),
@@ -43,7 +43,7 @@ Separator::Separator()
 {
 }
 
-Separator::Separator(const Separator &s)
+Capacity::Capacity(const Capacity &s)
 {
 
     // copying basic types
@@ -87,7 +87,7 @@ Separator::Separator(const Separator &s)
 //-----------------------------------------------------------------------------------------------
 // set up constraints
 //-----------------------------------------------------------------------------------------------
-void Separator::setupConstraints(const QVector<double> &master_schedule)
+void Capacity::setupConstraints(const QVector<double> &master_schedule)
 {
     // setting the schedule
     m_schedule = master_schedule;
@@ -109,7 +109,7 @@ void Separator::setupConstraints(const QVector<double> &master_schedule)
             c_oil->setMax(m_max_oil);
             c_oil->setMin(-m_max_oil);
             c_oil->setValue(0);
-            c_oil->setName("Oil production constraint for separator: " + name() + " for time = " + QString::number(master_schedule.at(i)));
+            c_oil->setName("Oil production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
             m_cons_oil.push_back(c_oil);
         }
@@ -126,7 +126,7 @@ void Separator::setupConstraints(const QVector<double> &master_schedule)
             c_gas->setMax(m_max_gas);
             c_gas->setMin(-m_max_gas);
             c_gas->setValue(0);
-            c_gas->setName("Gas production constraint for separator: " + name() + " for time = " + QString::number(master_schedule.at(i)));
+            c_gas->setName("Gas production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
             m_cons_gas.push_back(c_gas);
         }
@@ -143,7 +143,7 @@ void Separator::setupConstraints(const QVector<double> &master_schedule)
             c_wat->setMax(m_max_water);
             c_wat->setMin(-m_max_water);
             c_wat->setValue(0);
-            c_wat->setName("Water production constraint for separator: " + name() + " for time = " + QString::number(master_schedule.at(i)));
+            c_wat->setName("Water production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
             m_cons_water.push_back(c_wat);
         }
@@ -160,7 +160,7 @@ void Separator::setupConstraints(const QVector<double> &master_schedule)
             c_liq->setMax(m_max_liquid);
             c_liq->setMin(-m_max_liquid);
             c_liq->setValue(0);
-            c_liq->setName("Liquid production constraint for separator: " + name() + " for time = " + QString::number(master_schedule.at(i)));
+            c_liq->setName("Liquid production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
             m_cons_liquid.push_back(c_liq);
         }
@@ -173,7 +173,7 @@ void Separator::setupConstraints(const QVector<double> &master_schedule)
 //-----------------------------------------------------------------------------------------------
 // update constraints
 //-----------------------------------------------------------------------------------------------
-void Separator::updateConstraints()
+void Capacity::updateConstraints()
 {
 
     cout << "Updating constraints for separator: " << name().toAscii().data() << endl;

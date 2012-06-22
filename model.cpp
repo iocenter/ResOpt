@@ -24,7 +24,7 @@
 #include <iostream>
 #include "reservoir.h"
 #include "well.h"
-#include "separator.h"
+#include "capacity.h"
 #include "intvariable.h"
 #include "realvariable.h"
 #include "binaryvariable.h"
@@ -71,9 +71,9 @@ Model::Model(const Model &m)
     }
 
     // copying the separators
-    for(int i = 0; i < m.numberOfSeparators(); i++)
+    for(int i = 0; i < m.numberOfCapacities(); i++)
     {
-        m_separators.push_back(new Separator(*m.m_separators.at(i)));
+        m_capacities.push_back(new Capacity(*m.m_capacities.at(i)));
     }
 
     // copying the objective
@@ -90,7 +90,7 @@ Model::~Model()
 
     for(int i = 0; i < m_wells.size(); i++) delete m_wells.at(i);
     for(int i = 0; i < m_pipes.size(); i++) delete m_pipes.at(i);
-    for(int i = 0; i < m_separators.size(); i++) delete m_separators.at(i);
+    for(int i = 0; i < m_capacities.size(); i++) delete m_capacities.at(i);
 }
 
 
@@ -177,19 +177,27 @@ bool Model::validate()
 void Model::initialize()
 {
 
-    // setting up the constraints for production wells
+    // initializing all wells, setting up constraints for production wells
     for(int i = 0; i < numberOfWells(); ++i)
     {
-        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
+        // initializing the well
+        well(i)->initialize();
 
+        // casting the well to production well, setting up constraints if cast is ok
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
         if(prod_well != 0) prod_well->setupConstraints();
     }
 
-    // setting up the constraints for the separators
-
-    for(int i = 0; i < numberOfSeparators(); ++i)
+    // initializing the pipes
+    for(int i = 0; i < numberOfPipes(); ++i)
     {
-        separator(i)->setupConstraints(m_master_schedule);
+        pipe(i)->initialize(m_master_schedule);
+    }
+
+    // setting up the constraints for the separators
+    for(int i = 0; i < numberOfCapacities(); ++i)
+    {
+        capacity(i)->setupConstraints(m_master_schedule);
     }
 }
 
@@ -393,14 +401,14 @@ bool Model::calculatePipePressures()
 //-----------------------------------------------------------------------------------------------
 // Connects separators to the pipes
 //-----------------------------------------------------------------------------------------------
-bool Model::resolveSeparatorConnections()
+bool Model::resolveCapacityConnections()
 {
     cout << "Resolving separator - pipe connections..." << endl;
     bool ok = true;
 
-    for(int i = 0; i < m_separators.size(); i++)        // looping through all separators
+    for(int i = 0; i < m_capacities.size(); i++)        // looping through all separators
     {
-        Separator *s = m_separators.at(i);
+        Capacity *s = m_capacities.at(i);
 
         for(int j = 0; j < s->numberOfFeedPipeNumbers(); j++)   // looping through all the pipes specified in the driver file
         {
@@ -439,15 +447,15 @@ bool Model::resolveSeparatorConnections()
 //-----------------------------------------------------------------------------------------------
 // Updates the separator constraints
 //-----------------------------------------------------------------------------------------------
-bool Model::updateSeparatorConstraints()
+bool Model::updateCapacityConstraints()
 {
     bool ok = true;
 
     cout << "Updating the separator constraints..." << endl;
 
-    for(int i = 0; i < numberOfSeparators(); i++)
+    for(int i = 0; i < numberOfCapacities(); i++)
     {
-        separator(i)->updateConstraints();
+        capacity(i)->updateConstraints();
     }
 
     return ok;
@@ -504,7 +512,7 @@ bool Model::updateConstraints()
 {
     bool ok = true;
 
-    if(!updateSeparatorConstraints()) ok = false;
+    if(!updateCapacityConstraints()) ok = false;
     if(!updateWellConstaints()) ok = false;
     if(!updatePipeConstraints()) ok = false;
 
@@ -642,9 +650,9 @@ QVector<shared_ptr<Constraint> >& Model::constraints()
 
 
         // getting the separator capacity constraints
-        for(int i = 0; i < numberOfSeparators(); i++)
+        for(int i = 0; i < numberOfCapacities(); i++)
         {
-            Separator *sep = separator(i);
+            Capacity *sep = capacity(i);
 
             m_cons += sep->gasConstraints();
             m_cons += sep->oilConstraints();

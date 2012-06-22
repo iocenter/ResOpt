@@ -42,7 +42,7 @@
 #include "cumgasobjective.h"
 #include "endpipe.h"
 #include "midpipe.h"
-#include "separator.h"
+#include "capacity.h"
 #include "pipeconnection.h"
 
 #include "stream.h"
@@ -104,7 +104,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("WELL")) p_model->addWell(readWell());                                // new well
             else if(list.at(1).startsWith("OBJECTIVE")) p_model->setObjective(readObjective());                 // objective
             else if(list.at(1).startsWith("PIPE")) p_model->addPipe(readPipe());                                // pipe
-            else if(list.at(1).startsWith("SEPARATOR")) p_model->addSeparator(readSeparator());                 // separator
+            else if(list.at(1).startsWith("CAPACITY")) p_model->addCapacity(readCapacity());                    // capacity
             else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                                       // optimizer
             else if(list.at(1).startsWith("MASTERSCHEDULE")) p_model->setMasterSchedule(readMasterSchedule());  // master schedule
 
@@ -1069,11 +1069,11 @@ Pipe* ModelReader::readPipe()
 //-----------------------------------------------------------------------------------------------
 // Reads a separator definition
 //-----------------------------------------------------------------------------------------------
-Separator* ModelReader::readSeparator()
+Capacity* ModelReader::readCapacity()
 {
-    cout << "Reading separator definition..." << endl;
+    cout << "Reading capacity definition..." << endl;
 
-    Separator *s = new Separator();
+    Capacity *s = new Capacity();
 
     QVector<int> pipe_nums;
 
@@ -1102,7 +1102,7 @@ Separator* ModelReader::readSeparator()
             if(!pipe_ok)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                     << "The SEPARATOR input PIPES were not correctly defined..." << endl
+                     << "The CAPACITY input PIPES were not correctly defined..." << endl
                      << "Last line: " << list.join(" ").toAscii().data() << endl;
 
 
@@ -1130,7 +1130,7 @@ Separator* ModelReader::readSeparator()
                 else                    // error getting the numbers
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
-                         << "The SEPARATOR WATER constraint was not correctly defined..." << endl
+                         << "The CAPACITY WATER constraint was not correctly defined..." << endl
                          << "Last line: " << list.join(" ").toAscii().data() << endl;
 
 
@@ -1159,7 +1159,7 @@ Separator* ModelReader::readSeparator()
                 else                    // error getting the numbers
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
-                         << "The SEPARATOR GAS constraint was not correctly defined..." << endl
+                         << "The CAPACITY GAS constraint was not correctly defined..." << endl
                          << "Last line: " << list.join(" ").toAscii().data() << endl;
 
 
@@ -1189,7 +1189,7 @@ Separator* ModelReader::readSeparator()
                 else                    // error getting the numbers
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
-                         << "The SEPARATOR OIL constraint was not correctly defined..." << endl
+                         << "The CAPACITY OIL constraint was not correctly defined..." << endl
                          << "Last line: " << list.join(" ").toAscii().data() << endl;
 
 
@@ -1219,7 +1219,7 @@ Separator* ModelReader::readSeparator()
                 else                    // error getting the numbers
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
-                         << "The SEPARATOR LIQUID constraint was not correctly defined..." << endl
+                         << "The CAPACITY LIQUID constraint was not correctly defined..." << endl
                          << "Last line: " << list.join(" ").toAscii().data() << endl;
 
 
@@ -1256,7 +1256,7 @@ Separator* ModelReader::readSeparator()
     if(!consr_added)    // no constraint
     {
         cout << endl << "### Error detected in input file! ###" << endl
-        << "SEPARATOR definition is incomplete..." << endl
+        << "CAPACITY definition is incomplete..." << endl
         << "No constraint of any kind detected" << endl
         << "Last line: " << list.join(" ").toAscii().data() << endl;
 
@@ -1268,7 +1268,7 @@ Separator* ModelReader::readSeparator()
     if(pipe_nums.size() == 0)    // no pipes
     {
         cout << endl << "### Error detected in input file! ###" << endl
-        << "SEPARATOR definition is incomplete..." << endl
+        << "CAPACITY definition is incomplete..." << endl
         << "No input PIPES defined" << endl
         << "Last line: " << list.join(" ").toAscii().data() << endl;
 

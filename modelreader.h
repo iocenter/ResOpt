@@ -37,7 +37,7 @@ class Reservoir;
 class Pipe;
 class MidPipe;
 class Objective;
-class Separator;
+class Capacity;
 
 
 class ModelReader
@@ -129,11 +129,11 @@ private:
 
 
     /**
-     * @brief Reads a SEPARATOR definition from the driver file
+     * @brief Reads a CAPACITY definition from the driver file
      *
      * @return Separator
      */
-    Separator* readSeparator();
+    Capacity* readCapacity();
 
 
     /**

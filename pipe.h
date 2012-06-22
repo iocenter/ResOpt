@@ -55,6 +55,7 @@ private:
     QVector<double> m_connected_well_fractions;     // the fractions of flow from the connected wells going through this pipe
 
     QVector<Stream*> m_streams;         // the streams going through the pipe
+    QVector<double> m_schedule;         // a copy of the master schedule set in the model
 
 
 
@@ -104,6 +105,8 @@ public:
 
     // misc functions
 
+    void initialize(const QVector<double> &schedule);
+
 
     /**
      * @brief A recursive function that calculates the inlet pressures for all the feed pipes.
@@ -128,11 +131,6 @@ public:
     void cleanFeedConnections();
 
 
-    /**
-     * @brief Deletes all the streams for the Pipe
-     *
-     */
-    void cleanStreams();
 
 
     /**
@@ -168,9 +166,11 @@ public:
      */
     void addFeedWell(ProductionWell *w) {m_feed_wells.push_back(w);}
 
-    void addStream(Stream *s) {m_streams.push_back(s);}
+
 
     // set functions
+
+    bool setStream(int i, Stream *s);
 
     /**
      * @brief Sets the identifying number of the pipe

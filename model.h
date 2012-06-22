@@ -36,7 +36,7 @@ class Well;
 class Reservoir;
 class Objective;
 class Pipe;
-class Separator;
+class Capacity;
 class IntVariable;
 class RealVariable;
 class BinaryVariable;
@@ -53,7 +53,7 @@ private:
     Reservoir *p_reservoir; /**< TODO */
     QVector<Well*> m_wells; /**< TODO */
     QVector<Pipe*> m_pipes;
-    QVector<Separator*> m_separators;
+    QVector<Capacity*> m_capacities;
     Objective *p_obj;
     QVector<double> m_master_schedule;
 
@@ -63,12 +63,12 @@ private:
 
 
     /**
-     * @brief Updates the separator constraints for all the separators in the model.
-     * @details This function calls in turn Separator::updateConstraints() on all the separators.
+     * @brief Updates the capacity constraints for all the Capacities in the model.
+     * @details This function calls in turn Capacity::updateConstraints() on all the capacities.
      *
      * @return bool
      */
-    bool updateSeparatorConstraints();
+    bool updateCapacityConstraints();
 
 
 
@@ -125,11 +125,11 @@ public:
 
     /**
      * @brief Translates the input PIPE numbers given in the driver file to pointers to Pipes.
-     * @details This functions should only be called once, before the optimization starts. The input pipes to a given separator are fixed.
+     * @details This functions should only be called once, before the optimization starts. The input pipes to a given Capacity are fixed.
      *
      * @return bool
      */
-    bool resolveSeparatorConnections();
+    bool resolveCapacityConnections();
 
 
 
@@ -174,7 +174,7 @@ public:
 
     /**
      * @brief Returns a vector containing all the constraints defined within the model.
-     * @details The constraints include well BHP constraints and separator capasity constraints
+     * @details The constraints include well BHP constraints and capasity constraints
      *
      * @return QVector<Constraint *>
      */
@@ -236,11 +236,11 @@ public:
 
 
     /**
-     * @brief Adds a separator to the model
+     * @brief Adds a Capacity to the model
      *
      * @param s
      */
-    void addSeparator(Separator *s) {m_separators.push_back(s);}
+    void addCapacity(Capacity *s) {m_capacities.push_back(s);}
 
     // get functions
 
@@ -286,19 +286,19 @@ public:
 
 
     /**
-     * @brief Returns Separator number i
+     * @brief Returns Capacity number i
      *
      * @param i
-     * @return Separator
+     * @return Capacity
      */
-    Separator* separator(int i) {return m_separators.at(i);}
+    Capacity* capacity(int i) {return m_capacities.at(i);}
 
     /**
-     * @brief Returns the total number of separators defined in the model
+     * @brief Returns the total number of capacities defined in the model
      *
      * @return int
      */
-    int numberOfSeparators() const {return m_separators.size();}
+    int numberOfCapacities() const {return m_capacities.size();}
 
 
     /**

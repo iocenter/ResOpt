@@ -41,7 +41,7 @@ class Pipe;
  * @brief Container class for separators
  *
  */
-class Separator
+class Capacity
 {
 private:
 
@@ -68,8 +68,8 @@ public:
  * @brief
  *
  */
-    Separator();
-    Separator(const Separator &s);
+    Capacity();
+    Capacity(const Capacity &s);
 
     // misc functions
 

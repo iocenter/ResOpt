@@ -75,10 +75,10 @@ public:
     // misc functions
 
     /**
-     * @brief Deletes all the streams for the well
+     * @brief Initializes all the streams
      *
      */
-    void deleteStreams();
+    void initialize();
 
     // virtual functions
 
@@ -105,14 +105,17 @@ public:
     void addControl(WellControl *c);
 
 
-    /**
-     * @brief Adds a Stream to the well
-     *
-     * @param s
-     */
-    void addStream(Stream *s) {m_streams.push_back(s);}
 
     // set functions
+
+    /**
+     * @brief Sets the Stream for control interval i
+     *
+     * @param i
+     * @param s
+     */
+    bool setStream(int i, Stream *s);
+
 
     /**
      * @brief Sets the type of well, either injector or producer

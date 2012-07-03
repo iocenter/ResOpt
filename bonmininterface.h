@@ -43,6 +43,11 @@ class BonminOptimizer;
 class Case;
 class CaseQueue;
 
+
+/**
+ * @brief Implementation of a MINLP used by bonmin.
+ *
+ */
 class BonminInterface : public TMINLP
 {
 private:

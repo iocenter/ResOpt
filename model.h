@@ -44,7 +44,8 @@ class Constraint;
 
 
 /**
- * @brief Class that keeps track of all the parts of the model structure
+ * @brief Abstract base class for Models.
+ * @details The Model stores all the sub-parts of the problem (wells, pipes, separators, etc).
  *
  */
 class Model
@@ -95,7 +96,20 @@ public:
     ~Model();
 
     // virtual functions
+
+
+    /**
+     * @brief Updates the streams in the pipe network.
+     *
+     */
     virtual void updateStreams() = 0;
+
+
+    /**
+     * @brief Returns a clone of this model.
+     *
+     * @return Model
+     */
     virtual Model* clone() const = 0;
 
 

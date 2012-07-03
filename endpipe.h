@@ -28,6 +28,10 @@ namespace ResOpt
 {
 
 
+/**
+ * @brief A top node in the Pipe network.
+ *
+ */
 class EndPipe : public Pipe
 {
 private:

@@ -28,6 +28,10 @@ namespace ResOpt
 {
 
 
+/**
+ * @brief Class for representations of injection wells.
+ *
+ */
 class InjectionWell : public Well
 {
 public:

@@ -95,10 +95,6 @@ public:
 
 
 
-
-
-
-
     /**
      * @brief Writes the problem definition to the summary file
      * @details A list of all the variables and constraints are printed to the summary file.
@@ -107,7 +103,7 @@ public:
 
 
     /**
-     * @brief Writes the results from the current run of the Model to the summary file
+     * @brief Writes the results from all the cases to the summary file
      * @details The variable, constraints and objective values are printed as a new line to the summary file.
      */
     void writeCasesToSummary();
@@ -124,6 +120,14 @@ public:
     bool isUpToDate() {return m_up_to_date;}
 
 public slots:
+
+    /**
+     * @brief This slot is called whenever a Launcher finishes with its model evaluation.
+     * @details If there are more cases to run in the queue, the launcher is sent a new case from the queue to evaluate. If there are no more cases to run, this function checks if all the other
+     *          launchers have finished. If all the launchers have finished, casesFinished() is emitted, and the results are written to the summary file.
+     *
+     * @param l
+     */
     void onLauncherFinished(Launcher *l);
 
     /**

@@ -33,6 +33,11 @@ class CaseQueue;
 class Case;
 
 
+
+/**
+ * @brief Abstract base class for optimization algorithms.
+ *
+ */
 class Optimizer : public QObject
 {
     Q_OBJECT

@@ -34,6 +34,11 @@ namespace ResOpt
 class Well;
 
 
+/**
+ * @brief Interface for GPRS from Stanford.
+ * @details This interface takes care of generating input files in the GPRS format, launching GPRS, and extracting output. GPRS must be installed (and in the path) on the computer.
+ *
+ */
 class GprsSimulator : public ReservoirSimulator
 {
 private:

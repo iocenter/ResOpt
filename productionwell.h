@@ -39,6 +39,10 @@ class Constraint;
 class Pipe;
 
 
+/**
+ * @brief Representation of a production well.
+ *
+ */
 class ProductionWell : public Well
 {
 private:

@@ -50,6 +50,11 @@ class Runner;
 class BonminInterface;
 
 
+
+/**
+ * @brief The bonmin optimization algorithm.
+ *
+ */
 class BonminOptimizer : public Optimizer
 {
 private:

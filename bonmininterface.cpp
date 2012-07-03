@@ -163,25 +163,25 @@ bool BonminInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
     int n_var = 0;  // variable index used by the optimizer (first real, then int)
 
     // setting the real variable bounds
-    for(int i = 0; i < m_vars_real.size(); i++)
+    for(int i = 0; i < m_vars_real.size(); ++i)
     {
         x_l[n_var] = m_vars_real.at(i)->min();  // lower bound
         x_u[n_var] = m_vars_real.at(i)->max();	// upper bound
 
-        n_var++;
+        ++n_var;
     }
 
     //setting integer variable bounds
-    for(int i = 0; i < m_vars_binary.size(); i++)
+    for(int i = 0; i < m_vars_binary.size(); ++i)
     {
         x_l[n_var] = m_vars_binary.at(i)->min();   // lower bound
         x_u[n_var] = m_vars_binary.at(i)->max();	// upper bound
 
-        n_var++;
+        ++n_var;
     }
 
     // setting the constraint bounds
-    for(int i = 0; i < m_cons.size(); i++)
+    for(int i = 0; i < m_cons.size(); ++i)
     {
         g_l[i] = m_cons.at(i)->min();   // lower bound
         g_u[i] = m_cons.at(i)->max();   // upper bound

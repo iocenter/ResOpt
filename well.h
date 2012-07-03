@@ -36,7 +36,7 @@ class Stream;
 
 
 /**
- * @brief Container class for Wells
+ * @brief Base class for representations of wells.
  *
  */
 class Well

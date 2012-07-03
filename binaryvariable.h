@@ -27,6 +27,11 @@
 namespace ResOpt
 {
 
+
+/**
+ * @brief Binary variables, can either be 0 or 1.
+ *
+ */
 class BinaryVariable : public Variable
 {
 private:

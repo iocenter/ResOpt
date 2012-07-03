@@ -30,6 +30,10 @@ namespace ResOpt
 class Runner;
 
 
+/**
+ * @brief Runs the project once with the starting point values for the variables.
+ *
+ */
 class RunonceOptimizer : public Optimizer
 {
 private:

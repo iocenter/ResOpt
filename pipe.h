@@ -35,7 +35,7 @@ class Stream;
 
 
 /**
- * @brief A container class for pipe segments
+ * @brief Abstract base class for pipe segments
  * @details A Pipe is fed by either Wells or other Pipes. Pressure drop calculations are performed based on the input streames
  *          going through the pipe and the outlet pressure of the pipe.
  *

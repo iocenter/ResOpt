@@ -40,6 +40,11 @@ class Objective;
 class Capacity;
 
 
+
+/**
+ * @brief Reads the driver file, and creates a Model.
+ *
+ */
 class ModelReader
 {
 private:

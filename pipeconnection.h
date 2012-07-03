@@ -34,6 +34,10 @@ class BinaryVariable;
 
 
 
+/**
+ * @brief Defines the connection from a Well or Pipe to a Pipe.
+ *
+ */
 class PipeConnection
 {
 private:

@@ -26,7 +26,7 @@ namespace ResOpt
 
 
 /**
- * @brief Container class for well connections (perforations)
+ * @brief Represents a well perforation
  *
  */
 class WellConnection

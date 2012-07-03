@@ -39,6 +39,10 @@ class Constraint;
 
 
 
+/**
+ * @brief A pipe that both have input and output connections.
+ *
+ */
 class MidPipe : public Pipe
 {
 private:

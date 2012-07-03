@@ -33,6 +33,11 @@ namespace ResOpt
 class Model;
 
 
+
+/**
+ * @brief Abstract base class for interfaces to reservoir simulators.
+ *
+ */
 class ReservoirSimulator
 {
 private:

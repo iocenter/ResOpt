@@ -29,10 +29,11 @@ namespace ResOpt
 {
 
 class Stream;
+class Cost;
 
 
 /**
- * @brief
+ * @brief Abstract class for objective functions.
  *
  */
 class Objective

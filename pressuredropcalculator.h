@@ -27,6 +27,11 @@ namespace ResOpt
 
 class Stream;
 
+
+/**
+ * @brief Calculates pressure drops in pipe segments.
+ *
+ */
 class PressureDropCalculator
 {
 public:

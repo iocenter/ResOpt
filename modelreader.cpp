@@ -42,8 +42,10 @@
 #include "cumgasobjective.h"
 #include "endpipe.h"
 #include "midpipe.h"
+#include "separator.h"
 #include "capacity.h"
 #include "pipeconnection.h"
+#include "cost.h"
 
 #include "stream.h"
 #include "beggsbrillcalculator.h"
@@ -107,6 +109,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("CAPACITY")) p_model->addCapacity(readCapacity());                    // capacity
             else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                                       // optimizer
             else if(list.at(1).startsWith("MASTERSCHEDULE")) p_model->setMasterSchedule(readMasterSchedule());  // master schedule
+            else if(list.at(1).startsWith("SEPARATOR")) p_model->addPipe(readSeparator());                      // separator
 
         }
 
@@ -679,7 +682,7 @@ bool ModelReader::readWellConnections(Well *w)
 //-----------------------------------------------------------------------------------------------
 bool ModelReader::readPipeConnections(ProductionWell *w)
 {
-    cout << "       outlet pipes table..." << endl;
+    cout << "        outlet pipes table..." << endl;
 
     QStringList list;
 
@@ -757,7 +760,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
 //-----------------------------------------------------------------------------------------------
 bool ModelReader::readPipeConnections(MidPipe *p)
 {
-    cout << "       outlet pipes table..." << endl;
+    cout << "        outlet pipes table..." << endl;
 
     QStringList list;
 
@@ -1038,8 +1041,6 @@ Pipe* ModelReader::readPipe()
 
     // checking remaining input
 
-    cout << "checking remaining input" << endl;
-
     if(!ok || p == 0)                                             // error with number reading
     {
         cout << endl << "### Error detected in input file! ###" << endl
@@ -1060,14 +1061,14 @@ Pipe* ModelReader::readPipe()
     p->setFileName(l_file);
     p->setNumber(l_number);
 
-    cout << "done reading pipe" << endl;
+
 
     return p;
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Reads a separator definition
+// Reads a capacity definition
 //-----------------------------------------------------------------------------------------------
 Capacity* ModelReader::readCapacity()
 {
@@ -1286,6 +1287,158 @@ Capacity* ModelReader::readCapacity()
     return s;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Reads a separator definition
+//-----------------------------------------------------------------------------------------------
+Pipe* ModelReader::readSeparator()
+{
+
+    cout << "Reading separator definition..." << endl;
+
+    Separator *p_sep = new Separator();
+    QStringList list;
+
+    bool ok = true;
+    int l_number = -1;
+    int l_outlet_pipe = -1;
+    double l_cost = -1.0;
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !(list.at(0).startsWith("END") && list.at(1).startsWith("SEPARATOR")))
+    {
+
+
+
+        if(list.at(0).startsWith("NUMBER")) l_number = list.at(1).toInt(&ok);                   // getting the id number of the separator
+        else if(list.at(0).startsWith("OUTLETPIPE")) l_outlet_pipe = list.at(1).toInt(&ok);     // getting the outlet pipe number
+        else if(list.at(0).startsWith("COST")) l_cost = list.at(1).toDouble(&ok);               // getting the cost
+        else if(list.at(0).startsWith("INSTALLTIME"))                                           // getting the installation time
+        {
+            shared_ptr<IntVariable> var_install = shared_ptr<IntVariable>(new IntVariable());
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                int value = list.at(1).toInt(&ok);
+                var_install->setValue(value);
+                var_install->setMax(value);
+                var_install->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                int value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toInt(&ok1);
+                max = list.at(2).toInt(&ok2);
+                min = list.at(3).toInt(&ok3);
+
+                var_install->setValue(value);
+                var_install->setMax(max);
+                var_install->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "INSTALLTIME for SEPARATOR not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+
+            p_sep->setInstallTime(var_install);
+
+        }
+
+        else if(list.at(0).startsWith("REMOVE"))                                           // getting the remove phases
+        {
+
+            if(list.at(1).startsWith("WATER")) p_sep->setRemoveWater(true);
+            else if(list.at(1).startsWith("GAS")) p_sep->setRemoveGas(true);
+            else if(list.at(1).startsWith("OIL")) p_sep->setRemoveOil(true);
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "REMOVE keyword for SEPARATOR not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+
+        }
+
+
+
+        else
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Not understood in current context." << endl << endl;
+
+                exit(1);
+            }
+        }
+
+        if(!ok) break;
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    if(!ok)                                             // error with number reading
+    {
+        cout << endl << "### Error detected in input file! ###" << endl
+        << "PIPE definition is incomplete..." << endl
+        << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+        exit(1);
+
+    }
+
+
+
+    // everything is ok, setting common parameters
+
+    p_sep->setNumber(l_number);
+
+
+    // the cost
+    Cost *c = new Cost();
+    c->setValue(l_cost);
+    p_sep->setCost(c);
+
+    // the outlet connection
+    PipeConnection *p_con = new PipeConnection();
+    p_con->setPipeNumber(l_outlet_pipe);
+
+    shared_ptr<BinaryVariable> routing_var = shared_ptr<BinaryVariable>(new BinaryVariable());
+    routing_var->setValue(1.0);
+    routing_var->setIsVariable(false);
+    routing_var->setName("Dummy variable for separator outlet connection");
+    p_con->setVariable(routing_var);
+
+    p_sep->setOutletConnection(p_con);
+
+
+
+
+    return p_sep;
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // Reads the optimizer definition

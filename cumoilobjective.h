@@ -49,7 +49,7 @@ public:
      *
      * @param s
      */
-    virtual void calculateValue(QVector<Stream*> s);
+    virtual void calculateValue(QVector<Stream*> s, QVector<Cost*> c);
 
 };
 

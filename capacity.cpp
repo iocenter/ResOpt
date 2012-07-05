@@ -176,7 +176,7 @@ void Capacity::setupConstraints(const QVector<double> &master_schedule)
 void Capacity::updateConstraints()
 {
 
-    cout << "Updating constraints for separator: " << name().toAscii().data() << endl;
+    cout << "Updating constraints for capacity: " << name().toAscii().data() << endl;
 
     // checking if any feed pipes are defined
     if(numberOfFeedPipes() > 0)
@@ -210,12 +210,6 @@ void Capacity::updateConstraints()
                 s += *feedPipe(j)->stream(i);   // adding feed pipe rate to the separator rate
             }
 
-            cout << "Flow through separator for t = " << s.time() << endl;
-            cout << "oil = " << s.oilRate() << endl;
-            cout << "gas = " << s.gasRate() << endl;
-            cout << "water = " << s.waterRate() << endl;
-
-
             // setting new values if the cons are defined
             if(m_max_oil >= 0) m_cons_oil.at(i)->setValue(s.oilRate());
             if(m_max_gas >= 0) m_cons_gas.at(i)->setValue(s.gasRate());
@@ -233,7 +227,7 @@ void Capacity::updateConstraints()
     //cout << "Max oil = " << max_oil << endl;
     //cout << "Max wat = " << max_water << endl;
 
-    cout << "Done updating constraints for separator: " << name().toAscii().data() << endl;
+    cout << "Done updating constraints for capacity: " << name().toAscii().data() << endl;
 
 }
 

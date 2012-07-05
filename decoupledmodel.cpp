@@ -18,36 +18,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef CUMGASOBJECTIVE_H
-#define CUMGASOBJECTIVE_H
 
-#include "objective.h"
+#include "decoupledmodel.h"
 
 namespace ResOpt
 {
 
-/**
- * @brief Class for objectives that maximize oil cumulative production
- *
- */
-class CumgasObjective : public Objective
+DecoupledModel::DecoupledModel()
 {
-public:
-    CumgasObjective();
+}
 
-    // virtuals
+DecoupledModel::DecoupledModel(const DecoupledModel &m)
+    : Model(m)
+{}
 
-    virtual Objective* clone() {return new CumgasObjective(*this);}
 
-    /**
-     * @brief Calculates the cumulative oil produced from the input streams
-     *
-     * @param s
-     */
-    virtual void calculateValue(QVector<Stream*> s, QVector<Cost*> c);
+//-----------------------------------------------------------------------------------------------
+// updates the rates flowing through every element in the model
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::updateStreams()
+{}
 
-};
 
 } // namespace ResOpt
-
-#endif // CUMGASOBJECTIVE_H

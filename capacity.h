@@ -19,8 +19,8 @@
  */
 
 
-#ifndef SEPARATOR_H
-#define SEPARATOR_H
+#ifndef CAPACITY_H
+#define CAPACITY_H
 
 #include <QVector>
 #include <QString>

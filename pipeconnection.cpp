@@ -38,6 +38,7 @@ PipeConnection::PipeConnection()
 PipeConnection::PipeConnection(const PipeConnection &p)
 {
 
+
     // copying basic types
     m_pipe_number = p.m_pipe_number;
     p_pipe = 0; // this should refer to a new pipe in the new model...

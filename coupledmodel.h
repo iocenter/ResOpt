@@ -28,6 +28,7 @@ namespace ResOpt
 {
 class ProductionWell;
 class MidPipe;
+class Separator;
 
 
 /**
@@ -53,6 +54,14 @@ private:
     * @param p
      */
     void addStreamsUpstream(MidPipe *p);
+
+
+    /**
+     * @brief Adds the streams flowing from this separator to the upstream connected pipe
+     *
+     * @param s
+     */
+    void addStreamsUpstream(Separator *s);
 
 
 public:

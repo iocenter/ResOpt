@@ -30,8 +30,10 @@
 #include "binaryvariable.h"
 #include "constraint.h"
 #include "objective.h"
+#include "cost.h"
 #include "midpipe.h"
 #include "endpipe.h"
+#include "separator.h"
 #include "stream.h"
 #include "productionwell.h"
 #include "pipeconnection.h"
@@ -54,7 +56,6 @@ Model::Model()
 //-----------------------------------------------------------------------------------------------
 Model::Model(const Model &m)
 {
-
     // copying the reservoir
     p_reservoir = new Reservoir(*m.reservoir());
 
@@ -70,7 +71,7 @@ Model::Model(const Model &m)
         m_pipes.push_back(m.pipe(i)->clone());
     }
 
-    // copying the separators
+    // copying the capacity constraints
     for(int i = 0; i < m.numberOfCapacities(); i++)
     {
         m_capacities.push_back(new Capacity(*m.m_capacities.at(i)));
@@ -79,7 +80,9 @@ Model::Model(const Model &m)
     // copying the objective
     p_obj = m.p_obj->clone();
 
-    // now it is time to connect the pipes and separators
+    // copying the master schedule
+    m_master_schedule = m.m_master_schedule;
+
 
 }
 
@@ -194,7 +197,7 @@ void Model::initialize()
         pipe(i)->initialize(m_master_schedule);
     }
 
-    // setting up the constraints for the separators
+    // setting up the constraints for the capacities
     for(int i = 0; i < numberOfCapacities(); ++i)
     {
         capacity(i)->setupConstraints(m_master_schedule);
@@ -280,8 +283,9 @@ bool Model::resolvePipeRouting()
     // connecting the pipes
     for(int i = 0; i < m_pipes.size(); i++)     // looping through the pipes
     {
-        // only the MidPipe types should be checked
+        // only the MidPipe and Separator types should be checked
         MidPipe *p_mid = dynamic_cast<MidPipe*>(m_pipes.at(i));
+        Separator *p_sep = dynamic_cast<Separator*>(m_pipes.at(i));
 
         if(p_mid != 0)  // this is a MidPipe
         {
@@ -346,6 +350,49 @@ bool Model::resolvePipeRouting()
             }
 
         } // midpipe
+        else if(p_sep != 0) // this is a Separator
+        {
+
+            bool pipe_ok = false;
+
+            int pipe_num = p_sep->outletConnection()->pipeNumber();
+
+            // checking if it is connected to it self
+            if(pipe_num == p_sep->number())
+            {
+                cout << endl << "###  Runtime Error  ###" << endl
+                     << "Separator " << pipe_num << " is connected to itself!" << endl << endl;
+
+                exit(1);
+            }
+
+            // looping through the pipes to find the correct one
+            for(int j = 0; j < numberOfPipes(); j++)
+            {
+                if(pipe_num == pipe(j)->number())
+                {
+                    p_sep->outletConnection()->setPipe(pipe(j));
+                    pipe(j)->addFeedPipe(p_sep);
+
+                    pipe_ok = true;
+                    break;
+                }
+
+            }
+
+            // checking if the pipe - pipe connection was ok
+            if(!pipe_ok)
+            {
+                cout << endl << "###  Runtime Error  ###" << endl
+                     << "Separator to Pipe connection could not be established..." << endl
+                     << "SEPARATOR:       " << pipe_num << endl
+                     << "DOWNSTREAM PIPE: " << pipe(i)->number() << endl;
+
+                exit(1);
+
+            }
+        } // separator
+
     }   // pipe i
 
 
@@ -399,11 +446,11 @@ bool Model::calculatePipePressures()
 }
 
 //-----------------------------------------------------------------------------------------------
-// Connects separators to the pipes
+// Connects capacities to the pipes
 //-----------------------------------------------------------------------------------------------
 bool Model::resolveCapacityConnections()
 {
-    cout << "Resolving separator - pipe connections..." << endl;
+    cout << "Resolving capacity - pipe connections..." << endl;
     bool ok = true;
 
     for(int i = 0; i < m_capacities.size(); i++)        // looping through all separators
@@ -451,7 +498,7 @@ bool Model::updateCapacityConstraints()
 {
     bool ok = true;
 
-    cout << "Updating the separator constraints..." << endl;
+    cout << "Updating the capacity constraints..." << endl;
 
     for(int i = 0; i < numberOfCapacities(); i++)
     {
@@ -527,7 +574,11 @@ void Model::readPipeFiles()
 {
     for(int i = 0; i < numberOfPipes(); i++)
     {
-        pipe(i)->readInputFile();
+        // this should not be done for separators
+
+        Separator *sep = dynamic_cast<Separator*>(pipe(i));
+
+        if(sep == 0) pipe(i)->readInputFile();
     }
 }
 
@@ -675,20 +726,48 @@ void Model::updateObjectiveValue()
     // first adding together the streams from all the wells
     QVector<Stream*> field_rates;
 
-    for(int i = 0; i < m_wells.at(0)->numberOfStreams(); i++)   // looping through the time steps
+    for(int i = 0; i < m_wells.at(0)->numberOfStreams(); ++i)   // looping through the time steps
     {
         Stream *s = new Stream();
 
         for(int j = 0; j < numberOfWells(); j++)    // looping through the wells
         {
-            if(well(j)->type() == Well::PROD) *s += *well(j)->stream(i);
+            // checking if this is a production well
+            ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(j));
+
+            if(prod_well != 0) *s += *well(j)->stream(i);
         }
 
         field_rates.push_back(s);
     }
 
+    // then collecting all the costs
+    QVector<Cost*> costs;
+
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        Separator *p_sep = dynamic_cast<Separator*>(pipe(i));
+        if(p_sep != 0)
+        {
+            // updating the time of the cost according to the variable
+            int time_cost = p_sep->installTime()->value() - 1;
+
+
+            if(time_cost <= 0) p_sep->cost()->setTime(0.0);
+            else if(time_cost >= m_master_schedule.size()) p_sep->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1));
+            else p_sep->cost()->setTime(m_master_schedule.at(time_cost));
+
+            // adding the cost to the vector
+            costs.push_back(p_sep->cost());
+        }
+    }
+
+    qSort(costs.begin(), costs.end());  // sorting the costs wrt. time
+
+
+
     // calculating the new objective value
-    objective()->calculateValue(field_rates);
+    objective()->calculateValue(field_rates, costs);
 
     cout << "Objective value = " << objective()->value() << endl;
 

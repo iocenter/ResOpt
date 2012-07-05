@@ -21,6 +21,7 @@
 #include "npvobjective.h"
 
 #include "stream.h"
+#include "cost.h"
 #include <math.h>
 #include <iostream>
 
@@ -44,7 +45,7 @@ NpvObjective::NpvObjective()
 //-----------------------------------------------------------------------------------------------
 // Calculates the net present value
 //-----------------------------------------------------------------------------------------------
-void NpvObjective::calculateValue(QVector<Stream *> s)
+void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 {
     // checking if the discount factor is entered as fraction or percent
     if(m_dcf >= 1.0)
@@ -54,6 +55,8 @@ void NpvObjective::calculateValue(QVector<Stream *> s)
     }
 
     double npv = 0;
+
+    int cost_place = 0;
 
     for(int i = 0; i < s.size(); i++)       // looping through each time step
     {
@@ -69,6 +72,24 @@ void NpvObjective::calculateValue(QVector<Stream *> s)
         cf = dt * (s.at(i)->gasRate() * gasPrice());        // gas
         cf += dt * (s.at(i)->oilRate() * oilPrice());       // oil
         cf += dt * (s.at(i)->waterRate() * waterPrice());   // water
+
+        // adding costs that fall within this time step
+        double ts_cost = 0;
+        bool add_more_costs = true;
+        while(cost_place < c.size() && add_more_costs)
+        {
+            if(c.at(cost_place)->time() < s.at(i)->time())
+            {
+                ts_cost += c.at(cost_place)->value();
+                ++cost_place;
+            }
+            else add_more_costs = false;
+
+
+        }
+
+        // subtracting the costs from the cash flow
+        cf -= ts_cost;
 
         // add and discount cash flow to NPV
         double time_yr = s.at(i)->time() / 365;

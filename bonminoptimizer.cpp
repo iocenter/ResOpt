@@ -41,10 +41,10 @@ void BonminOptimizer::initialize()
 
     // Options can also be set by using a string with a format similar to the bonmin.opt file
     m_bonmin.readOptionsString("bonmin.algorithm B-BB\n");
-    m_bonmin.readOptionsString("hessian_approximation limited-memory\n");
-    m_bonmin.readOptionsString("tol 0.1\n");
+
+    m_bonmin.readOptionsString("tol 6.0\n");
     m_bonmin.readOptionsString("compl_inf_tol 0.1\n");
-    m_bonmin.readOptionsString("dual_inf_tol 0.3\n");
+    m_bonmin.readOptionsString("dual_inf_tol 300000.0\n");
     m_bonmin.readOptionsString("constr_viol_tol 0.1\n");
     QString s_max_iter = "max_iter " + QString::number(maxIterations()) + "\n";
     m_bonmin.readOptionsString(s_max_iter.toStdString());
@@ -56,6 +56,7 @@ void BonminOptimizer::initialize()
     //m_bonmin.readOptionsFile("bonmin.opt");
     m_bonmin.readOptionsFile();// This reads the default file "bonmin.opt"
 
+    m_bonmin.readOptionsString("hessian_approximation limited-memory\n");
 
     // initializing the TMINLP
     m_bonmin.initialize(GetRawPtr(p_tminlp));

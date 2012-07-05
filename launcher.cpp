@@ -77,7 +77,7 @@ void Launcher::evaluate(Case *c)
     // setting the variable values according to the case
     for(int i = 0; i < p_model->realVariables().size(); ++i)    // real variables
     {
-        // need to add a check to see if anything requiering the reservoir simulator to launch has changed
+        // TODO: need to add a check to see if anything requiering the reservoir simulator to launch has changed
         p_model->realVariables().at(i)->setValue(c->realVariableValue(i));
     }
     for(int i = 0; i < p_model->binaryVariables().size(); ++i)  // binary variables
@@ -113,18 +113,6 @@ void Launcher::evaluate(Case *c)
 
     c->setObjectiveValue(p_model->objective()->value());
 
-    //// debug code /////
-
-    // checking the rates for all the pipes
-    for(int i = 0; i < p_model->numberOfPipes(); ++i)
-    {
-        cout << "------ Pipe #" << p_model->pipe(i)->number() << " ------" << endl;
-
-        for(int j = 0; j < p_model->pipe(i)->numberOfStreams(); ++j)
-        {
-            p_model->pipe(i)->stream(j)->printToCout();
-        }
-    }
 
 
     // letting the runner know the evaluation has finished

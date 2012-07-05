@@ -46,6 +46,10 @@ public:
     // get functions
     double time() const {return m_time;}
     double value() const {return m_value;}
+
+    // overloaded operators
+    bool operator<(const Cost &rhs) const;
+    bool operator>(const Cost &rhs) const;
 };
 
 

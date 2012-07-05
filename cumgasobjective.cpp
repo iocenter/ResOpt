@@ -33,7 +33,7 @@ CumgasObjective::CumgasObjective()
 //-----------------------------------------------------------------------------------------------
 // Calculates the cumulative gas produced
 //-----------------------------------------------------------------------------------------------
-void CumgasObjective::calculateValue(QVector<Stream *> s)
+void CumgasObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 {
     double cumgas = 0;
 

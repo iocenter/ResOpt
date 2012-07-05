@@ -34,7 +34,7 @@ CumoilObjective::CumoilObjective()
 //-----------------------------------------------------------------------------------------------
 // Calculates the cumulative oil produced
 //-----------------------------------------------------------------------------------------------
-void CumoilObjective::calculateValue(QVector<Stream *> s)
+void CumoilObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 {
     double cumoil = 0;
 

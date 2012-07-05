@@ -74,7 +74,9 @@ SOURCES += main.cpp \
     casequeue.cpp \
     capacity.cpp \
     cost.cpp \
-    coupledmodel.cpp
+    coupledmodel.cpp \
+    decoupledmodel.cpp \
+    separator.cpp
 
 HEADERS += \
     well.h \
@@ -113,4 +115,6 @@ HEADERS += \
     casequeue.h \
     capacity.h \
     cost.h \
-    coupledmodel.h
+    coupledmodel.h \
+    decoupledmodel.h \
+    separator.h

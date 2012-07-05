@@ -40,7 +40,6 @@ class Objective;
 class Capacity;
 
 
-
 /**
  * @brief Reads the driver file, and creates a Model.
  *
@@ -136,9 +135,18 @@ private:
     /**
      * @brief Reads a CAPACITY definition from the driver file
      *
-     * @return Separator
+     * @return Capacity
      */
     Capacity* readCapacity();
+
+
+
+    /**
+     * @brief Reads a SEPARATOR definition from the driver file
+     *
+     * @return Separator
+     */
+    Pipe* readSeparator();
 
 
     /**

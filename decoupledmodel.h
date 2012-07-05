@@ -18,36 +18,35 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#ifndef CUMGASOBJECTIVE_H
-#define CUMGASOBJECTIVE_H
 
-#include "objective.h"
+#ifndef DECOUPLEDMODEL_H
+#define DECOUPLEDMODEL_H
+
+#include "model.h"
 
 namespace ResOpt
 {
 
+
 /**
- * @brief Class for objectives that maximize oil cumulative production
+ * @brief Model where input rates to all parts of the system are treated as variables.
+ * @details In this type of Model there is no automatic link between the output of a upstream part and the input to a downstream part. The input rates to every pipe segment in the Model
+ *          is included as a variable. Constraints are included to honour the mass balance in the system (c = q_in - q_out = 0).
  *
  */
-class CumgasObjective : public Objective
+class DecoupledModel : public Model
 {
 public:
-    CumgasObjective();
+    DecoupledModel();
 
-    // virtuals
+    DecoupledModel(const DecoupledModel &m);
 
-    virtual Objective* clone() {return new CumgasObjective(*this);}
-
-    /**
-     * @brief Calculates the cumulative oil produced from the input streams
-     *
-     * @param s
-     */
-    virtual void calculateValue(QVector<Stream*> s, QVector<Cost*> c);
-
+    // virtual functions
+    virtual void updateStreams();
+    virtual Model* clone() const {return new DecoupledModel(*this);}
 };
+
 
 } // namespace ResOpt
 
-#endif // CUMGASOBJECTIVE_H
+#endif // DECOUPLEDMODEL_H

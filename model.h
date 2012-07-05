@@ -58,9 +58,8 @@ private:
     Objective *p_obj;
     QVector<double> m_master_schedule;
 
-    QVector<shared_ptr<RealVariable> > m_vars_real;     // vector containing all real variables
-    QVector<shared_ptr<BinaryVariable> > m_vars_binary;
-    QVector<shared_ptr<Constraint> > m_cons;
+
+
 
 
     /**
@@ -93,7 +92,7 @@ private:
 public:
     Model();
     Model(const Model &m);
-    ~Model();
+    virtual ~Model();
 
     // virtual functions
 
@@ -113,6 +112,52 @@ public:
     virtual Model* clone() const = 0;
 
 
+    /**
+     * @brief Returns a vector containing all integer variables defined within the model.
+     * @details These are all the routing variables for the model.
+     *
+     * @return QVector<BinaryVariable *>
+     */
+    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables() = 0;
+
+    /**
+     * @brief Returns a vector containing all the real variables defined within the model.
+     * @details These are all the well control variables.
+     *
+     * @return QVector<RealVariable *>
+     */
+    virtual QVector<shared_ptr<RealVariable> >& realVariables() = 0;
+
+
+    /**
+     * @brief Returns a vector containing all the constraints defined within the model.
+     * @details The constraints include well BHP constraints and capasity constraints
+     *
+     * @return QVector<Constraint *>
+     */
+    virtual QVector<shared_ptr<Constraint> >& constraints() = 0;
+
+
+    /**
+     * @brief Initializes the model.
+     * @detials This function sets up the constraints associated with production wells and separators, and connects the pipe network
+     *          to the wells and separators. The function must be called before the model is used for anything.
+     *
+     */
+    virtual void initialize() = 0;
+
+
+
+    /**
+     * @brief Updates the value of all constraints in the model.
+     *
+     * @return bool
+     */
+    virtual bool updateConstraints() = 0;
+
+
+
+
     // misc functions
 
     /**
@@ -125,13 +170,6 @@ public:
     bool validate();
 
 
-    /**
-     * @brief Initializes the model.
-     * @detials This function sets up the constraints associated with production wells and separators, and connects the pipe network
-     *          to the wells and separators. The function must be called before the model is used for anything.
-     *
-     */
-    void initialize();
 
     /**
      * @brief Checks the current routing of wells and pipes, and connects them correctly.
@@ -180,32 +218,6 @@ public:
 
 
     /**
-     * @brief Returns a vector containing all integer variables defined within the model.
-     * @details These are all the routing variables for the model.
-     *
-     * @return QVector<BinaryVariable *>
-     */
-    QVector<shared_ptr<BinaryVariable> >& binaryVariables();
-
-    /**
-     * @brief Returns a vector containing all the real variables defined within the model.
-     * @details These are all the well control variables.
-     *
-     * @return QVector<RealVariable *>
-     */
-    QVector<shared_ptr<RealVariable> >& realVariables();
-
-
-    /**
-     * @brief Returns a vector containing all the constraints defined within the model.
-     * @details The constraints include well BHP constraints and capasity constraints
-     *
-     * @return QVector<Constraint *>
-     */
-    QVector<shared_ptr<Constraint> >& constraints();
-
-
-    /**
      * @brief Updates the value of the Objective from the current Streams of all the wells in the model.
      *
      */
@@ -213,10 +225,10 @@ public:
 
 
     /**
-     * @brief Updates the value of all the constraints in the model
+     * @brief Updates the value of the constraints that are common for all model types
      *
      */
-    bool updateConstraints();
+    bool updateCommonConstraints();
 
 
 
@@ -270,6 +282,7 @@ public:
 
     int numberOfMasterScheduleTimes() const {return m_master_schedule.size();}
     double masterScheduleTime(int i) const {return m_master_schedule.at(i);}
+    QVector<double>& masterSchedule() {return m_master_schedule;}
 
     /**
      * @brief Returns the Reservoir

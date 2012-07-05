@@ -41,6 +41,10 @@ class CoupledModel : public Model
 {
 private:
 
+    QVector<shared_ptr<BinaryVariable> > m_vars_binary;     // vector containing all binary variables
+    QVector<shared_ptr<RealVariable> > m_vars_real;         // vector containing all real variables
+    QVector<shared_ptr<Constraint> > m_cons;                // vector containing all the constraints
+
     /**
     * @brief Adds the streams flowing from this well to the upstream connected pipes
     *
@@ -68,9 +72,18 @@ public:
     CoupledModel();
     CoupledModel(const CoupledModel &m);
 
+    virtual ~CoupledModel();
+
     // virtual functions
-    virtual void updateStreams();
     virtual Model* clone() const {return new CoupledModel(*this);}
+
+    virtual void initialize();
+    virtual void updateStreams();
+    virtual bool updateConstraints();
+
+    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables();
+    virtual QVector<shared_ptr<RealVariable> >& realVariables();
+    virtual QVector<shared_ptr<Constraint> >& constraints();
 };
 
 

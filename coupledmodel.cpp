@@ -23,10 +23,12 @@
 #include "midpipe.h"
 #include "pipeconnection.h"
 #include "binaryvariable.h"
+#include "realvariable.h"
 #include "intvariable.h"
 #include "stream.h"
 #include "productionwell.h"
 #include "separator.h"
+#include "capacity.h"
 
 #include <iostream>
 
@@ -43,6 +45,41 @@ CoupledModel::CoupledModel()
 CoupledModel::CoupledModel(const CoupledModel &m)
     : Model(m)
 {}
+
+
+CoupledModel::~CoupledModel()
+{}
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the model, sets up constraints
+//-----------------------------------------------------------------------------------------------
+void CoupledModel::initialize()
+{
+
+    // initializing all wells, setting up constraints for production wells
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        // initializing the well
+        well(i)->initialize();
+
+        // casting the well to production well, setting up constraints if cast is ok
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
+        if(prod_well != 0) prod_well->setupConstraints();
+    }
+
+    // initializing the pipes
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        pipe(i)->initialize(masterSchedule());
+    }
+
+    // setting up the constraints for the capacities
+    for(int i = 0; i < numberOfCapacities(); ++i)
+    {
+        capacity(i)->setupConstraints(masterSchedule());
+    }
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // updates the rates flowing through every element in the model
@@ -80,6 +117,16 @@ void CoupledModel::updateStreams()
             } // pipe connection
         } // production well
     } // well
+}
+
+//-----------------------------------------------------------------------------------------------
+// updates the value of the constraints
+//-----------------------------------------------------------------------------------------------
+bool CoupledModel::updateConstraints()
+{
+    // the coupled model does not have any custom constraints
+
+    updateCommonConstraints();  // updates the constraints that are common for all model types
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -183,6 +230,142 @@ void CoupledModel::addStreamsUpstream(Separator *s)
     else if(p_sep != 0) addStreamsUpstream(p_sep);
 
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Collects all the binary variables
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<BinaryVariable> >& CoupledModel::binaryVariables()
+{
+
+
+    if(m_vars_binary.size() == 0)
+    {
+
+        // finding well routnig variables
+        for(int i = 0; i < numberOfWells(); i++)
+        {
+            // checking if this is a production well
+            ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+            if(prod_well != 0)
+            {
+                // looping through the pipe connections
+                for(int j = 0; j < prod_well->numberOfPipeConnections(); j++)
+                {
+                    if(prod_well->pipeConnection(j)->variable()->isVariable()) m_vars_binary.push_back(prod_well->pipeConnection(j)->variable());
+                }
+            }
+
+        }
+
+
+
+        // finding pipe routing variables
+        for(int j = 0; j < numberOfPipes(); ++j)
+        {
+
+            MidPipe *p_mid = dynamic_cast<MidPipe*>(pipe(j));     // end pipes do not have routing
+
+            if(p_mid != 0)
+            {
+                // looping through the outlet connections
+                for(int j = 0; j < p_mid->numberOfOutletConnections(); j++)
+                {
+                    if(p_mid->outletConnection(j)->variable()->isVariable()) m_vars_binary.push_back(p_mid->outletConnection(j)->variable());
+                }
+
+            }
+        }
+    }
+
+
+    return m_vars_binary;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Collects all the real variables
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables()
+{
+
+    if(m_vars_real.size() == 0)
+    {
+
+        for(int i = 0; i < numberOfWells(); ++i)     // looping through all the wells
+        {
+            Well *w = well(i);
+
+            for(int j = 0; j < w->numberOfControls(); j++)  // looping through each element in the wells schedule
+            {
+                // checking if this shcedule entry is a variable
+                if(w->control(j)->controlVar()->isVariable()) m_vars_real.push_back(w->control(j)->controlVar());
+            }
+
+        }
+
+    }
+    return m_vars_real;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Collects all the constraints
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
+{
+    if(m_cons.size() == 0)
+    {
+
+        // getting the well bhp constraints
+        for(int i = 0; i < numberOfWells(); ++i)
+        {
+            // checking if this is a production well
+            ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+            if(prod_well != 0)
+            {
+                for(int i = 0; i < prod_well->numberOfBhpConstraints(); ++i) m_cons.push_back(prod_well->bhpConstraint(i));
+            }
+        }
+
+        // getting the well pipe connection constraints
+        for(int i = 0; i < numberOfWells(); ++i)
+        {
+            // checking if this is a production well
+            ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+            if(prod_well != 0) m_cons.push_back(prod_well->pipeConnectionConstraint());
+        }
+
+        // getting the mid pipe connection constraints
+        for(int i = 0; i < numberOfPipes(); i++)
+        {
+            // checking if this is a mid pipe
+            MidPipe *p_mid = dynamic_cast<MidPipe*>(pipe(i));
+
+            if(p_mid != 0) m_cons.push_back(p_mid->outletConnectionConstraint());
+        }
+
+
+
+        // getting the separator capacity constraints
+        for(int i = 0; i < numberOfCapacities(); ++i)
+        {
+            Capacity *sep = capacity(i);
+
+            m_cons += sep->gasConstraints();
+            m_cons += sep->oilConstraints();
+            m_cons += sep->waterConstraints();
+            m_cons += sep->liquidConstraints();
+
+        }
+    }
+
+
+    return m_cons;
+}
+
 
 
 } // namespace ResOpt

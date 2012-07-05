@@ -21,6 +21,25 @@
 
 #include "decoupledmodel.h"
 
+#include "materialbalanceconstraint.h"
+#include "inputratevariable.h"
+#include "realvariable.h"
+#include "binaryvariable.h"
+#include "intvariable.h"
+#include "productionwell.h"
+#include "midpipe.h"
+#include "capacity.h"
+#include "stream.h"
+#include "pipeconnection.h"
+#include "midpipe.h"
+#include "productionwell.h"
+#include "separator.h"
+
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 namespace ResOpt
 {
 
@@ -30,14 +49,472 @@ DecoupledModel::DecoupledModel()
 
 DecoupledModel::DecoupledModel(const DecoupledModel &m)
     : Model(m)
-{}
+{
+    //copying the input rate variables
+    initializeVarsAndCons();
 
+
+}
+
+DecoupledModel::~DecoupledModel()
+{
+
+    for(int i = 0; i < m_mb_cons.size(); ++i) delete m_mb_cons.at(i);
+    for(int i = 0; i < m_rate_vars.size(); ++i) delete m_rate_vars.at(i);
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the model, sets up constraints
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::initialize()
+{
+
+    // initializing all wells, setting up constraints for production wells
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        // initializing the well
+        well(i)->initialize();
+
+        // casting the well to production well, setting up constraints if cast is ok
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
+        if(prod_well != 0) prod_well->setupConstraints();
+    }
+
+    // initializing the pipes
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        pipe(i)->initialize(masterSchedule());
+    }
+
+    // setting up the constraints for the capacities
+    for(int i = 0; i < numberOfCapacities(); ++i)
+    {
+        capacity(i)->setupConstraints(masterSchedule());
+    }
+
+    // setting up the rate input variables
+    initializeVarsAndCons();
+}
+
+//-----------------------------------------------------------------------------------------------
+// setting up the input rate variables and mbc
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::initializeVarsAndCons()
+{
+
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        Pipe *p = pipe(i);
+        for(int j = 0; j < p->numberOfStreams(); ++j)
+        {
+            InputRateVariable *irv = new InputRateVariable();
+            irv->setPipe(p);
+            irv->setStream(p->stream(j));
+
+            shared_ptr<RealVariable> var_oil = shared_ptr<RealVariable>(new RealVariable);
+            var_oil->setMax(1e7);
+            var_oil->setMin(-1e7);
+            var_oil->setValue(100);
+            var_oil->setName("Input oil rate variable for Pipe #" + QString::number(p->number()) + ", time = " + QString::number(p->stream(j)->time()));
+
+            irv->setOilVariable(var_oil);
+
+            shared_ptr<RealVariable> var_gas = shared_ptr<RealVariable>(new RealVariable);
+            var_gas->setMax(1e7);
+            var_gas->setMin(-1e7);
+            var_gas->setValue(100);
+            var_gas->setName("Input gas rate variable for Pipe #" + QString::number(p->number()) + ", time = " + QString::number(p->stream(j)->time()));
+
+            irv->setGasVariable(var_gas);
+
+            shared_ptr<RealVariable> var_water = shared_ptr<RealVariable>(new RealVariable);
+            var_water->setMax(1e7);
+            var_water->setMin(-1e7);
+            var_water->setValue(100);
+            var_water->setName("Input water rate variable for Pipe #" + QString::number(p->number()) + ", time = " + QString::number(p->stream(j)->time()));
+
+            irv->setWaterVariable(var_water);
+
+            // creating the constraints asociates with the input rate variable
+            MaterialBalanceConstraint *mbc = new MaterialBalanceConstraint();
+            mbc->setInputRateVariable(irv);
+            m_mb_cons.push_back(mbc);
+
+            // adding the input rate variable to the vector
+            m_rate_vars.push_back(irv);
+
+
+        }
+    }
+}
+
+//-----------------------------------------------------------------------------------------------
+// updates the values of the constraints
+//-----------------------------------------------------------------------------------------------
+bool DecoupledModel::updateConstraints()
+{
+    bool ok = true;
+
+    // first updating the non-material balance constraints
+    ok = updateCommonConstraints();
+
+    cout << "updating the material balance streams..." << endl;
+    // updating the streams in the material balance constraints
+    updateMaterialBalanceStreams();
+
+    cout << "done updating the material balance streams..." << endl;
+
+    // last need to update the value of the material balance constraints
+    for(int i = 0; i < m_mb_cons.size(); ++i) m_mb_cons.at(i)->updateConstraints();
+
+
+    return ok;
+}
 
 //-----------------------------------------------------------------------------------------------
 // updates the rates flowing through every element in the model
 //-----------------------------------------------------------------------------------------------
 void DecoupledModel::updateStreams()
-{}
+{
+    for(int i = 0; i < m_rate_vars.size(); ++i)
+    {
+        m_rate_vars.at(i)->updateStream();
+    }
+}
+
+//-----------------------------------------------------------------------------------------------
+// finds the material balance constraint that is connected to this stream
+//-----------------------------------------------------------------------------------------------
+MaterialBalanceConstraint* DecoupledModel::find(Stream *s)
+{
+    MaterialBalanceConstraint *mbc = 0;
+
+    for(int i = 0; i < m_mb_cons.size(); ++i)
+    {
+
+        if(s == m_mb_cons.at(i)->inputRateVariable()->stream())
+        {
+            mbc = m_mb_cons.at(i);
+            break;
+        }
+    }
+
+    if(mbc == 0)
+    {
+        cout << "find mbc error!" << endl;
+        s->printToCout();
+    }
+
+    return mbc;
+}
+
+//-----------------------------------------------------------------------------------------------
+// updates the streams in the material balance constraints
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::updateMaterialBalanceStreams()
+{
+    // emptying the streams in the mbcs
+    for(int i = 0; i < m_mb_cons.size(); ++i) m_mb_cons.at(i)->emptyStream();
+
+    // updating the streams in the mbc, starting from the production wells, and working its way up the system
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        // trying to cast to production well
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+        if(prod_well != 0)  // this is a production well
+        {
+            // adding the streams from this well to the upstream pipes connected to it
+            addToMaterialBalanceStreamsUpstream(prod_well);
+
+            // looping through the outlet connections of the well, doing the same
+            for(int j = 0; j < prod_well->numberOfPipeConnections(); ++j)
+            {
+                // checking if it is a midpipe or separator
+                MidPipe *p_mid = dynamic_cast<MidPipe*>(prod_well->pipeConnection(j)->pipe());
+                Separator *p_sep = dynamic_cast<Separator*>(prod_well->pipeConnection(j)->pipe());
+                if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid);
+                else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep);
+
+
+            } // pipe connection
+        } // production well
+    } // well
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// adds the rates from the well to the direct upstream connections
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::addToMaterialBalanceStreamsUpstream(ProductionWell *w)
+{
+
+    // looping through the pipes connected to the well
+    for(int i = 0; i < w->numberOfPipeConnections(); ++i)
+    {
+
+        Pipe *p = w->pipeConnection(i)->pipe();     // pointer to the pipe
+
+
+        // finding the flow fraction from this well to the pipe
+        double frac = w->pipeConnection(i)->variable()->value();
+
+        // calculating the rate from this well to the pipe vs. time
+        for(int j = 0; j < w->numberOfStreams(); ++j)
+        {
+            Stream s = *w->stream(j) * frac;
+
+            // finding the material balance constraint that corresponds to this pipe and time
+            MaterialBalanceConstraint *mbc = find(p->stream(j));
+
+            // adding the rate contribution from this well to what is allready in the mbc
+            mbc->setStream(s + mbc->stream());
+
+        }
+
+    }
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// adds the rates from the pipe to all upstream connections
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::addToMaterialBalanceStreamsUpstream(MidPipe *p)
+{
+    // looping through the pipes connected to the pipe
+    for(int i = 0; i < p->numberOfOutletConnections(); ++i)
+    {
+        Pipe *upstream = p->outletConnection(i)->pipe();    // pointer to the upstream pipe
+
+
+        // finding the flow fraction from this pipe to the upstream pipe
+        double frac = p->outletConnection(i)->variable()->value();
+
+
+        // looping through the streams, adding the rate from this pipe
+        for(int j = 0; j < p->numberOfStreams(); ++j)
+        {
+            Stream s = *p->stream(j) * frac;
+
+
+            // finding the material balance constraint that corresponds to this pipe and time
+            MaterialBalanceConstraint *mbc = find(upstream->stream(j));
+
+            // adding the rate contribution from this well to what is allready in the mbc
+            mbc->setStream(s + mbc->stream());
+
+
+        }
+
+        // then checking if the outlet pipe connection is a midpipe or separator
+        MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
+        Separator *p_sep = dynamic_cast<Separator*>(upstream);
+
+        if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid);
+        else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep);
+
+    }
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// adds the rates from the pipe to all upstream connections
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s)
+{
+    // pointer to the upstream connected pipe
+    Pipe *upstream = s->outletConnection()->pipe();
+
+    // looping through the streams, adding the contribution from the separator
+    for(int i = 0; i < s->numberOfStreams(); ++i)
+    {
+        Stream str = *s->stream(i);
+
+        // checking if the separator is installed
+        if(i >= s->installTime()->value())
+        {
+            // checking if any of the phases should be removed
+            if(s->removeGas()) str.setGasRate(0.0);
+            if(s->removeOil()) str.setOilRate(0.0);
+            if(s->removeWater()) str.setWaterRate(0.0);
+        }
+
+        // finding the material balance constraint that corresponds to this pipe and time
+        MaterialBalanceConstraint *mbc = find(upstream->stream(i));
+
+        // adding the rate contribution from this well to what is allready in the mbc
+        mbc->setStream(str + mbc->stream());
+
+
+    }
+
+    // then checking if the upstream pipe is a midpipe or separator
+    MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
+    Separator *p_sep = dynamic_cast<Separator*>(upstream);
+
+    if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid);
+    else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep);
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Collects all the binary variables
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<BinaryVariable> >& DecoupledModel::binaryVariables()
+{
+
+    if(m_vars_binary.size() == 0)
+    {
+
+        // finding well routnig variables
+        for(int i = 0; i < numberOfWells(); i++)
+        {
+            // checking if this is a production well
+            ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+            if(prod_well != 0)
+            {
+                // looping through the pipe connections
+                for(int j = 0; j < prod_well->numberOfPipeConnections(); j++)
+                {
+                    if(prod_well->pipeConnection(j)->variable()->isVariable()) m_vars_binary.push_back(prod_well->pipeConnection(j)->variable());
+                }
+            }
+
+        }
+
+
+
+        // finding pipe routing variables
+        for(int j = 0; j < numberOfPipes(); ++j)
+        {
+
+            MidPipe *p_mid = dynamic_cast<MidPipe*>(pipe(j));     // end pipes do not have routing
+
+            if(p_mid != 0)
+            {
+                // looping through the outlet connections
+                for(int j = 0; j < p_mid->numberOfOutletConnections(); j++)
+                {
+                    if(p_mid->outletConnection(j)->variable()->isVariable()) m_vars_binary.push_back(p_mid->outletConnection(j)->variable());
+                }
+
+            }
+        }
+    }
+
+
+    return m_vars_binary;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Collects all the real variables
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<RealVariable> >& DecoupledModel::realVariables()
+{
+    if(m_vars_real.size() == 0)
+    {
+
+        // getting the control variables for the wells
+        for(int i = 0; i < numberOfWells(); ++i)     // looping through all the wells
+        {
+            Well *w = well(i);
+
+            for(int j = 0; j < w->numberOfControls(); j++)  // looping through each element in the wells schedule
+            {
+                // checking if this shcedule entry is a variable
+                if(w->control(j)->controlVar()->isVariable()) m_vars_real.push_back(w->control(j)->controlVar());
+            }
+
+        }
+
+        // getting the input rate variables
+        for(int i = 0; i < m_rate_vars.size(); ++i)
+        {
+            m_vars_real.push_back(m_rate_vars.at(i)->oilVariable());
+            m_vars_real.push_back(m_rate_vars.at(i)->gasVariable());
+            m_vars_real.push_back(m_rate_vars.at(i)->waterVariable());
+        }
+
+    }
+
+    return m_vars_real;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Collects all the constraints
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<Constraint> >& DecoupledModel::constraints()
+{
+    // TODO: the part of this function that is common between Coupled and Decoupled model should be put back into the Model class
+
+    if(m_cons.size() == 0)
+    {
+
+        // getting the well bhp constraints
+        for(int i = 0; i < numberOfWells(); ++i)
+        {
+            // checking if this is a production well
+            ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+            if(prod_well != 0)
+            {
+                for(int i = 0; i < prod_well->numberOfBhpConstraints(); ++i) m_cons.push_back(prod_well->bhpConstraint(i));
+            }
+        }
+
+        // getting the well pipe connection constraints
+        for(int i = 0; i < numberOfWells(); ++i)
+        {
+            // checking if this is a production well
+            ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+            if(prod_well != 0) m_cons.push_back(prod_well->pipeConnectionConstraint());
+        }
+
+        // getting the mid pipe connection constraints
+        for(int i = 0; i < numberOfPipes(); ++i)
+        {
+            // checking if this is a mid pipe
+            MidPipe *p_mid = dynamic_cast<MidPipe*>(pipe(i));
+
+            if(p_mid != 0) m_cons.push_back(p_mid->outletConnectionConstraint());
+        }
+
+
+
+        // getting the separator capacity constraints
+        for(int i = 0; i < numberOfCapacities(); ++i)
+        {
+            Capacity *sep = capacity(i);
+
+            m_cons += sep->gasConstraints();
+            m_cons += sep->oilConstraints();
+            m_cons += sep->waterConstraints();
+            m_cons += sep->liquidConstraints();
+
+        }
+
+        // getting the material balance constraints
+        for(int i = 0; i < m_mb_cons.size(); ++i)
+        {
+            MaterialBalanceConstraint *mbc = m_mb_cons.at(i);
+
+            m_cons.push_back(mbc->oilConstraint());
+            m_cons.push_back(mbc->gasConstraint());
+            m_cons.push_back(mbc->waterConstraint());
+
+        }
+    }
+
+
+    return m_cons;
+}
 
 
 } // namespace ResOpt

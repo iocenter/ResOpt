@@ -27,6 +27,7 @@
 
 #include "runner.h"
 #include "coupledmodel.h"
+#include "decoupledmodel.h"
 #include "reservoir.h"
 #include "injectionwell.h"
 #include "productionwell.h"
@@ -84,7 +85,7 @@ ModelReader::ModelReader(const QString &driver)
 //-----------------------------------------------------------------------------------------------
 Model* ModelReader::readDriverFile(Runner *r)
 {
-    Model *p_model = new CoupledModel();
+    Model *p_model = 0;
 
     cout << "****  Reading driver file: " << m_driver_file.fileName().toAscii().data() << "  ****" << endl;
 
@@ -95,6 +96,44 @@ Model* ModelReader::readDriverFile(Runner *r)
 
 
     list = processLine(m_driver_file.readLine());
+
+    // the first keyword in the driver file must specify the type of model (COUPLED, DECOUPLED)
+    bool found_model_def = false;
+    while(!found_model_def && !m_driver_file.atEnd() && !list.at(0).startsWith("EOF"))
+    {
+        if(list.at(0).startsWith("COUPLED"))            // Coupled model
+        {
+            cout << "Generating a COUPLED model..." << endl;
+            p_model = new CoupledModel();
+            found_model_def = true;
+        }
+        else if(list.at(0).startsWith("DECOUPLED"))     // Decoupled model
+        {
+            cout << "Generating a DECOUPLED model..." << endl;
+            p_model = new DecoupledModel();
+            found_model_def = true;
+        }
+        else
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The first keyword must specify the model type..." << endl
+                     << "Possible types: COUPLED, DECOUPLED" << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+                exit(1);
+            }
+
+        }
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+
+    // reading the remaining input
+
 
     while(!m_driver_file.atEnd() && !list.at(0).startsWith("EOF"))
     {

@@ -27,6 +27,13 @@
 namespace ResOpt
 {
 
+class InputRateVariable;
+class MaterialBalanceConstraint;
+class ProductionWell;
+class MidPipe;
+class Separator;
+class Stream;
+
 
 /**
  * @brief Model where input rates to all parts of the system are treated as variables.
@@ -36,14 +43,65 @@ namespace ResOpt
  */
 class DecoupledModel : public Model
 {
+private:
+    QVector<shared_ptr<BinaryVariable> > m_vars_binary;     // vector containing all binary variables
+    QVector<shared_ptr<RealVariable> > m_vars_real;         // vector containing all real variables
+    QVector<shared_ptr<Constraint> > m_cons;                // vector containing all the constraints
+
+    QVector<InputRateVariable*> m_rate_vars;            // all the varaibles for rate input to the different parts of the model
+    QVector<MaterialBalanceConstraint*> m_mb_cons;      // constraints associated with the input rate variables for mass balance feasibility
+
+    void initializeVarsAndCons();
+
+    /**
+    * @brief Adds the streams flowing from this well to the streams in the asociated material balance constraints
+    *
+    * @param w
+    */
+    void addToMaterialBalanceStreamsUpstream(ProductionWell *w);
+
+    /**
+    * @brief Adds the streams flowing from this pipe to the streams in the asociated material balance constraints
+    *
+    * @param p
+     */
+    void addToMaterialBalanceStreamsUpstream(MidPipe *p);
+
+
+    /**
+     * @brief Adds the streams flowing from this separator to the streams in the asociated material balance constraints
+     *
+     * @param s
+     */
+    void addToMaterialBalanceStreamsUpstream(Separator *s);
+
+
+    /**
+     * @brief Updates all the streams in the material balance constraints
+     *
+     */
+    void updateMaterialBalanceStreams();
+
+    MaterialBalanceConstraint* find(Stream *s);
+
+
 public:
     DecoupledModel();
 
     DecoupledModel(const DecoupledModel &m);
 
+    virtual ~DecoupledModel();
+
     // virtual functions
-    virtual void updateStreams();
     virtual Model* clone() const {return new DecoupledModel(*this);}
+
+    virtual void initialize();
+    virtual void updateStreams();
+    virtual bool updateConstraints();
+
+    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables();
+    virtual QVector<shared_ptr<RealVariable> >& realVariables();
+    virtual QVector<shared_ptr<Constraint> >& constraints();
 };
 
 

@@ -43,6 +43,7 @@ Pipe::Pipe()
 // copy constructor
 //-----------------------------------------------------------------------------------------------
 Pipe::Pipe(const Pipe &p)
+    : Component(p)
 {
     // copying basic types
     m_number = p.m_number;
@@ -52,14 +53,6 @@ Pipe::Pipe(const Pipe &p)
     // the calculator
     if(p.p_calculator != 0) p_calculator = p.p_calculator->clone();
 
-    // the streams
-    m_streams.clear();
-    m_streams.resize(p.m_streams.size());
-
-    for(int i = 0; i < p.numberOfStreams(); i++)
-    {
-        m_streams.replace(i, new Stream(*p.m_streams.at(i)));
-    }
 
 }
 
@@ -67,10 +60,6 @@ Pipe::~Pipe()
 {
     if(p_calculator != 0) delete p_calculator;
 
-    for(int i = 0; i < numberOfStreams(); i++)
-    {
-        delete m_streams.at(i);
-    }
 }
 
 
@@ -81,8 +70,8 @@ void Pipe::initialize(const QVector<double> &schedule)
 {
     m_schedule = schedule;
 
-    m_streams.clear();
-    for(int i = 0; i < m_schedule.size(); ++i) m_streams.push_back(new Stream(schedule.at(i), 0, 0, 0, 0));
+    clearStreams();
+    for(int i = 0; i < m_schedule.size(); ++i) addStream(new Stream(schedule.at(i), 0, 0, 0, 0));
 
 }
 
@@ -102,28 +91,8 @@ void Pipe::emptyStreams()
     }
 }
 
-//-----------------------------------------------------------------------------------------------
-// sets the Stream for interval i
-//-----------------------------------------------------------------------------------------------
-bool Pipe::setStream(int i, Stream *s)
-{
-
-    // first checking that the stream vector is set up correctly
-    if(i >= m_streams.size() || i < 0) return false;
-
-    // then checking that the number of streams correspond to the number of schedule entries
-    if(m_streams.size() != m_schedule.size()) return false;
-
-    // then checking that the time of the stream corresponds to the time of the shecdule entry
-    if(s->time() != m_schedule.at(i)) return false;
-
-    // everything seems to be ok, setting the stream
-    delete m_streams.at(i);
-    m_streams.replace(i, s);
 
 
-    return true;
-}
 
 //-----------------------------------------------------------------------------------------------
 // adds the rates in s to the current stream in the pipe
@@ -131,7 +100,16 @@ bool Pipe::setStream(int i, Stream *s)
 bool Pipe::addToStream(int i, const Stream &s)
 {
     // first checking that the stream vector is set up correctly
-    if(i >= m_streams.size() || i < 0) return false;
+    if(i >= numberOfStreams() || i < 0)
+    {
+        cout << endl << "### Runtime Error ###" << endl
+             << "Trying to add to a stream that does not exist... " << endl
+             << "PIPE:   " << number() <<  endl
+             << "STREAM: " << i << endl << endl;
+
+        exit(1);
+
+    }
 
     // adding the stream
     *stream(i) += s;

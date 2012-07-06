@@ -113,26 +113,26 @@ void DecoupledModel::initializeVarsAndCons()
             irv->setPipe(p);
             irv->setStream(p->stream(j));
 
-            shared_ptr<RealVariable> var_oil = shared_ptr<RealVariable>(new RealVariable);
-            var_oil->setMax(1e7);
-            var_oil->setMin(-1e7);
+            shared_ptr<RealVariable> var_oil = shared_ptr<RealVariable>(new RealVariable(p));
+            var_oil->setMax(1e6);
+            var_oil->setMin(0);
             var_oil->setValue(100);
             var_oil->setName("Input oil rate variable for Pipe #" + QString::number(p->number()) + ", time = " + QString::number(p->stream(j)->time()));
 
             irv->setOilVariable(var_oil);
 
-            shared_ptr<RealVariable> var_gas = shared_ptr<RealVariable>(new RealVariable);
+            shared_ptr<RealVariable> var_gas = shared_ptr<RealVariable>(new RealVariable(p));
             var_gas->setMax(1e7);
-            var_gas->setMin(-1e7);
-            var_gas->setValue(100);
+            var_gas->setMin(0);
+            var_gas->setValue(1000);
             var_gas->setName("Input gas rate variable for Pipe #" + QString::number(p->number()) + ", time = " + QString::number(p->stream(j)->time()));
 
             irv->setGasVariable(var_gas);
 
-            shared_ptr<RealVariable> var_water = shared_ptr<RealVariable>(new RealVariable);
-            var_water->setMax(1e7);
-            var_water->setMin(-1e7);
-            var_water->setValue(100);
+            shared_ptr<RealVariable> var_water = shared_ptr<RealVariable>(new RealVariable(p));
+            var_water->setMax(1e5);
+            var_water->setMin(0);
+            var_water->setValue(10);
             var_water->setName("Input water rate variable for Pipe #" + QString::number(p->number()) + ", time = " + QString::number(p->stream(j)->time()));
 
             irv->setWaterVariable(var_water);

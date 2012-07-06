@@ -434,6 +434,13 @@ void BonminInterface::finalize_solution(TMINLP::SolverReturn status,
     else cout << "UNKNOWN_ERROR";
 
     cout << endl;
+
+    cout << "Writing the final solution to the summary file..." << endl;
+    Case *c = generateCase(n,x);
+    c->setObjectiveValue(-obj_value);
+
+    p_optimizer->sendBestCaseToRunner(c);
+
 }
 
 

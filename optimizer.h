@@ -59,6 +59,9 @@ public:
 
     virtual void start() = 0;
 
+
+    void sendBestCaseToRunner(Case *c);
+
     Runner* runner() {return p_runner;}
 
     // set functions
@@ -80,6 +83,14 @@ signals:
      *
      */
     void finished();
+
+
+    /**
+     * @brief Sends the best case (final solution) to the runner for printing.
+     *
+     * @param c
+     */
+    void bestCase(Case *c);
 
 public slots:
 

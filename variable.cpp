@@ -24,8 +24,9 @@ namespace ResOpt
 {
 
 
-Variable::Variable()
-    : m_name("no_name")
+Variable::Variable(Component *parent)
+    : p_parent(parent),
+      m_name("no_name")
 {
 }
 

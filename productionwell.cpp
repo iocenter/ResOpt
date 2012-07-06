@@ -170,7 +170,10 @@ void ProductionWell::updateBhpConstraint()
         p_in = p_in / tot_frac;
 
         // calculating constraint value
-        double c_ts = (stream(i)->pressure() - p_in) / stream(i)->pressure();
+        double p_wf = stream(i)->pressure();
+        if(p_wf < 0.001) p_wf = 0.001;
+
+        double c_ts = (p_wf - p_in) / p_wf;
 
         // updating the value of the constraint for this time
         bhpConstraint(i)->setValue(c_ts);
@@ -180,6 +183,15 @@ void ProductionWell::updateBhpConstraint()
         if(c_ts < 0)
         {
             cout << "BHP constraint for Well " << name().toAscii().data() << " is violated at time = " << stream(i)->time() << ", c = " << c_ts << endl;
+
+            cout << "Well stream:" << endl;
+            stream(i)->printToCout();
+
+            for(int k = 0; k < numberOfPipeConnections(); ++k)
+            {
+                cout << "Pipe #" << pipeConnection(k)->pipe()->number() << " stream:" << endl;
+                pipeConnection(k)->pipe()->stream(i)->printToCout();
+            }
         }
 
     }

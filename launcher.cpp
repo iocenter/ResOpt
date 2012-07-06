@@ -29,6 +29,8 @@
 #include "constraint.h"
 #include "objective.h"
 
+#include "well.h"
+
 // for debug
 #include "pipe.h"
 #include "stream.h"
@@ -74,10 +76,12 @@ bool Launcher::initialize()
 //-----------------------------------------------------------------------------------------------
 void Launcher::evaluate(Case *c)
 {
+    // checking if the reservoir simulator must be rerun
+    bool run_res_sim = rerunReservoirSimulator(c);
+
     // setting the variable values according to the case
     for(int i = 0; i < p_model->realVariables().size(); ++i)    // real variables
     {
-        // TODO: need to add a check to see if anything requiering the reservoir simulator to launch has changed
         p_model->realVariables().at(i)->setValue(c->realVariableValue(i));
     }
     for(int i = 0; i < p_model->binaryVariables().size(); ++i)  // binary variables
@@ -85,12 +89,23 @@ void Launcher::evaluate(Case *c)
         p_model->binaryVariables().at(i)->setValue(c->binaryVariableValue(i));
     }
 
+    // the variable values have changed, so the status of the model is no longer up to date
+    p_model->setUpToDate(false);
 
-    // running the reservoir simulator
-    p_simulator->generateInputFiles(p_model);   // generating input based on the current Model
-    p_simulator->launchSimulator();             // running the simulator
-    p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
 
+    // running the reservoir simulator, if needed
+    if(run_res_sim)
+    {
+        emit runningReservoirSimulator();
+
+        p_simulator->generateInputFiles(p_model);   // generating input based on the current Model
+        p_simulator->launchSimulator();             // running the simulator
+        p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
+    }
+    else
+    {
+        cout << "No need to run reservoir simulator, it is already up to date..." << endl;
+    }
 
     // update the streams in the pipe network
     p_model->updateStreams();
@@ -103,6 +118,9 @@ void Launcher::evaluate(Case *c)
 
     // updating the objective
     p_model->updateObjectiveValue();
+
+    // updating the status of the model
+    p_model->setUpToDate(true);
 
 
     // copying back the results to the case
@@ -121,6 +139,37 @@ void Launcher::evaluate(Case *c)
 
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Checks if the reservoir simulator has to be rerun
+//-----------------------------------------------------------------------------------------------
+bool Launcher::rerunReservoirSimulator(Case *c)
+{
+    bool rerun = false;
+
+    if(!p_model->isUpToDate()) return true; // checks if the model has been evaluated yet
+
+    // looping through the real variables
+    for(int i = 0; i < p_model->realVariables().size(); ++i)
+    {
+        // checking if the variable is asociated with a well
+        Well *w = dynamic_cast<Well*>(p_model->realVariables().at(i)->parent());
+
+        if(w != 0)  // this var is a well control variable
+        {
+
+
+            if(c->realVariableValue(i) != p_model->realVariables().at(i)->value())  // the  variable value has changed from whats in the model
+            {
+                rerun = true;
+                break;  // no need to check any more variables
+            }
+        }
+
+    }
+
+    return rerun;
+}
 
 
 } // namespace ResOpt

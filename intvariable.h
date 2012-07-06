@@ -44,7 +44,7 @@ public:
  * @brief
  *
  */
-    IntVariable();
+    IntVariable(Component *parent);
 
     // virtual functions
 

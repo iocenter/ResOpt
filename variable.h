@@ -26,6 +26,8 @@
 namespace ResOpt
 {
 
+class Component;
+
 
 /**
  * @brief Base class for all varaibles.
@@ -36,10 +38,11 @@ class Variable
 
 private:
 
-    QString m_name;     // identifying name for the variable
+    Component *p_parent;    // pointer to the component (well, pipe) that owns this variable
+    QString m_name;         // identifying name for the variable
 
 public:
-    Variable();
+    Variable(Component *parent);
 
 
     /**
@@ -55,6 +58,8 @@ public:
 
     // get functions
     const QString& name() const {return m_name;}
+
+    Component* parent() {return p_parent;}
 
 
 };

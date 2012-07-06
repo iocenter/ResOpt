@@ -22,8 +22,8 @@
 #define WELL_H
 
 #include <QString>
-#include <QVector>
 
+#include "component.h"
 #include "wellcontrol.h"
 
 
@@ -39,7 +39,7 @@ class Stream;
  * @brief Base class for representations of wells.
  *
  */
-class Well
+class Well : public Component
 {
 public:
     /**
@@ -58,7 +58,6 @@ private:
 
     QVector<WellConnection*> m_connections;     // the perforations of the well
     QVector<WellControl*> m_schedule;           // the control schedule of the well /**< TODO */
-    QVector<Stream*> m_streams;                 // output rates for the well
 
 
 
@@ -107,14 +106,6 @@ public:
 
 
     // set functions
-
-    /**
-     * @brief Sets the Stream for control interval i
-     *
-     * @param i
-     * @param s
-     */
-    bool setStream(int i, Stream *s);
 
 
     /**
@@ -241,21 +232,6 @@ public:
 
 
 
-    /**
-     * @brief Returns the number of streams
-     *
-     * @return int
-     */
-    int numberOfStreams() const {return m_streams.size();}
-
-
-    /**
-     * @brief Returns Stream number i
-     *
-     * @param i
-     * @return Stream
-     */
-    Stream* stream(int i) {return m_streams.at(i);}
 
 
 

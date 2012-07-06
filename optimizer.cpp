@@ -83,4 +83,17 @@ void Optimizer::runCase(Case *c)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// sends the best case to the runner for printing
+//-----------------------------------------------------------------------------------------------
+void Optimizer::sendBestCaseToRunner(Case *c)
+{
+    connect(this, SIGNAL(bestCase(Case*)), p_runner, SLOT(writeBestCaseToSummary(Case*)));
+
+    emit bestCase(c);
+
+    disconnect(this, SIGNAL(bestCase(Case*)), p_runner, SLOT(writeBestCaseToSummary(Case*)));
+
+}
+
 } // namespace ResOpt

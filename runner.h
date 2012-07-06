@@ -29,6 +29,7 @@
  */
 
 #include <tr1/memory>
+#include <time.h>
 
 #include <QString>
 #include <QFile>
@@ -73,11 +74,27 @@ private:
 
     QFile *p_summary;
     int m_number_of_runs;
-    bool m_up_to_date;
+    int m_number_of_res_sim_runs;
+    time_t m_start_time;
 
     CaseQueue *p_cases;
 
+
     void initializeLaunchers();
+
+    /**
+     * @brief Writes the problem definition to the summary file
+     * @details A list of all the variables and constraints are printed to the summary file.
+     */
+    void writeProblemDefToSummary();
+
+
+    /**
+     * @brief Writes the results from all the cases to the summary file
+     * @details The variable, constraints and objective values are printed as a new line to the summary file.
+     */
+    void writeCasesToSummary();
+
 
 
 
@@ -95,19 +112,6 @@ public:
 
 
 
-    /**
-     * @brief Writes the problem definition to the summary file
-     * @details A list of all the variables and constraints are printed to the summary file.
-     */
-    void writeProblemDefToSummary();
-
-
-    /**
-     * @brief Writes the results from all the cases to the summary file
-     * @details The variable, constraints and objective values are printed as a new line to the summary file.
-     */
-    void writeCasesToSummary();
-
     // set functions
 
     void setSummaryFile(const QString &f);
@@ -117,7 +121,7 @@ public:
     // get functions
     Model* model() {return p_model;}
 
-    bool isUpToDate() {return m_up_to_date;}
+
 
 public slots:
 
@@ -150,6 +154,16 @@ public slots:
      * @param cases
      */
     void evaluate(CaseQueue *cases);
+
+
+    void writeBestCaseToSummary(Case *c);
+
+
+    /**
+     * @brief Increases the number of simulator runs by 1
+     *
+     */
+    void incrementReservoirSimRuns() {++m_number_of_res_sim_runs;}
 
 
 

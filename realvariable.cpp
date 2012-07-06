@@ -24,7 +24,8 @@ namespace ResOpt
 {
 
 
-RealVariable::RealVariable()
+RealVariable::RealVariable(Component *parent)
+    : Variable(parent)
 {
 }
 

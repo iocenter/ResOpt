@@ -19,41 +19,53 @@
  */
 
 
-#ifndef BINARYVARIABLE_H
-#define BINARYVARIABLE_H
 
-#include "variable.h"
+#ifndef COMPONENT_H
+#define COMPONENT_H
+
+#include <QVector>
 
 namespace ResOpt
 {
 
+class Stream;
 
 /**
- * @brief Binary variables, can either be 0 or 1.
+ * @brief Mother class of all components in the model (wells, pipes)
  *
  */
-class BinaryVariable : public Variable
+class Component
 {
 private:
-    double m_value;
-    bool m_is_variable;
+    QVector<Stream*> m_streams;         // the streams going through the component
 
 public:
-    BinaryVariable(Component *parent);
+    Component();
+    Component(const Component &c);
 
-    virtual bool isVariable() {return m_is_variable;}
+    virtual ~Component();
+
+    // virtual functions
+
+    // misc functions
+    void clearStreams() {m_streams.clear();}
+
+    // add functions
+    void addStream(Stream *s) {m_streams.push_back(s);}
+
+
 
     // set functions
-    void setValue(double v) {m_value = v;}
-    void setIsVariable(bool b) {m_is_variable = b;}
+    bool setStream(int i, Stream *s);
+
 
     // get functions
-    double max() {return 1.0;}
-    double min() {return 0.0;}
-    double value() {return m_value;}
+    int numberOfStreams() const {return m_streams.size();}
+    Stream* stream(int i) {return m_streams.at(i);}
+
+
+
 };
 
 } // namespace ResOpt
-
-
-#endif // BINARYVARIABLE_H
+#endif // COMPONENT_H

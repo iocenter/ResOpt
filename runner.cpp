@@ -63,7 +63,7 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       p_optimizer(0),
       p_summary(0),
       m_number_of_runs(0),
-      m_up_to_date(false),
+      m_number_of_res_sim_runs(0),
       p_cases(0)
 {
     p_reader = new ModelReader(driver_file);
@@ -192,6 +192,7 @@ void Runner::initializeLaunchers()
 
         // connecting signals and slots
         connect(l, SIGNAL(finished(Launcher*)), this, SLOT(onLauncherFinished(Launcher*)));
+        connect(l, SIGNAL(runningReservoirSimulator()), this, SLOT(incrementReservoirSimRuns()));
 
 
         // creating the thread where the launcher shouild live
@@ -216,6 +217,7 @@ void Runner::initializeLaunchers()
 //-----------------------------------------------------------------------------------------------
 void Runner::run()
 {
+    m_start_time = time(NULL);     // storing the start time of the run
 
     // checking if the model has been initialized
     if(p_model == 0) initialize();
@@ -528,6 +530,57 @@ void Runner::writeCasesToSummary()
     }
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Writes the results of the best case to the summary file
+//-----------------------------------------------------------------------------------------------
+void Runner::writeBestCaseToSummary(Case *c)
+{
+    if(p_summary != 0)
+    {
+        QTextStream out(p_summary);
+
+
+        out << "\nBEST CASE:\n";
+
+        out << "xx" << "\t" << c->objectiveValue() << "\t";
+
+        // real variables
+        for(int j = 0; j < c->numberOfRealVariables(); ++j)
+        {
+            out << c->realVariableValue(j) << "\t";
+        }
+
+
+        // binary variables
+        for(int j = 0; j < c->numberOfBinaryVariables(); ++j)
+        {
+            out << c->binaryVariableValue(j) << "\t";
+        }
+
+
+        // constraints
+        //for(int j = 0; j < c->numberOfConstraints(); ++j)
+        //{
+        //    out << c->constraintValue(j) << "\t";
+        //}
+
+        out << "\n\n";
+
+        time_t end_time = time(NULL);
+
+        out << "Total execution time: " << difftime(end_time, m_start_time) << " seconds\n";
+        out << "Total number of model evaluations: " << m_number_of_runs -1 << "\n";
+        out << "Number of reservoir simulator launches: " << m_number_of_res_sim_runs << "\n";
+
+
+
+        p_summary->flush();
+
+    }
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // This function is called whenever a Launcher emits finished

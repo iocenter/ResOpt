@@ -25,8 +25,9 @@ namespace ResOpt
 {
 
 
-BinaryVariable::BinaryVariable()
-    : m_value(1.0),
+BinaryVariable::BinaryVariable(Component *parent)
+    : Variable(parent),
+      m_value(1.0),
       m_is_variable(true)
 {
 }

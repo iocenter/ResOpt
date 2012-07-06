@@ -78,7 +78,8 @@ SOURCES += main.cpp \
     decoupledmodel.cpp \
     separator.cpp \
     inputratevariable.cpp \
-    materialbalanceconstraint.cpp
+    materialbalanceconstraint.cpp \
+    component.cpp
 
 HEADERS += \
     well.h \
@@ -121,4 +122,5 @@ HEADERS += \
     decoupledmodel.h \
     separator.h \
     inputratevariable.h \
-    materialbalanceconstraint.h
+    materialbalanceconstraint.h \
+    component.h

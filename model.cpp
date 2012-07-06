@@ -48,6 +48,9 @@ namespace ResOpt
 
 
 Model::Model()
+    : p_reservoir(0),
+      p_obj(0),
+      m_up_to_date(false)
 {
 }
 
@@ -56,6 +59,9 @@ Model::Model()
 //-----------------------------------------------------------------------------------------------
 Model::Model(const Model &m)
 {
+    // setting the up to date status
+    m_up_to_date = false;
+
     // copying the reservoir
     p_reservoir = new Reservoir(*m.reservoir());
 

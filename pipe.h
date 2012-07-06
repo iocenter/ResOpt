@@ -25,6 +25,8 @@
 #include <QStringList>
 #include <QVector>
 
+#include "component.h"
+
 
 namespace ResOpt
 {
@@ -40,7 +42,7 @@ class Stream;
  *          going through the pipe and the outlet pressure of the pipe.
  *
  */
-class Pipe
+class Pipe : public Component
 {
 private:
     int m_number;                           // the identifier for the pipe
@@ -50,8 +52,6 @@ private:
 
     QVector<Pipe*> m_feed_pipes;                    // pointers to pipes entering this pipe
     QVector<ProductionWell*> m_feed_wells;                    // pointers to wells entering this pipe directly
-
-    QVector<Stream*> m_streams;         // the streams going through the pipe
     QVector<double> m_schedule;         // a copy of the master schedule set in the model
 
 
@@ -165,7 +165,7 @@ public:
 
     // set functions
 
-    bool setStream(int i, Stream *s);
+
 
     /**
      * @brief Sets the identifying number of the pipe
@@ -202,9 +202,9 @@ public:
     PressureDropCalculator* calculator() {return p_calculator;}
 
 
-    int numberOfStreams() const {return m_streams.size();}
 
-    Stream* stream(int i) {return m_streams.at(i);}
+
+
 
 
 

@@ -46,7 +46,7 @@ public:
  * @brief
  *
  */
-    RealVariable();
+    RealVariable(Component *parent);
 
     // virtual functions
 

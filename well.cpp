@@ -48,6 +48,7 @@ Well::Well()
 // copy constructor
 //-----------------------------------------------------------------------------------------------
 Well::Well(const Well &w)
+    : Component(w)
 {
 
     // copying basic types
@@ -69,14 +70,7 @@ Well::Well(const Well &w)
         m_schedule.push_back(new WellControl(*w.m_schedule.at(i)));
     }
 
-    // copying streams
-    m_streams.clear();
-    m_streams.resize(w.m_streams.size());
 
-    for(int i = 0; i < w.numberOfStreams(); i++)
-    {
-        m_streams.replace(i, new Stream(*w.m_streams.at(i)));
-    }
 }
 
 
@@ -92,11 +86,6 @@ Well::~Well()
         delete m_schedule.at(i);
     }
 
-    for(int i = 0; i < m_streams.size(); i++)
-    {
-        delete m_streams.at(i);
-    }
-
 
 }
 
@@ -105,34 +94,13 @@ Well::~Well()
 //-----------------------------------------------------------------------------------------------
 void Well::initialize()
 {
-    m_streams.clear();
+    clearStreams();
 
-    for(int i = 0; i < m_schedule.size(); ++i) m_streams.push_back(new Stream());
+    //for(int i = 0; i < m_schedule.size(); ++i) addStream(new Stream());
+    for(int i = 0; i < m_schedule.size(); ++i) addStream(new Stream(m_schedule.at(i)->endTime(), 0, 0, 0, 0));
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// sets the Stream for interval i
-//-----------------------------------------------------------------------------------------------
-bool Well::setStream(int i, Stream *s)
-{
-
-    // first checking that the stream vector is set up correctly
-    if(i >= m_streams.size() || i < 0) return false;
-
-    // then checking that the number of streams correspond to the number of schedule entries
-    if(m_streams.size() != m_schedule.size()) return false;
-
-    // then checking that the time of the stream corresponds to the time of the shecdule entry
-    if(s->time() != m_schedule.at(i)->endTime()) return false;
-
-    // everything seems to be ok, setting the stream
-    delete m_streams.at(i);
-    m_streams.replace(i, s);
-
-
-    return true;
-}
 
 
 //-----------------------------------------------------------------------------------------------

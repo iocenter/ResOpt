@@ -45,6 +45,17 @@ private:
     ReservoirSimulator *p_simulator;
 
 
+    /**
+     * @brief Checks if the reservoir simulator must be rerun for the Case.
+     * @details This function checks if any of the real variable values in the Case that corresponds to well control variables have changed
+     *          from what is currently in the model. The function also checks if the simulator has been launched.
+     *
+     * @param c
+     * @return bool
+     */
+    bool rerunReservoirSimulator(Case *c);
+
+
 
 public:
     explicit Launcher(QObject *parent = 0);
@@ -68,6 +79,8 @@ signals:
      * @param source
      */
     void finished(Launcher *source);
+
+    void runningReservoirSimulator();
 
 
 public slots:

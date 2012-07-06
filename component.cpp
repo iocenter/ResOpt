@@ -18,24 +18,62 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
-#include "intvariable.h"
+
+
+#include "component.h"
+#include "stream.h"
 
 namespace ResOpt
 {
 
-IntVariable::IntVariable(Component *parent)
-    : Variable(parent)
+Component::Component()
 {
+}
+
+Component::Component(const Component &c)
+{
+
+    // the streams
+    m_streams.clear();
+    m_streams.resize(c.m_streams.size());
+
+    for(int i = 0; i < c.numberOfStreams(); i++)
+    {
+        m_streams.replace(i, new Stream(*c.m_streams.at(i)));
+    }
+
+
+
+}
+
+Component::~Component()
+{
+    for(int i = 0; i < numberOfStreams(); ++i) delete m_streams.at(i);
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// Checks if this is a variable
+// sets the Stream for interval i
 //-----------------------------------------------------------------------------------------------
-bool IntVariable::isVariable()
+bool Component::setStream(int i, Stream *s)
 {
-    if(max() == value() && min() == value()) return false;
-    else return true;
+
+    // first checking that the stream vector is set up correctly
+    if(i >= m_streams.size() || i < 0) return false;
+
+    // then checking that the number of streams correspond to the number of schedule entries
+    //if(m_streams.size() != m_schedule.size()) return false;
+
+    // then checking that the time of the stream corresponds to the time of the shecdule entry
+    //if(s->time() != m_schedule.at(i)->endTime()) return false;
+
+    // everything seems to be ok, setting the stream
+    delete m_streams.at(i);
+    m_streams.replace(i, s);
+
+
+    return true;
 }
+
 
 } // namespace ResOpt

@@ -572,7 +572,7 @@ bool ModelReader::readWellSchedule(Well *w)
             // got all the numbers ok
             if(ok)
             {
-                shared_ptr<RealVariable> var(new RealVariable());
+                shared_ptr<RealVariable> var(new RealVariable(w));
                 var->setValue(nums.at(1));
                 var->setMax(nums.at(2));
                 var->setMin(nums.at(3));
@@ -747,7 +747,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
             if(ok1 && ok2)
             {
                 PipeConnection *pipe_con = new PipeConnection();
-                shared_ptr<BinaryVariable> var(new BinaryVariable());
+                shared_ptr<BinaryVariable> var(new BinaryVariable(w));
 
                 var->setValue(frac);
                 var->setName("Routing variable for well: "+ w->name() + " to Pipe #" + QString::number(pipe_num));
@@ -826,7 +826,7 @@ bool ModelReader::readPipeConnections(MidPipe *p)
             {
 
                 PipeConnection *pipe_con = new PipeConnection();
-                shared_ptr<BinaryVariable> var(new BinaryVariable());
+                shared_ptr<BinaryVariable> var(new BinaryVariable(p));
 
                 var->setValue(frac);
                 var->setName("Routing variable for Pipe #"+ QString::number(p->number()) + " to Pipe #" + QString::number(pipe_num));
@@ -1355,7 +1355,7 @@ Pipe* ModelReader::readSeparator()
         else if(list.at(0).startsWith("COST")) l_cost = list.at(1).toDouble(&ok);               // getting the cost
         else if(list.at(0).startsWith("INSTALLTIME"))                                           // getting the installation time
         {
-            shared_ptr<IntVariable> var_install = shared_ptr<IntVariable>(new IntVariable());
+            shared_ptr<IntVariable> var_install = shared_ptr<IntVariable>(new IntVariable(p_sep));
 
             if(list.size() == 2) // not a variable, only starting value specified
             {
@@ -1464,7 +1464,7 @@ Pipe* ModelReader::readSeparator()
     PipeConnection *p_con = new PipeConnection();
     p_con->setPipeNumber(l_outlet_pipe);
 
-    shared_ptr<BinaryVariable> routing_var = shared_ptr<BinaryVariable>(new BinaryVariable());
+    shared_ptr<BinaryVariable> routing_var = shared_ptr<BinaryVariable>(new BinaryVariable(p_sep));
     routing_var->setValue(1.0);
     routing_var->setIsVariable(false);
     routing_var->setName("Dummy variable for separator outlet connection");

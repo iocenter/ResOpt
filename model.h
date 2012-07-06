@@ -58,6 +58,8 @@ private:
     Objective *p_obj;
     QVector<double> m_master_schedule;
 
+    bool m_up_to_date;      // true if the model has been evaluated
+
 
 
 
@@ -251,6 +253,8 @@ public:
      */
     void setObjective(Objective *o) {p_obj = o;}
 
+    void setUpToDate(bool b) {m_up_to_date = b;}
+
     // add functions
 
 
@@ -344,6 +348,8 @@ public:
      * @return Objective
      */
     Objective* objective() {return p_obj;}
+
+    bool isUpToDate() const {return m_up_to_date;}
 };
 
 } // namespace ResOpt

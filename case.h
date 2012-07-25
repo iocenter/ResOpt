@@ -32,6 +32,11 @@ class Model;
 
 /**
  * @brief Container class for storing variable, constraint, and objective values.
+ * @details This class is used by the Optimizer and Runner to set up cases to be run by a Launcher. The Optimizer should set the variable values
+ *          that should be used when running the given Case. The number of binary and real variables in the Case must match what is in the model.
+ *
+ *          When the Launcher has finished the model evaluation, it will set the constraint and objective values to the Case, so that they may be
+ *          accessed by the Optimizer.
  *
  */
 class Case

@@ -30,6 +30,11 @@ namespace ResOpt
 
 /**
  * @brief A top node in the Pipe network.
+ * @details An EndPipe is the last downstream component in the pipe network. It does not have any outlet connections. A minimum outlet pressure is specified for the EndPipe.
+ *          The minimum outlet pressure works as a boundary condition for the pipe network, and is used by upstream parts of the network to calculate inlet pipe pressures, all
+ *          the way down to the production wells. The inlet pressure of the pipes directly connected to production wells are compared to the producing bottomhole pressure of the well.
+ *          If the bottomhole pressure is lower than the pipe inlet pressure, the solution is not feasible. If the bottomhole pressure is higher, the solution is considered feasible.
+ *          It is assumed that the well may be choked back to correspond to the pipe pressure.
  *
  */
 class EndPipe : public Pipe

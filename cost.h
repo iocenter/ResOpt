@@ -28,6 +28,8 @@ namespace ResOpt
 
 /**
  * @brief Class for costs associated with installing equipment etc.
+ * @details A Cost has a price (value in USD), and an installation time. A vector of costs can be supplied to the Objective. The costs are
+ *          only used for the NpvObjective when the net present value is calculated. Currently only separators have associated costs.
  *
  */
 class Cost

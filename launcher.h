@@ -34,7 +34,8 @@ class Case;
 
 /**
  * @brief Launches the project.
- * @details This class takes care of launching the project for a set of variable values.
+ * @details This class takes care of launching the project for a set of variable values. The launcher holds a copy of the Model and the ReservorSimulator. Each Launcher lives in a separate
+ *          thread. Multiple launchers may be run in parallel to exploit the available cores on the computer.
  *
  */
 class Launcher : public QObject

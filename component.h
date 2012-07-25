@@ -32,6 +32,7 @@ class Stream;
 
 /**
  * @brief Mother class of all components in the model (wells, pipes)
+ * @details Every part of the Model that have streams of oil, gas, or water going through it should inheret from this class.
  *
  */
 class Component

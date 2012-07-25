@@ -31,7 +31,7 @@ namespace ResOpt
 {
 
 /**
- * @brief Container class for constraints
+ * @brief Class for constraints
  *
  */
 class Constraint

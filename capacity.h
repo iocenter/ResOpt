@@ -38,7 +38,14 @@ class Pipe;
 
 
 /**
- * @brief Container class for separators
+ * @brief Capacity constraints at a given point in the pipe network.
+ * @details A capacity constraint is used to set maximum allowed rates for the different phases at points in the pipe network.
+ *          Constraints can be set for the maximum rate of gas, oil, water, or total liquid (oil + water). This is done through the
+ *          setMax() functions.
+ *
+ *          The Capacity is fed by any number of pipes. When the Capacity is generated from the driver file, the identifying pipe numbers
+ *          are added through addFeedPipeNumber(). The Model takes care of translating the numbers to Pipe pointers during initialization.
+ *          The pointers to the feed pipes are added through addFeedPipe().
  *
  */
 class Capacity

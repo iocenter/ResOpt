@@ -1,4 +1,4 @@
-/*
+     /*
  * This file is part of the ResOpt project.
  *
  * Copyright (C) 2011-2012 Aleksander O. Juell <aleksander.juell@ntnu.no>
@@ -43,6 +43,7 @@ class InputRateVariable
 private:
     Pipe *p_pipe;
     Stream *p_stream;
+
     shared_ptr<RealVariable> p_var_oil;
     shared_ptr<RealVariable> p_var_gas;
     shared_ptr<RealVariable> p_var_water;

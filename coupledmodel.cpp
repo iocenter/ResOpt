@@ -32,6 +32,8 @@
 
 #include <iostream>
 
+#include <QThread>
+
 using std::cout;
 using std::endl;
 
@@ -87,6 +89,8 @@ void CoupledModel::initialize()
 void CoupledModel::updateStreams()
 {
 
+    cout << "!!! Model thread = " << QThread::currentThreadId() << endl;
+
     cout << "Updating the streams for the pipe system..." << endl;
 
     // first need to empty all the streams in all pipes
@@ -126,7 +130,9 @@ bool CoupledModel::updateConstraints()
 {
     // the coupled model does not have any custom constraints
 
-    updateCommonConstraints();  // updates the constraints that are common for all model types
+    bool ok = updateCommonConstraints();  // updates the constraints that are common for all model types
+
+    return ok;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -364,6 +370,26 @@ QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
 
 
     return m_cons;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns a vector of the real vars for a component
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<RealVariable> > CoupledModel::realVariables(Component *c)
+{
+    QVector<shared_ptr<RealVariable> > comp_vars;
+
+    // looping through all the real variables
+    for(int i = 0; i < realVariables().size(); ++i)
+    {
+        if(realVariables().at(i)->parent() == c)
+        {
+            comp_vars.push_back(realVariables().at(i));
+        }
+    }
+
+    return comp_vars;
 }
 
 

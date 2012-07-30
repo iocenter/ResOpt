@@ -41,6 +41,7 @@ class IntVariable;
 class RealVariable;
 class BinaryVariable;
 class Constraint;
+class Component;
 
 
 /**
@@ -138,6 +139,15 @@ public:
      * @return QVector<Constraint *>
      */
     virtual QVector<shared_ptr<Constraint> >& constraints() = 0;
+
+
+    /**
+     * @brief Returns a vector of the real variables associated with the Component c.
+     *
+     * @param c
+     * @return QVector<shared_ptr<RealVariable> >
+     */
+    virtual QVector<shared_ptr<RealVariable> > realVariables(Component *c) = 0;
 
 
     /**

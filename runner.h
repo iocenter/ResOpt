@@ -52,7 +52,7 @@ class Optimizer;
 class Launcher;
 class CaseQueue;
 class Case;
-
+class Component;
 
 
 /**
@@ -132,7 +132,7 @@ public slots:
      *
      * @param l
      */
-    void onLauncherFinished(Launcher *l);
+    void onLauncherFinished(Launcher *l, Component *comp);
 
     /**
      * @brief Starts the Optimizer
@@ -151,9 +151,12 @@ public slots:
      *          calling this function, it should be done within an event loop. The event loop should wait for the casesFinished() signal before
      *          proceeding.
      *
-     * @param cases
+     * @param cases A list of the cases that should be run
+     * @param comp A pointer to the component of the Model that should be evaluated. If this is a null pointer, the entire Model is evaluated.
      */
-    void evaluate(CaseQueue *cases);
+    void evaluate(CaseQueue *cases, Component *comp);
+
+
 
 
     void writeBestCaseToSummary(Case *c);
@@ -171,7 +174,7 @@ public slots:
 signals:
     void optimizationFinished();
     void casesFinished();
-    void sendCase(Case *c);
+    void sendCase(Case *c, Component *comp);
 
 };
 

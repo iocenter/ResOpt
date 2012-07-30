@@ -48,6 +48,8 @@
 
 
 
+
+
 using std::cout;
 using std::endl;
 
@@ -222,6 +224,7 @@ void Runner::run()
     // checking if the model has been initialized
     if(p_model == 0) initialize();
 
+    cout << "!!! Runner thread = " << QThread::currentThreadId() << endl;
 
     // starting the optimizer
     p_optimizer->start();
@@ -336,7 +339,7 @@ void Runner::run()
 //-----------------------------------------------------------------------------------------------
 // Running a set of cases for the optimizer
 //-----------------------------------------------------------------------------------------------
-void Runner::evaluate(CaseQueue *cases)
+void Runner::evaluate(CaseQueue *cases, Component *comp)
 {
     // TODO: checking that none of the launchers are working
 
@@ -354,13 +357,13 @@ void Runner::evaluate(CaseQueue *cases)
             m_launcher_running.replace(i, true);
 
             // connecting the launcher
-            connect(this, SIGNAL(sendCase(Case*)), m_launchers.at(i), SLOT(evaluate(Case*)));
+            connect(this, SIGNAL(sendCase(Case*, Component*)), m_launchers.at(i), SLOT(evaluate(Case*, Component*)));
 
             // sending the case to the launcher
-            emit sendCase(c);
+            emit sendCase(c, comp);
 
             // disconnecting the launcher
-            disconnect(this, SIGNAL(sendCase(Case*)), m_launchers.at(i), SLOT(evaluate(Case*)));
+            disconnect(this, SIGNAL(sendCase(Case*, Component*)), m_launchers.at(i), SLOT(evaluate(Case*, Component*)));
 
         }
         else break; // no more cases to run
@@ -370,6 +373,8 @@ void Runner::evaluate(CaseQueue *cases)
 
 
 }
+
+
 
 //-----------------------------------------------------------------------------------------------
 // Initializes the summary file
@@ -585,7 +590,7 @@ void Runner::writeBestCaseToSummary(Case *c)
 //-----------------------------------------------------------------------------------------------
 // This function is called whenever a Launcher emits finished
 //-----------------------------------------------------------------------------------------------
-void Runner::onLauncherFinished(Launcher *l)
+void Runner::onLauncherFinished(Launcher *l, Component *comp)
 {
 
     // check if there are more cases to run
@@ -594,13 +599,13 @@ void Runner::onLauncherFinished(Launcher *l)
     if(c != 0)      // found a new case, sending it to the launcher
     {
         // connecting the launcher
-        connect(this, SIGNAL(sendCase(Case*)), l, SLOT(evaluate(Case*)));
+        connect(this, SIGNAL(sendCase(Case*, Component*)), l, SLOT(evaluate(Case*, Component*)));
 
         // sending the case to the launcher
-        emit sendCase(c);
+        emit sendCase(c, comp);
 
         // disconnecting the launcher
-        disconnect(this, SIGNAL(sendCase(Case*)), l, SLOT(evaluate(Case*)));
+        disconnect(this, SIGNAL(sendCase(Case*, Component*)), l, SLOT(evaluate(Case*, Component*)));
     }
     else    // no more cases, checking if all launchers have finished
     {

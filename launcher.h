@@ -30,7 +30,9 @@ namespace ResOpt
 class Model;
 class ReservoirSimulator;
 class Case;
-
+class Component;
+class Pipe;
+class Well;
 
 /**
  * @brief Launches the project.
@@ -56,6 +58,10 @@ private:
      */
     bool rerunReservoirSimulator(Case *c);
 
+    void evaluateEntireModel(Case *c);
+    void evaluatePipe(Case *c, Pipe *p);
+    void evaluateWell(Case *c, Well *w);
+
 
 
 public:
@@ -79,7 +85,7 @@ signals:
      *
      * @param source
      */
-    void finished(Launcher *source);
+    void finished(Launcher *source, Component *comp);
 
     void runningReservoirSimulator();
 
@@ -93,8 +99,9 @@ public slots:
      *
      * @param c
      */
-    void evaluate(Case *c);
-    
+    void evaluate(Case *c, Component *comp);
+
+
 };
 
 } // namespace ResOpt

@@ -48,7 +48,7 @@ Optimizer::Optimizer(Runner *r)
 //-----------------------------------------------------------------------------------------------
 // sends off a queue of cases to the runner for evaluation
 //-----------------------------------------------------------------------------------------------
-void Optimizer::runCases(CaseQueue *cases)
+void Optimizer::runCases(CaseQueue *cases, Component *comp)
 {
     // creating an event loop that waits for all the cases to finish in the runner
     QEventLoop loop;
@@ -57,7 +57,7 @@ void Optimizer::runCases(CaseQueue *cases)
     connect(p_runner, SIGNAL(casesFinished()), &loop, SLOT(quit()));
 
     // sending the cases to the runner
-    p_runner->evaluate(cases);
+    p_runner->evaluate(cases, comp);
 
     // waiting for the runner to finish
     loop.exec();
@@ -66,7 +66,7 @@ void Optimizer::runCases(CaseQueue *cases)
 //-----------------------------------------------------------------------------------------------
 // sends a single case to the runner for evaluation
 //-----------------------------------------------------------------------------------------------
-void Optimizer::runCase(Case *c)
+void Optimizer::runCase(Case *c, Component *comp)
 {
     // making a queue
     CaseQueue *queue = new CaseQueue();
@@ -75,12 +75,14 @@ void Optimizer::runCase(Case *c)
     queue->push_back(c);
 
     // running the queue
-    runCases(queue);
+    runCases(queue, comp);
 
     // deleting the queue
     delete queue;
     queue = 0;
 }
+
+
 
 
 //-----------------------------------------------------------------------------------------------

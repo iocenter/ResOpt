@@ -102,6 +102,8 @@ public:
     virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables();
     virtual QVector<shared_ptr<RealVariable> >& realVariables();
     virtual QVector<shared_ptr<Constraint> >& constraints();
+
+    virtual QVector<shared_ptr<RealVariable> > realVariables(Component *c);
 };
 
 

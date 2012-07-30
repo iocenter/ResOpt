@@ -79,7 +79,8 @@ SOURCES += main.cpp \
     separator.cpp \
     inputratevariable.cpp \
     materialbalanceconstraint.cpp \
-    component.cpp
+    component.cpp \
+    evolutionarystrategyoptimizer.cpp
 
 HEADERS += \
     well.h \
@@ -123,4 +124,5 @@ HEADERS += \
     separator.h \
     inputratevariable.h \
     materialbalanceconstraint.h \
-    component.h
+    component.h \
+    evolutionarystrategyoptimizer.h

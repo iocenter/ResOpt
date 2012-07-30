@@ -517,4 +517,25 @@ QVector<shared_ptr<Constraint> >& DecoupledModel::constraints()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// Returns a vector of the real vars for a component
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<RealVariable> > DecoupledModel::realVariables(Component *c)
+{
+    QVector<shared_ptr<RealVariable> > comp_vars;
+
+    // looping through all the real variables
+    for(int i = 0; i < realVariables().size(); ++i)
+    {
+        if(realVariables().at(i)->parent() == c)
+        {
+            comp_vars.push_back(realVariables().at(i));
+        }
+    }
+
+    return comp_vars;
+}
+
+
+
 } // namespace ResOpt

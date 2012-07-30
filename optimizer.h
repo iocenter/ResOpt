@@ -31,6 +31,7 @@ namespace ResOpt
 class Runner;
 class CaseQueue;
 class Case;
+class Component;
 
 
 
@@ -100,7 +101,7 @@ public slots:
      *
      * @param cases
      */
-    void runCases(CaseQueue *cases);
+    void runCases(CaseQueue *cases, Component *comp = 0);
 
 
     /**
@@ -109,7 +110,9 @@ public slots:
      *
      * @param c
      */
-    void runCase(Case *c);
+    void runCase(Case *c, Component *comp = 0);
+
+
 
 };
 

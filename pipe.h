@@ -51,8 +51,8 @@ private:
 
 
     QVector<Pipe*> m_feed_pipes;                    // pointers to pipes entering this pipe
-    QVector<ProductionWell*> m_feed_wells;                    // pointers to wells entering this pipe directly
-    QVector<double> m_schedule;         // a copy of the master schedule set in the model
+    QVector<ProductionWell*> m_feed_wells;          // pointers to wells entering this pipe directly
+    QVector<double> m_schedule;                     // a copy of the master schedule set in the model
 
 
 

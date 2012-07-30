@@ -21,6 +21,8 @@
 
 #include "launcher.h"
 
+#include <QVector>
+
 #include "model.h"
 #include "reservoirsimulator.h"
 #include "case.h"
@@ -28,14 +30,24 @@
 #include "binaryvariable.h"
 #include "constraint.h"
 #include "objective.h"
-
+#include "component.h"
 #include "well.h"
+#include "pipe.h"
+
+
+
 
 // for debug
-#include "pipe.h"
+
 #include "stream.h"
 #include <iostream>
 
+#include <QThread>
+
+
+#include <tr1/memory>
+
+using std::tr1::shared_ptr;
 using std::cout;
 using std::endl;
 
@@ -74,8 +86,41 @@ bool Launcher::initialize()
 //-----------------------------------------------------------------------------------------------
 // Running the model, calculating results
 //-----------------------------------------------------------------------------------------------
-void Launcher::evaluate(Case *c)
+void Launcher::evaluate(Case *c, Component *comp)
 {
+
+    if(comp == 0) evaluateEntireModel(c);   // the entire model should be evaluated
+
+    else        // only a single component should be evaluated
+    {
+        // finding what type of component this is
+
+        Pipe *p = dynamic_cast<Pipe*>(comp);
+        if(p != 0) evaluatePipe(c, p);  // this is a Pipe
+        else
+        {
+            Well *w = dynamic_cast<Well*>(comp);
+            if(w != 0) evaluateWell(c, w);  // this is a Well
+        }
+
+
+    }
+
+
+    // letting the runner know the evaluation has finished
+    emit finished(this, comp);
+
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Running the entire model, calculating results
+//-----------------------------------------------------------------------------------------------
+void Launcher::evaluateEntireModel(Case *c)
+{
+
+
     // checking if the reservoir simulator must be rerun
     bool run_res_sim = rerunReservoirSimulator(c);
 
@@ -132,9 +177,74 @@ void Launcher::evaluate(Case *c)
     c->setObjectiveValue(p_model->objective()->value());
 
 
+}
 
-    // letting the runner know the evaluation has finished
-    emit finished(this);
+
+//-----------------------------------------------------------------------------------------------
+// Evaluating only a single pipe in the model
+//-----------------------------------------------------------------------------------------------
+void Launcher::evaluatePipe(Case *c, Pipe *p)
+{
+    // finding the real variables asociated with the pipe
+    QVector<shared_ptr<RealVariable> > pipe_vars = model()->realVariables(p);
+
+    // checking that the case has the correct number of variables
+    if(c->numberOfRealVariables() != pipe_vars.size())
+    {
+        cout << endl << "###  Runtime Error  ###" << endl
+             << "The Case does not have the same number of variables as the Pipe..." << endl << endl;
+        exit(1);
+
+    }
+
+    // updating the values of the variables
+    for(int i = 0; i < c->numberOfRealVariables(); ++i)
+    {
+        pipe_vars.at(i)->setValue(c->realVariableValue(i));
+    }
+
+    // calculating the pressure drop
+    p->calculateInletPressure();
+
+    // extracting the inlet pressure, setting it as the objective in the case
+    c->setObjectiveValue(p->stream(0)->pressure());
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// Evaluating a well in the model
+//-----------------------------------------------------------------------------------------------
+void Launcher::evaluateWell(Case *c, Well *w)
+{
+    // finding the real variables asociated with the well
+    QVector<shared_ptr<RealVariable> > well_vars = model()->realVariables(w);
+
+    // checking that the case has the correct number of variables
+    if(c->numberOfRealVariables() != well_vars.size())
+    {
+        cout << endl << "###  Runtime Error  ###" << endl
+             << "The Case does not have the same number of variables as the Well..." << endl << endl;
+        exit(1);
+
+    }
+
+    // updating the values of the variables
+    for(int i = 0; i < c->numberOfRealVariables(); ++i)
+    {
+        well_vars.at(i)->setValue(c->realVariableValue(i));
+    }
+
+    // running the reservoir simulator
+    emit runningReservoirSimulator();
+
+    p_simulator->generateInputFiles(p_model);   // generating input based on the current Model
+    p_simulator->launchSimulator();             // running the simulator
+    p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
+
+
+    // extracting the bhp as the objective of the case
+    c->setObjectiveValue(w->stream(0)->pressure());
+
 
 
 }

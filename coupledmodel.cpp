@@ -218,10 +218,13 @@ void CoupledModel::addStreamsUpstream(Separator *s)
         // checking if the separator is installed
         if(i >= s->installTime()->value())
         {
-            // checking if any of the phases should be removed
-            if(s->removeGas()) str.setGasRate(0.0);
-            if(s->removeOil()) str.setOilRate(0.0);
-            if(s->removeWater()) str.setWaterRate(0.0);
+            // how much water should be removed
+            double qw_remove = str.waterRate() * s->removeFraction()->value();
+            if(qw_remove > s->removeCapacity()->value()) qw_remove = s->removeCapacity()->value();
+
+            // subtracting the removed water
+            str.setWaterRate(str.waterRate() - qw_remove);
+
         }
 
         // adding the stream to the upstream pipe
@@ -308,6 +311,17 @@ QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables()
                 if(w->control(j)->controlVar()->isVariable()) m_vars_real.push_back(w->control(j)->controlVar());
             }
 
+        }
+
+        for(int i = 0; i < numberOfPipes(); ++i)    // looping through the pipes, finding the separators
+        {
+            Separator *s = dynamic_cast<Separator*>(pipe(i));
+
+            if(s != 0)  // this is a separator
+            {
+                if(s->removeFraction()->isVariable()) m_vars_real.push_back(s->removeFraction());
+                if(s->removeCapacity()->isVariable()) m_vars_real.push_back(s->removeCapacity());
+            }
         }
 
     }

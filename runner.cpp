@@ -193,7 +193,7 @@ void Runner::initializeLaunchers()
         }
 
         // connecting signals and slots
-        connect(l, SIGNAL(finished(Launcher*)), this, SLOT(onLauncherFinished(Launcher*)));
+        connect(l, SIGNAL(finished(Launcher*, Component*)), this, SLOT(onLauncherFinished(Launcher*, Component*)));
         connect(l, SIGNAL(runningReservoirSimulator()), this, SLOT(incrementReservoirSimRuns()));
 
 
@@ -224,115 +224,12 @@ void Runner::run()
     // checking if the model has been initialized
     if(p_model == 0) initialize();
 
-    cout << "!!! Runner thread = " << QThread::currentThreadId() << endl;
 
     // starting the optimizer
     p_optimizer->start();
 
 
-    ///// debug code  //////
 
-
-
-    /*
-
-    cout << "*****  DEBUG  *****" << endl;
-
-
-
-    // running the model once
-
-    evaluate();
-
-
-
-    // testing arithmetic manipulation of streams
-    Stream str;
-    str.setGasRate(10000);
-    str.setOilRate(1000);
-    str.setWaterRate(1.0);
-    str.setTime(10);
-    str.setPressure(14.7);
-
-    Stream result = str*0.23;
-
-    cout << "--- Streams multiplication ---" << endl;
-    result.printToCout();
-
-
-
-    // testing the flow fractions code
-
-    ProductionWell *prod1 = dynamic_cast<ProductionWell*>(p_model->well(0));
-    if(prod1 != 0)
-    {
-        cout << "calculating the flow fraction from prod1 to Pipe 1..." << endl;
-
-        double frac = prod1->flowFraction(p_model->pipe(0));
-
-        cout <<"fraction = " << frac << endl;
-
-
-        cout << "calculating the flow fraction from prod1 to Pipe 2..." << endl;
-
-        frac = prod1->flowFraction(p_model->pipe(1));
-
-        cout <<"fraction = " << frac << endl;
-
-        cout << "calculating the flow fraction from prod1 to Pipe 3..." << endl;
-
-        frac = prod1->flowFraction(p_model->pipe(2));
-
-        cout <<"fraction = " << frac << endl;
-
-
-
-    }
-
-
-
-    // making a stream
-    Stream *str = new Stream();
-    str->setGasRate(10000);
-    str->setOilRate(1000);
-    str->setWaterRate(0.0);
-    str->setTime(10);
-
-    // getting the calculator for the first pipe
-    PressureDropCalculator *calc = p_model->pipe(1)->calculator();
-
-    // calculating the pressure drop for the stream
-    double dp = calc->pressureDrop(str, 57.9);
-
-    cout << "Calculated pressure drop = " << dp << endl;
-
-
-    // testing the reservoir simulator input file generation
-    p_simulator->setFolder("output");
-    p_simulator->generateInputFiles(p_model);
-    p_simulator->launchSimulator();
-    p_simulator->readOutput(p_model);
-
-
-    // calculating the pipe inlet pressures
-    p_model->calculatePipePressures();
-
-
-    // printing the calculated pressures and rates for PIPE 1
-
-    Pipe *p = p_model->pipe(0);
-
-    cout << "Calculated pressures for PIPE: " << p->number() << endl;
-    for(int i = 0; i < p->numberOfStreams(); i++)
-    {
-        cout << p->stream(i)->time() << "    " << p->stream(i)->pressure() << endl;
-    }
-
-
-    // updating the separator constraints
-    p_model->updateSeparatorConstraints();
-
-    */
 }
 
 

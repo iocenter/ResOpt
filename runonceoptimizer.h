@@ -37,8 +37,6 @@ class Runner;
 class RunonceOptimizer : public Optimizer
 {
 private:
-    void calculateGradients();
-    double perturbedVariableValue(double value, double max, double min);
 
 public:
     RunonceOptimizer(Runner *r);

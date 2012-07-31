@@ -80,7 +80,8 @@ SOURCES += main.cpp \
     inputratevariable.cpp \
     materialbalanceconstraint.cpp \
     component.cpp \
-    evolutionarystrategyoptimizer.cpp
+    evolutionarystrategyoptimizer.cpp \
+    userconstraint.cpp
 
 HEADERS += \
     well.h \
@@ -125,4 +126,5 @@ HEADERS += \
     inputratevariable.h \
     materialbalanceconstraint.h \
     component.h \
-    evolutionarystrategyoptimizer.h
+    evolutionarystrategyoptimizer.h \
+    userconstraint.h

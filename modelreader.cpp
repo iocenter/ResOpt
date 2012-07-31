@@ -1341,7 +1341,10 @@ Pipe* ModelReader::readSeparator()
     bool ok = true;
     int l_number = -1;
     int l_outlet_pipe = -1;
-    double l_cost = -1.0;
+    double l_cost_constant = -1.0;
+    double l_cost_fraction = -1.0;
+    double l_cost_capacity = -1.0;
+
 
     list = processLine(m_driver_file.readLine());
 
@@ -1352,7 +1355,30 @@ Pipe* ModelReader::readSeparator()
 
         if(list.at(0).startsWith("NUMBER")) l_number = list.at(1).toInt(&ok);                   // getting the id number of the separator
         else if(list.at(0).startsWith("OUTLETPIPE")) l_outlet_pipe = list.at(1).toInt(&ok);     // getting the outlet pipe number
-        else if(list.at(0).startsWith("COST")) l_cost = list.at(1).toDouble(&ok);               // getting the cost
+        else if(list.at(0).startsWith("COST"))                                                  // getting the cost
+        {
+            if(list.size() == 4)  // the right number of numbers
+            {
+                bool ok1, ok2, ok3 = true;
+                l_cost_constant = list.at(1).toDouble(&ok1);
+                l_cost_fraction = list.at(2).toDouble(&ok2);
+                l_cost_capacity = list.at(3).toDouble(&ok3);
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "COST for SEPARATOR not in correct format..." << endl
+                     << "The COST keyword must be followed by three numbers: constant term, fraction multiplier, capacity multiplier" << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+        }
         else if(list.at(0).startsWith("INSTALLTIME"))                                           // getting the installation time
         {
             shared_ptr<IntVariable> var_install = shared_ptr<IntVariable>(new IntVariable(p_sep));
@@ -1398,25 +1424,91 @@ Pipe* ModelReader::readSeparator()
 
         }
 
-        else if(list.at(0).startsWith("REMOVE"))                                           // getting the remove phases
+        else if(list.at(0).startsWith("REMOVE"))                                           // getting the remove fraction
         {
 
-            if(list.at(1).startsWith("WATER")) p_sep->setRemoveWater(true);
-            else if(list.at(1).startsWith("GAS")) p_sep->setRemoveGas(true);
-            else if(list.at(1).startsWith("OIL")) p_sep->setRemoveOil(true);
+            shared_ptr<RealVariable> var_fraction = shared_ptr<RealVariable>(new RealVariable(p_sep));
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                double value = list.at(1).toDouble(&ok);
+                var_fraction->setValue(value);
+                var_fraction->setMax(value);
+                var_fraction->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                double value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toDouble(&ok1);
+                max = list.at(2).toDouble(&ok2);
+                min = list.at(3).toDouble(&ok3);
+
+                var_fraction->setValue(value);
+                var_fraction->setMax(max);
+                var_fraction->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
             else
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "REMOVE keyword for SEPARATOR not in correct format..." << endl
                      << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
-
-
                 exit(1);
 
             }
 
-        }
+            p_sep->setRemoveFraction(var_fraction);
 
+        } // REMOVE kwrd
+
+        else if(list.at(0).startsWith("CAPACITY"))                                           // getting the water removal capacity
+        {
+
+            shared_ptr<RealVariable> var_capacity = shared_ptr<RealVariable>(new RealVariable(p_sep));
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                double value = list.at(1).toDouble(&ok);
+                var_capacity->setValue(value);
+                var_capacity->setMax(value);
+                var_capacity->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                double value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toDouble(&ok1);
+                max = list.at(2).toDouble(&ok2);
+                min = list.at(3).toDouble(&ok3);
+
+                var_capacity->setValue(value);
+                var_capacity->setMax(max);
+                var_capacity->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "CAPACITY keyword for SEPARATOR not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                exit(1);
+
+            }
+
+            p_sep->setRemoveCapacity(var_capacity);
+
+        } // CAPACITY kwrd
 
 
         else
@@ -1457,7 +1549,13 @@ Pipe* ModelReader::readSeparator()
 
     // the cost
     Cost *c = new Cost();
-    c->setValue(l_cost);
+    c->setConstant(l_cost_constant);
+    c->setFractionMultiplier(l_cost_fraction);
+    c->setCapacityMultiplier(l_cost_capacity);
+
+    c->setFraction(p_sep->removeFraction()->value());
+    c->setCapacity(p_sep->removeCapacity()->value());
+
     p_sep->setCost(c);
 
     // the outlet connection
@@ -1472,6 +1570,10 @@ Pipe* ModelReader::readSeparator()
 
     p_sep->setOutletConnection(p_con);
 
+    // setting the names of the removal variables
+    p_sep->installTime()->setName("Installation time variable for separator #" + QString::number(l_number));
+    p_sep->removeFraction()->setName("Water removal fraction for separator #" + QString::number(l_number));
+    p_sep->removeCapacity()->setName("Water removal capacity for separator #" + QString::number(l_number));
 
 
 

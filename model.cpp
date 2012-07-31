@@ -595,6 +595,10 @@ void Model::updateObjectiveValue()
         Separator *p_sep = dynamic_cast<Separator*>(pipe(i));
         if(p_sep != 0)
         {
+            // updating the remove fraction and capacity in the cost according to the variable values in the separator
+            p_sep->cost()->setFraction(p_sep->removeFraction()->value());
+            p_sep->cost()->setCapacity(p_sep->removeCapacity()->value());
+
             // updating the time of the cost according to the variable
             int time_cost = p_sep->installTime()->value() - 1;
 

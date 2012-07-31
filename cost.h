@@ -36,18 +36,28 @@ class Cost
 {
 private:
     double m_time;
-    double m_value;
+    double m_const;
+    double m_mult_frac;
+    double m_mult_cap;
+
+    double m_fraction;
+    double m_capacity;
 
 public:
     Cost();
 
     // set functions
     void setTime(double t) {m_time = t;}
-    void setValue(double v) {m_value = v;}
+    void setConstant(double v) {m_const = v;}
+    void setFractionMultiplier(double v) {m_mult_frac = v;}
+    void setCapacityMultiplier(double v) {m_mult_cap = v;}
+
+    void setFraction(double f) {m_fraction = f;}
+    void setCapacity(double c) {m_capacity = c;}
 
     // get functions
     double time() const {return m_time;}
-    double value() const {return m_value;}
+    double value() const {return m_const + m_mult_frac*m_fraction + m_mult_cap*m_capacity;}
 
     // overloaded operators
     bool operator<(const Cost &rhs) const;

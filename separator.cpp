@@ -4,6 +4,7 @@
 #include "cost.h"
 #include "pipeconnection.h"
 #include "intvariable.h"
+#include "realvariable.h"
 #include "stream.h"
 
 using std::cout;
@@ -13,10 +14,7 @@ namespace ResOpt
 {
 
 Separator::Separator()
-    : m_remove_water(false),
-      m_remove_oil(false),
-      m_remove_gas(false),
-      p_cost(0),
+    : p_cost(0),
       p_outlet_connection(0)
 {
 }
@@ -24,17 +22,15 @@ Separator::Separator()
 Separator::Separator(const Separator &s)
     : Pipe(s)
 {
-    // basic types
-    m_remove_water = s.m_remove_water;
-    m_remove_oil = s.m_remove_oil;
-    m_remove_gas = s.m_remove_gas;
 
     // copying pointed objects
     p_cost = new Cost(*s.p_cost);
     p_outlet_connection = new PipeConnection(*s.p_outlet_connection);
 
-    // copying variable
+    // copying variables
     p_install_time = shared_ptr<IntVariable>(new IntVariable(*s.p_install_time));
+    p_remove_fraction = shared_ptr<RealVariable>(new RealVariable(*s.p_remove_fraction));
+    p_remove_capacity = shared_ptr<RealVariable>(new RealVariable(*s.p_remove_capacity));
 
 }
 

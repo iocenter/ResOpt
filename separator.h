@@ -12,6 +12,7 @@ namespace ResOpt
 
 class Cost;
 class IntVariable;
+class RealVariable;
 class PipeConnection;
 
 
@@ -25,12 +26,10 @@ class Separator : public Pipe
 {
 private:
 
-    bool m_remove_water;        // true if the water should be discarded
-    bool m_remove_oil;          // true if the oil should be discarded
-    bool m_remove_gas;          // true if the gas should be discarded
-
     Cost *p_cost;                               // the cost associated with installing the separator
     shared_ptr<IntVariable> p_install_time;     // the installation time of the separator
+    shared_ptr<RealVariable> p_remove_fraction; // the fraction of water that should be removed from the separator
+    shared_ptr<RealVariable> p_remove_capacity; // the maximum removal capacity of water
     PipeConnection *p_outlet_connection;        // the outlet pipe that this separator feeds
 
 
@@ -49,22 +48,18 @@ public:
     virtual void calculateInletPressure();
 
     // set functions
-    void setRemoveWater(bool b) {m_remove_water = b;}
-    void setRemoveOil(bool b) {m_remove_oil = b;}
-    void setRemoveGas(bool b) {m_remove_gas = b;}
-
     void setOutletConnection(PipeConnection *c) {p_outlet_connection = c;}
     void setCost(Cost *c) {p_cost = c;}
     void setInstallTime(shared_ptr<IntVariable> t) {p_install_time = t;}
+    void setRemoveFraction(shared_ptr<RealVariable> f) {p_remove_fraction = f;}
+    void setRemoveCapacity(shared_ptr<RealVariable> c) {p_remove_capacity = c;}
 
     // get functions
-    bool removeWater() const {return m_remove_water;}
-    bool removeOil() const {return m_remove_oil;}
-    bool removeGas() const {return m_remove_gas;}
-
     PipeConnection* outletConnection() {return p_outlet_connection;}
     Cost* cost() {return p_cost;}
     shared_ptr<IntVariable> installTime() {return p_install_time;}
+    shared_ptr<RealVariable> removeFraction() {return p_remove_fraction;}
+    shared_ptr<RealVariable> removeCapacity() {return p_remove_capacity;}
 };
 
 } // namespace ResOpt

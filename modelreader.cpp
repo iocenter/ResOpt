@@ -47,6 +47,7 @@
 #include "capacity.h"
 #include "pipeconnection.h"
 #include "cost.h"
+#include "userconstraint.h"
 
 #include "stream.h"
 #include "beggsbrillcalculator.h"
@@ -149,6 +150,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                                       // optimizer
             else if(list.at(1).startsWith("MASTERSCHEDULE")) p_model->setMasterSchedule(readMasterSchedule());  // master schedule
             else if(list.at(1).startsWith("SEPARATOR")) p_model->addPipe(readSeparator());                      // separator
+            else if(list.at(1).startsWith("CONSTRAINTS")) readUserDefinedConstraints(p_model);                  // user defined constraints
 
         }
 
@@ -1665,6 +1667,45 @@ void ModelReader::readOptimizer(Runner *r)
 
 }
 
+
+
+//-----------------------------------------------------------------------------------------------
+// Reads the user defined constraints
+//-----------------------------------------------------------------------------------------------
+void ModelReader::readUserDefinedConstraints(Model *m)
+{
+    cout << "Reading user defined constraints..." << endl;
+
+    QStringList list;
+
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+        if(!isEmpty(list))
+        {
+
+            UserConstraint *uc = new UserConstraint(m);
+
+            uc->setExpression(list.join(" "));
+
+            m->addUserDefinedConstraint(uc);
+
+
+
+        }
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+
+
+}
 
 
 

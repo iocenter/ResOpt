@@ -34,6 +34,7 @@
 #include "midpipe.h"
 #include "productionwell.h"
 #include "separator.h"
+#include "userconstraint.h"
 
 #include <iostream>
 
@@ -96,6 +97,10 @@ void DecoupledModel::initialize()
 
     // setting up the rate input variables
     initializeVarsAndCons();
+
+    // initializing the user defined constraints
+    for(int i = 0; i < numberOfUserDefinedConstraints(); ++i) userDefinedConstraint(i)->initialize();
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -543,7 +548,7 @@ QVector<shared_ptr<RealVariable> > DecoupledModel::realVariables(Component *c)
     // looping through all the real variables
     for(int i = 0; i < realVariables().size(); ++i)
     {
-        if(realVariables().at(i)->parent() == c)
+        if(realVariables().at(i)->parent()->id() == c->id())
         {
             comp_vars.push_back(realVariables().at(i));
         }

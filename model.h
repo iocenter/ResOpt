@@ -42,6 +42,7 @@ class RealVariable;
 class BinaryVariable;
 class Constraint;
 class Component;
+class UserConstraint;
 
 
 /**
@@ -58,6 +59,8 @@ private:
     QVector<Capacity*> m_capacities;
     Objective *p_obj;
     QVector<double> m_master_schedule;
+
+    QVector<UserConstraint*> m_user_constraints;
 
     bool m_up_to_date;      // true if the model has been evaluated
 
@@ -89,6 +92,14 @@ private:
      * @return bool
      */
     bool updatePipeConstraints();
+
+
+    /**
+     * @brief Updates the user defined constraints
+     *
+     * @return bool
+     */
+    bool updateUserDefinedConstraints();
 
 
 
@@ -292,6 +303,15 @@ public:
      */
     void addCapacity(Capacity *s) {m_capacities.push_back(s);}
 
+
+    /**
+     * @brief Adds a user defined constraint to the model
+     *
+     * @param uc
+     */
+    void addUserDefinedConstraint(UserConstraint *uc) {m_user_constraints.push_back(uc);}
+
+
     // get functions
 
     int numberOfMasterScheduleTimes() const {return m_master_schedule.size();}
@@ -350,6 +370,10 @@ public:
      * @return int
      */
     int numberOfCapacities() const {return m_capacities.size();}
+
+
+    UserConstraint* userDefinedConstraint(int i) {return m_user_constraints.at(i);}
+    int numberOfUserDefinedConstraints() {return m_user_constraints.size();}
 
 
     /**

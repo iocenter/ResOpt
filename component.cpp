@@ -26,12 +26,18 @@
 namespace ResOpt
 {
 
+int Component::next_id = 0;
+
 Component::Component()
 {
+    m_id = next_id++;
+
 }
 
 Component::Component(const Component &c)
 {
+    // the id
+    m_id = c.m_id;
 
     // the streams
     m_streams.clear();

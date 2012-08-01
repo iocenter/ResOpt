@@ -29,6 +29,7 @@
 #include "productionwell.h"
 #include "separator.h"
 #include "capacity.h"
+#include "userconstraint.h"
 
 #include <iostream>
 
@@ -80,6 +81,10 @@ void CoupledModel::initialize()
     {
         capacity(i)->setupConstraints(masterSchedule());
     }
+
+    // initializing the user defined constraints
+    for(int i = 0; i < numberOfUserDefinedConstraints(); ++i) userDefinedConstraint(i)->initialize();
+
 }
 
 
@@ -397,7 +402,7 @@ QVector<shared_ptr<RealVariable> > CoupledModel::realVariables(Component *c)
     // looping through all the real variables
     for(int i = 0; i < realVariables().size(); ++i)
     {
-        if(realVariables().at(i)->parent() == c)
+        if(realVariables().at(i)->parent()->id() == c->id())
         {
             comp_vars.push_back(realVariables().at(i));
         }

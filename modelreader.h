@@ -156,6 +156,14 @@ private:
      */
     void readOptimizer(Runner *r);
 
+
+    /**
+     * @brief Reads the CONSTRAINTS section of the driver file
+     *
+     * @param m
+     */
+    void readUserDefinedConstraints(Model *m);
+
 public:
 
     ModelReader(const QString &driver);

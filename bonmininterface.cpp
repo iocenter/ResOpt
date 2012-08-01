@@ -66,14 +66,14 @@ bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
     int n_var = 0;
     for(int i = 0; i < m_vars_real.size(); i++)
     {
-        var_types[i] = CONTINUOUS;
+        var_types[n_var] = CONTINUOUS;
         n_var++;
     }
 
     // the binary variables. this includes the routing vars
     for(int i = 0; i < m_vars_binary.size(); i++)
     {
-        var_types[i] = BINARY;
+        var_types[n_var] = BINARY;
         n_var++;
     }
 
@@ -93,14 +93,14 @@ bool BonminInterface::get_variables_linearity(Index n, Ipopt::TNLP::LinearityTyp
     int n_var = 0;
     for(int i = 0; i < m_vars_real.size(); i++)
     {
-        var_types[i] = Ipopt::TNLP::NON_LINEAR;
+        var_types[n_var] = Ipopt::TNLP::NON_LINEAR;
         n_var++;
     }
 
     // the integer variables. this includes the routing vars
     for(int i = 0; i < m_vars_binary.size(); i++)
     {
-        var_types[i] = Ipopt::TNLP::NON_LINEAR;
+        var_types[n_var] = Ipopt::TNLP::NON_LINEAR;
         n_var++;
     }
 

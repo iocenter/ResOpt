@@ -40,6 +40,9 @@ class Component
 private:
     QVector<Stream*> m_streams;         // the streams going through the component
 
+    int m_id;                           // unique id number for the component
+    static int next_id;
+
 public:
     Component();
     Component(const Component &c);
@@ -64,9 +67,13 @@ public:
     int numberOfStreams() const {return m_streams.size();}
     Stream* stream(int i) {return m_streams.at(i);}
 
+    int id() {return m_id;}
+
 
 
 };
+
+
 
 } // namespace ResOpt
 #endif // COMPONENT_H

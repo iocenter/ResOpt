@@ -37,6 +37,7 @@
 #include "stream.h"
 #include "productionwell.h"
 #include "pipeconnection.h"
+#include "userconstraint.h"
 
 using std::cout;
 using std::endl;
@@ -89,6 +90,12 @@ Model::Model(const Model &m)
     // copying the master schedule
     m_master_schedule = m.m_master_schedule;
 
+    // copying the user defined constraints
+    for(int i = 0; i < m.m_user_constraints.size(); ++i)
+    {
+        m_user_constraints.push_back(new UserConstraint(*m.m_user_constraints.at(i), this));
+    }
+
 
 }
 
@@ -100,6 +107,7 @@ Model::~Model()
     for(int i = 0; i < m_wells.size(); i++) delete m_wells.at(i);
     for(int i = 0; i < m_pipes.size(); i++) delete m_pipes.at(i);
     for(int i = 0; i < m_capacities.size(); i++) delete m_capacities.at(i);
+    for(int i = 0; i < m_user_constraints.size(); ++i) delete m_user_constraints.at(i);
 }
 
 
@@ -530,6 +538,21 @@ bool Model::updatePipeConstraints()
 }
 
 //-----------------------------------------------------------------------------------------------
+// Updates the user defined constraints
+//-----------------------------------------------------------------------------------------------
+bool Model::updateUserDefinedConstraints()
+{
+    bool ok = true;
+
+    for(int i = 0; i < numberOfUserDefinedConstraints(); ++i)
+    {
+        if(!userDefinedConstraint(i)->update()) ok = false;
+    }
+
+    return ok;
+}
+
+//-----------------------------------------------------------------------------------------------
 // Updates the constraints that are common for all model types
 //-----------------------------------------------------------------------------------------------
 bool Model::updateCommonConstraints()
@@ -539,6 +562,7 @@ bool Model::updateCommonConstraints()
     if(!updateCapacityConstraints()) ok = false;
     if(!updateWellConstaints()) ok = false;
     if(!updatePipeConstraints()) ok = false;
+    if(!updateUserDefinedConstraints()) ok = false;
 
     return ok;
 }

@@ -46,10 +46,12 @@ class Pipe;
 class ProductionWell : public Well
 {
 private:
-    QVector<shared_ptr<Constraint> > m_bhp_constraints;         // vector of bhp constraint<s
+    QVector<shared_ptr<Constraint> > m_bhp_constraints;        // vector of bhp constraint<s
 
-    QVector<PipeConnection*> m_pipe_connections;    // vector of all pipes that could be connected to the well
+    QVector<PipeConnection*> m_pipe_connections;               // vector of all pipes that could be connected to the well
     shared_ptr<Constraint> p_connection_constraint;            // constraint that makes sure that the sum of flow to pipes = 1
+
+    QVector<WellControl*> m_gaslift_schedule;           // the gas lift schedule of the well
 
 
 
@@ -95,6 +97,9 @@ public:
 
     void addPipeConnection(PipeConnection *c) {m_pipe_connections.push_back(c);}
 
+    void addGasLiftControl(WellControl *c) {m_gaslift_schedule.push_back(c);}
+
+
     // set functions
 
     //get functions
@@ -112,6 +117,11 @@ public:
 
     int numberOfPipeConnections() const {return m_pipe_connections.size();}
     PipeConnection* pipeConnection(int i) {return m_pipe_connections.at(i);}
+
+    int numberOfGasLiftControls() const {return m_gaslift_schedule.size();}
+    WellControl* gasLiftControl(int i) {return m_gaslift_schedule.at(i);}
+
+    bool hasGasLift() {return (m_gaslift_schedule.size() > 0);}
 
 
 

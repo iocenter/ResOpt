@@ -183,7 +183,52 @@ bool Model::validate()
             } // master schedule entries
         }
 
-    }
+    } // well
+
+    // checking that the master schedule corresponds to the gas lift schedule for the production wells that have gas lift
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        // checking if this is a production well
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(i));
+
+        if(prod_well != 0)
+        {
+            // checking if this production well has gas lift
+            if(prod_well->hasGasLift())
+            {
+                // first checking that the schedules have the same size
+                if(prod_well->numberOfGasLiftControls() != numberOfMasterScheduleTimes())
+                {
+                    cout << endl << "###  Model Validation Error  ###" << endl
+                         << "Well: " << prod_well->name().toAscii().data() << endl
+                         << "Does not have the same number of GASLIFT entries as the MASTERSCHEDULE..." << endl << endl;
+                    ok = false;
+                    break;
+                }
+                else
+                {
+                    // checking that each time entry in the well is the same as in the master schedule
+                    for(int j = 0; j < numberOfMasterScheduleTimes(); ++j)
+                    {
+                        if(prod_well->gasLiftControl(j)->endTime() != masterScheduleTime(j))
+                        {
+
+                            cout << endl << "###  Model Validation Error  ###" << endl
+                                 << "Well: " << prod_well->name().toAscii().data() << endl
+                                 << "GASLIFT entry: " << prod_well->gasLiftControl(j)->endTime() << endl
+                                 << "Is not found in the MASTERSCHEDULE..." << endl << endl;
+                            ok = false;
+                            break;
+
+
+                        }
+                    } // master schedule entries
+                }
+
+            } // has gas lift
+        } // production well
+    }   // well
+
 
     return ok;
 }

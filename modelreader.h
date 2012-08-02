@@ -88,6 +88,14 @@ private:
      */
     bool readWellSchedule(Well *w);
 
+    /**
+     * @brief Reads the GASLIFT part of a well definition.
+     *
+     * @param w pointer to the well where the gas lift schedule should be added
+     * @return true if everything went ok, false if errors were enocuntered
+     */
+    bool readGasLiftSchedule(ProductionWell *w);
+
 
     /**
      * @brief Reads the CONNECTIONS part of a well definition

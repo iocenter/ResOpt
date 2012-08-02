@@ -74,10 +74,9 @@ ProductionWell::ProductionWell(const ProductionWell &w)
 
 ProductionWell::~ProductionWell()
 {
-    for(int i = 0; i < numberOfPipeConnections(); i++)
-    {
-        delete pipeConnection(i);
-    }
+    for(int i = 0; i < numberOfPipeConnections(); ++i) delete pipeConnection(i);
+
+    for(int i = 0; i < m_gaslift_schedule.size(); ++i) delete m_gaslift_schedule.at(i);
 }
 
 //-----------------------------------------------------------------------------------------------

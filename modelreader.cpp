@@ -444,20 +444,20 @@ Well* ModelReader::readWell()
 
         else if(list.at(0).startsWith("START"))                             // A subsection (connections, schedule)
         {
+            // first checking that the well has been initialized
+            if(w == 0)
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The well TYPE must be specified before any of the START sections..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+                exit(1);
+            }
+
             if(list.at(1).startsWith("SCHEDULE")) readWellSchedule(w);      // reading SCHEDULE
             else if(list.at(1).startsWith("CON")) readWellConnections(w);   // reading CONNECTIONS
             else if(list.at(1).startsWith("OUTLETPIPE"))                    // reading OUTLETPIPES
             {
-                // checking if the type has been set
-                if(w == 0)
-                {
-                    cout << endl << "### Error detected in input file! ###" << endl
-                         << " Well TYPE must be set before OUTLETPIPES section..."
-                         << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
-
-
-                    exit(1);
-                }
 
                 // checking if this is a production well
                 ProductionWell *prod_well = dynamic_cast<ProductionWell*>(w);
@@ -472,6 +472,24 @@ Well* ModelReader::readWell()
 
                 // getting the pipe connections
                 readPipeConnections(prod_well);
+
+            }
+            else if(list.at(1).startsWith("GASLIFT"))                    // reading GASLIFT
+            {
+
+                // checking if this is a production well
+                ProductionWell *prod_well = dynamic_cast<ProductionWell*>(w);
+                if(prod_well == 0)
+                {
+                    cout << endl << "### Error detected in input file! ###" << endl
+                         << " GASLIFT can not be defined for INJECTION wells..."
+                         << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                    exit(1);
+
+                }
+
+                // getting the pipe connections
+                readGasLiftSchedule(prod_well);
 
             }
             else                                                            // unknown keyword
@@ -624,6 +642,90 @@ bool ModelReader::readWellSchedule(Well *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The SCHEDULE entry does not have the right format..."
+                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                exit(1);
+            }
+        }
+
+
+
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    return true;
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// Reads the GASLIFT section for a production well
+//-----------------------------------------------------------------------------------------------
+bool ModelReader::readGasLiftSchedule(ProductionWell *w)
+{
+    cout << "        gas lift schedule..." << endl;
+
+    QStringList list;
+
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+        if(list.size() == 4)        // correct number of elements (t_end, value, max, min)
+        {
+            // checking if the line is in the right format
+            QVector<double> nums;
+            bool ok = true;
+
+            for(int i = 0; i < 4; i++)  // looping through t_end, value, max, min
+            {
+                nums.push_back(list.at(i).toDouble(&ok));
+                if(!ok) break;
+            }
+
+            // got all the numbers ok
+            if(ok)
+            {
+                shared_ptr<RealVariable> var(new RealVariable(w));
+                var->setValue(nums.at(1));
+                var->setMax(nums.at(2));
+                var->setMin(nums.at(3));
+                var->setName("Gas lift variable for well: " + w->name() + ", until time = " + QString::number(nums.at(0)));
+
+                WellControl *control = new WellControl();
+
+                control->setEndTime(nums.at(0));
+                control->setType(WellControl::QGAS);
+                control->setControlVar(var);
+
+                w->addGasLiftControl(control);
+            }
+
+
+
+            else     // error when reading numbers in the schedule line
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The GASLIFT entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+        else        // wrong number of arguments on line
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The GASLIFT entry does not have the right format..."
                      << "Last line: " << list.join(" ").toAscii().data() << endl;
 
                 exit(1);

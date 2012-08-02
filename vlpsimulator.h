@@ -24,14 +24,17 @@ private:
 public:
     VlpSimulator();
 
+    VlpSimulator(const VlpSimulator &v);
+
     virtual ~VlpSimulator();
 
-    virtual ReservoirSimulator* clone() const = 0;
+
+    virtual ReservoirSimulator* clone() const {return new VlpSimulator(*this);}
 
 
     virtual bool generateInputFiles(Model *m);
-    virtual bool launchSimulator() = 0;
-    virtual bool readOutput(Model *m) = 0;
+    virtual bool launchSimulator();
+    virtual bool readOutput(Model *m);
 
 };
 

@@ -2,6 +2,7 @@
 
 #include <QFile>
 #include <iostream>
+#include <QDir>
 
 #include "vlptable.h"
 #include "model.h"
@@ -15,6 +16,12 @@ namespace ResOpt
 
 VlpSimulator::VlpSimulator()
 {
+}
+
+VlpSimulator::VlpSimulator(const VlpSimulator &v)
+    : ReservoirSimulator(v)
+{
+    for(int i = 0; i < v.m_vlp_tables.size(); ++i) m_vlp_tables.push_back(new VlpTable(*v.m_vlp_tables.at(i)));
 }
 
 VlpSimulator::~VlpSimulator()
@@ -115,7 +122,8 @@ bool VlpSimulator::generateInputFiles(Model *m)
     // checking if file opened ok...
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qWarning("Could not open reservoir definition file: %s", input.fileName().toAscii().data());
+        cout << "Could not open reservoir definition file: " << QDir::currentPath().toAscii().data() << "/" << input.fileName().toAscii().data() << endl;
+
         exit(1);
     }
 
@@ -153,6 +161,18 @@ bool VlpSimulator::generateInputFiles(Model *m)
 
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// calculates the rates
+//-----------------------------------------------------------------------------------------------
+bool VlpSimulator::launchSimulator()
+{}
+
+//-----------------------------------------------------------------------------------------------
+// extracts the resluts
+//-----------------------------------------------------------------------------------------------
+bool VlpSimulator::readOutput(Model *m)
+{}
 
 
 //-----------------------------------------------------------------------------------------------

@@ -46,6 +46,8 @@
 // needed for debug
 #include "productionwell.h"
 #include "userconstraint.h"
+#include "vlpsimulator.h"
+#include "vlptable.h"
 
 
 
@@ -226,9 +228,19 @@ void Runner::run()
 
 
     // starting the optimizer
-   p_optimizer->start();
+  // p_optimizer->start();
+
+// debug code
+
+    VlpSimulator *sim = new VlpSimulator();
+    sim->setFolder("output");
+
+    sim->generateInputFiles(p_model);
 
 
+
+
+    emit optimizationFinished();
 
 
 }

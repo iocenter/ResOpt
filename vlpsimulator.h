@@ -19,6 +19,7 @@ private:
 
     VlpTable* readVlpTable(const QString &file, const QString &well_name);
     QStringList processLine(const QString &line);
+    bool isEmpty(const QStringList &list);
 
 public:
     VlpSimulator();

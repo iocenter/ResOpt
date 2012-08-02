@@ -211,7 +211,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
 {
     // checking if the rates are zero
     double total_rate = s->gasRate() + s->oilRate() + s->waterRate();
-    if(total_rate <= 0) return p;
+    if(total_rate <= 0) return 0.0;
 
     // else getting on with the calculations
 
@@ -232,7 +232,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     double liquid_content = vsl / vm;
 
     // if the liquid content is 0, changing it to something small
-    if(liquid_content < 1e-4) liquid_content = 1e-4;
+    if(liquid_content < 1e-8) liquid_content = 1e-8;
 
     flow_regime regime;
 

@@ -48,6 +48,8 @@ public:
 
     ReservoirSimulator(const ReservoirSimulator &r);
 
+    virtual ~ReservoirSimulator();
+
     virtual ReservoirSimulator* clone() const = 0;
 
 

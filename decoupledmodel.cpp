@@ -438,6 +438,17 @@ QVector<shared_ptr<RealVariable> >& DecoupledModel::realVariables()
                 if(w->control(j)->controlVar()->isVariable()) m_vars_real.push_back(w->control(j)->controlVar());
             }
 
+            // checking if this is a production well, and if it has gas lift controls
+            ProductionWell *prod_well = dynamic_cast<ProductionWell*>(w);
+            if(prod_well != 0)
+            {
+                for(int j = 0; j < prod_well->numberOfGasLiftControls(); ++j)
+                {
+                    if(prod_well->gasLiftControl(j)->controlVar()->isVariable()) m_vars_real.push_back(prod_well->gasLiftControl(j)->controlVar());
+                }
+            }
+
+
         }
 
         // getting the remove fraction and capacity variables for the separators

@@ -55,6 +55,8 @@ public:
 
     GprsSimulator(const GprsSimulator &g);
 
+    virtual ~GprsSimulator();
+
     // virtual functions
 
     virtual ReservoirSimulator* clone() const {return new GprsSimulator(*this);}

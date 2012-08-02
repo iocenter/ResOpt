@@ -28,6 +28,7 @@ namespace ResOpt
 {
 
 class Runner;
+class Pipe;
 
 
 /**
@@ -37,6 +38,8 @@ class Runner;
 class RunonceOptimizer : public Optimizer
 {
 private:
+
+    Case* buildCase(Pipe *p);
 
 public:
     RunonceOptimizer(Runner *r);

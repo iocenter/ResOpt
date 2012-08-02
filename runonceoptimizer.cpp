@@ -31,6 +31,7 @@
 #include "binaryvariable.h"
 #include "constraint.h"
 #include "objective.h"
+#include "pipe.h"
 #include <QVector>
 
 #include <tr1/memory>
@@ -73,19 +74,30 @@ void RunonceOptimizer::start()
     cout << "Starting RUN_ONCE..." << endl;
 
     // creating a case for the current values in the model
-    CaseQueue *cases = new CaseQueue();
-
-    cases->push_back(new Case(runner()->model()));  // this creates a case with the varaible values currently in the model.
+    Case *c = new Case(runner()->model());
 
 
     // launching the runner on the case
-    runCases(cases);
+    runCase(c);
 
 
-    delete cases;
+    delete c;
+
+    // start debug
+
+    /*
+    Pipe *p = runner()->model()->pipe(0);
+
+    Case *pipe_case = buildCase(p);
+
+    runCase(pipe_case, p);
+
+    cout << "pipe pressure = " << pipe_case->objectiveValue() << endl;
+
+    // end debug
 
 
-
+    */
     // letting the runner know that the optimization has finished
     emit finished();
 
@@ -93,6 +105,20 @@ void RunonceOptimizer::start()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// builds a case for a pipe
+//-----------------------------------------------------------------------------------------------
+Case* RunonceOptimizer::buildCase(Pipe *p)
+{
+    Case *c = new Case();
+
+    c->addRealVariableValue(100);
+    c->addRealVariableValue(100);
+    c->addRealVariableValue(100);
+    c->addRealVariableValue(200);
+
+    return c;
+}
 
 
 

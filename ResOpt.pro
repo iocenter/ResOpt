@@ -81,7 +81,9 @@ SOURCES += main.cpp \
     materialbalanceconstraint.cpp \
     component.cpp \
     evolutionarystrategyoptimizer.cpp \
-    userconstraint.cpp
+    userconstraint.cpp \
+    vlptable.cpp \
+    vlpsimulator.cpp
 
 HEADERS += \
     well.h \
@@ -127,4 +129,6 @@ HEADERS += \
     materialbalanceconstraint.h \
     component.h \
     evolutionarystrategyoptimizer.h \
-    userconstraint.h
+    userconstraint.h \
+    vlpsimulator.h \
+    vlptable.h

@@ -34,6 +34,8 @@
 #include "well.h"
 #include "pipe.h"
 
+#include "pressuredropcalculator.h"
+
 
 
 
@@ -185,6 +187,31 @@ void Launcher::evaluateEntireModel(Case *c)
 //-----------------------------------------------------------------------------------------------
 void Launcher::evaluatePipe(Case *c, Pipe *p)
 {
+    // the variables in the case should be: qo, qg, qw, p_out
+
+    // checking that the case has the right number of variables
+    if(c->numberOfRealVariables() != 4)
+    {
+        cout << endl << "###  Runtime Error  ###" << endl
+             << "When evaluating the pressure drop in PIPE #" << p->number() << endl
+             << "The Case does not have the correct number of variables" << endl
+             << "They should be: qo, qg, qw, p" << endl;
+        exit(1);
+
+    }
+
+    // creating a stream for the pressure drop calculation
+    Stream *s = new Stream(0, c->realVariableValue(0), c->realVariableValue(1), c->realVariableValue(2), 0);
+
+    // calculating the pressure drop
+    double dp = p->calculator()->pressureDrop(s, c->realVariableValue(3));
+
+    // setting the pressure drop as the objective
+    c->setObjectiveValue(dp);
+
+
+    /*
+
     // finding the real variables asociated with the pipe
     QVector<shared_ptr<RealVariable> > pipe_vars = model()->realVariables(p);
 
@@ -208,6 +235,8 @@ void Launcher::evaluatePipe(Case *c, Pipe *p)
 
     // extracting the inlet pressure, setting it as the objective in the case
     c->setObjectiveValue(p->stream(0)->pressure());
+
+    */
 
 }
 

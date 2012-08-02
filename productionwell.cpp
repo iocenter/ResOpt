@@ -68,6 +68,14 @@ ProductionWell::ProductionWell(const ProductionWell &w)
         m_pipe_connections.push_back(new PipeConnection(*w.m_pipe_connections.at(i)));
     }
 
+    // copying gas lift controls
+    for(int i = 0; i < w.m_gaslift_schedule.size(); i++)
+    {
+        m_gaslift_schedule.push_back(new WellControl(*w.m_gaslift_schedule.at(i)));
+    }
+
+
+
 
 }
 

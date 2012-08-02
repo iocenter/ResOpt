@@ -229,31 +229,6 @@ void Runner::run()
    p_optimizer->start();
 
 
-    //// debug code ////
-
-    cout << "-----DEBUG-----" << endl;
-
-/*
-
-    // testing the user defined constraints
-    UserConstraint *uc = new UserConstraint(p_model);
-
-    uc->setExpression("0 < SEP_3_REMOVED_1 - WELL_inj1_W_1 < 1e6");
-    uc->initialize();
-
-    p_model->addUserDefinedConstraint(uc);
-
-    cout << "updating the user constraint..." << endl;
-    uc->update();
-
-    cout << "value = " << uc->constraint()->value() << endl;
-    cout << "max   = " << uc->constraint()->max() << endl;
-    cout << "min   = " << uc->constraint()->min() << endl;
-
-
-    emit optimizationFinished();
-
-*/
 
 
 }

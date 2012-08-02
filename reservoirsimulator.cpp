@@ -33,4 +33,7 @@ ReservoirSimulator::ReservoirSimulator(const ReservoirSimulator &r)
     m_folder = r.m_folder;
 }
 
+ReservoirSimulator::~ReservoirSimulator()
+{}
+
 } // namespace ResOpt

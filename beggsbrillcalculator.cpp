@@ -88,6 +88,10 @@ double BeggsBrillCalculator::liquidDensity(Stream *s)
     double oil_rate = s->oilRate(Stream::METRIC);
     double water_rate = s->waterRate(Stream::METRIC);
 
+
+
+    if((oil_rate + water_rate) < 1e-6) oil_rate = 1;
+
     double den_metric = (oil_rate * oilDensity() + water_rate * waterDensity()) / (oil_rate + water_rate); // Liquid density in kg/m^3
 
     return 0.0624279606 * den_metric;   // converting to lb / ft^3
@@ -192,6 +196,8 @@ double BeggsBrillCalculator::liquidViscosity(Stream *s)
     double oil_rate = s->oilRate();
     double water_rate = s->waterRate();
 
+    if((oil_rate + water_rate) < 1e-6) oil_rate = 1.0;
+
     return (oil_rate * oilViscosity() + water_rate * waterViscosity()) / (oil_rate + water_rate);
 
 }
@@ -219,9 +225,14 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     double vm = vsl + vsg;                              // superficial two phase velocity
 
 
+
+
     double froude_no = pow(vm, 2) / d_in / g;  // froude number
 
     double liquid_content = vsl / vm;
+
+    // if the liquid content is 0, changing it to something small
+    if(liquid_content < 1e-4) liquid_content = 1e-4;
 
     flow_regime regime;
 
@@ -274,6 +285,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     // sets the horizontal holdup to the liquid content if smaller
     if(hz_holdup < liquid_content) hz_holdup = liquid_content;
 
+
     // calculating correction factor
     double den_l = liquidDensity(s);                        // liquid density
     double den_g = gasDensity(temperature(), p, z_fac);         // gas density
@@ -282,6 +294,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     double nlv = vsl * pow(den_l / (g * surface_tens), 0.25);        // liquid velocity number
     double cor = 0.0;
     double payne_cor = 0.924;       // Payne correction factor to holdup
+
 
     if(angle() < 0)     //downhill pipe, all flow regimes are the same
     {
@@ -372,7 +385,9 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
 
     double fn = 1 / (2 * log10(pow(re_ns / (4.5223 * log10(re_ns) - 3.8215), 2)));    // no-slip friction factor
 
+
     double y = liquid_content / pow(holdup, 2);
+
 
     double s_term;
 
@@ -384,6 +399,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     {
         s_term = log(y) / (-0.0523 + 3.182 * log(y) - 0.8725 * pow(log(y), 2) + 0.01853 * pow(log(y), 4));
     }
+
 
     double ftp = fn * exp(s_term);      // the friction factor
 

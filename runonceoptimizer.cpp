@@ -78,14 +78,14 @@ void RunonceOptimizer::start()
 
 
     // launching the runner on the case
-    runCase(c);
+    //runCase(c);
 
 
     delete c;
 
     // start debug
 
-    /*
+
     Pipe *p = runner()->model()->pipe(0);
 
     Case *pipe_case = buildCase(p);
@@ -97,7 +97,7 @@ void RunonceOptimizer::start()
     // end debug
 
 
-    */
+
     // letting the runner know that the optimization has finished
     emit finished();
 
@@ -112,9 +112,9 @@ Case* RunonceOptimizer::buildCase(Pipe *p)
 {
     Case *c = new Case();
 
+    c->addRealVariableValue(0);
     c->addRealVariableValue(100);
-    c->addRealVariableValue(100);
-    c->addRealVariableValue(100);
+    c->addRealVariableValue(0);
     c->addRealVariableValue(200);
 
     return c;

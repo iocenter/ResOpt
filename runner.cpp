@@ -119,7 +119,7 @@ void Runner::initialize()
 
     cout << "Initializing the reservoir simulator..." << endl;
     // initializing the reservoir simulator
-    p_simulator = new GprsSimulator();
+    if(p_simulator == 0) p_simulator = new VlpSimulator();
     p_simulator->setFolder("output");
 
 
@@ -176,7 +176,7 @@ void Runner::initializeLaunchers()
         l->setModel(model()->clone());
 
         // setting up the reservoir simulator
-        ReservoirSimulator *r = new GprsSimulator();
+        ReservoirSimulator *r = p_simulator->clone();
         r->setFolder(folder_str);       // setting the folder for the simulator
 
         l->setReservoirSimulator(r);    // assigning the simulator to the launcher
@@ -228,21 +228,27 @@ void Runner::run()
 
 
     // starting the optimizer
-  // p_optimizer->start();
+    p_optimizer->start();
 
 // debug code
 
-    VlpSimulator *sim = new VlpSimulator();
-    sim->setFolder("output");
+ /*
+    m_launchers.at(0)->reservoirSimulator()->generateInputFiles(m_launchers.at(0)->model());
 
-    sim->generateInputFiles(p_model);
+    VlpSimulator* vlp_sim = dynamic_cast<VlpSimulator*>(m_launchers.at(0)->reservoirSimulator());
+
+    VlpTable* vlp_tab = vlp_sim->vlpTable(0);
+
+    Stream *s = vlp_tab->interpolate(10.1, 60);
+
+    s->printToCout();
 
 
 
 
     emit optimizationFinished();
 
-
+*/
 }
 
 

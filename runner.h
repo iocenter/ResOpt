@@ -117,6 +117,7 @@ public:
     void setSummaryFile(const QString &f);
 
     void setOptimizer(Optimizer *o) {p_optimizer = o;}
+    void setReservoirSimulator(ReservoirSimulator *s) {p_simulator = s;}
 
     // get functions
     Model* model() {return p_model;}

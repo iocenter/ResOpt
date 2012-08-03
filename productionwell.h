@@ -121,7 +121,7 @@ public:
     int numberOfGasLiftControls() const {return m_gaslift_schedule.size();}
     WellControl* gasLiftControl(int i) {return m_gaslift_schedule.at(i);}
 
-    bool hasGasLift() {return (m_gaslift_schedule.size() > 0);}
+    bool hasGasLift() {return (m_gaslift_schedule.size() == numberOfControls());}
 
 
 

@@ -252,7 +252,9 @@ void Launcher::evaluateWell(Case *c, Well *w)
     if(c->numberOfRealVariables() != well_vars.size())
     {
         cout << endl << "###  Runtime Error  ###" << endl
-             << "The Case does not have the same number of variables as the Well..." << endl << endl;
+             << "The Case does not have the same number of variables as the Well..." << endl
+             << "CASE: " << c->numberOfRealVariables() << endl
+             << "WELL: " << well_vars.size() << endl << endl;
         exit(1);
 
     }
@@ -271,8 +273,15 @@ void Launcher::evaluateWell(Case *c, Well *w)
     p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
 
 
-    // extracting the bhp as the objective of the case
-    c->setObjectiveValue(w->stream(0)->pressure());
+    // setting the rates and pressures as constraints: qo, qg, qw, pbh
+    for(int i = 0; i < w->numberOfStreams(); ++i)
+    {
+        c->addConstraintValue(w->stream(i)->oilRate());
+        c->addConstraintValue(w->stream(i)->gasRate());
+        c->addConstraintValue(w->stream(i)->waterRate());
+        c->addConstraintValue(w->stream(i)->pressure());
+    }
+
 
 
 

@@ -78,23 +78,10 @@ void RunonceOptimizer::start()
 
 
     // launching the runner on the case
-    //runCase(c);
+    runCase(c);
 
 
     delete c;
-
-    // start debug
-
-
-    Pipe *p = runner()->model()->pipe(0);
-
-    Case *pipe_case = buildCase(p);
-
-    runCase(pipe_case, p);
-
-    cout << "pipe pressure = " << pipe_case->objectiveValue() << endl;
-
-    // end debug
 
 
 

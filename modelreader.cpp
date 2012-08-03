@@ -56,6 +56,8 @@
 #include "runonceoptimizer.h"
 #include "bonminoptimizer.h"
 
+#include "gprssimulator.h"
+#include "vlpsimulator.h"
 
 
 using std::tr1::shared_ptr;
@@ -154,7 +156,20 @@ Model* ModelReader::readDriverFile(Runner *r)
 
         }
 
-        else if(list.at(0).startsWith("SPACING")) cout << "je!";
+        else if(list.at(0).startsWith("SIMULATOR"))     // reading the type of reservoir simulator to use
+        {
+            if(list.at(1).startsWith("GPRS")) r->setReservoirSimulator(new GprsSimulator());
+            else if(list.at(1).startsWith("VLP")) r->setReservoirSimulator(new VlpSimulator());
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "Type of SIMULATOR not understood..." << endl
+                     << "Possible types: GPRS, VLP" << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+                exit(1);
+            }
+        }
 
         else
         {

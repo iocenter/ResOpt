@@ -3,9 +3,12 @@
 
 #include <QList>
 #include <QString>
+#include <QPair>
 
 namespace ResOpt
 {
+
+class Stream;
 
 class VlpTable
 {
@@ -16,16 +19,50 @@ private:
     QList<double> m_gas;
     QList<double> m_wat;
 
+    QList<double> m_pbh_entries;        // list of the unique values for the pbh
+    QList<double> m_glift_entries;      // list of the uniquie values for the glift
+
     QString m_well_name;
+
+
+    /**
+     * @brief returns the index for the upper glift and upper pbh point
+     *
+     * @param pbh
+     * @param qlift
+     * @return int
+     */
+    QPair<int,int> findUpperEntries(double pbh, double glift);
+
+    int findTableIndex(int pbh_entry, int glift_entry);
 
 public:
     VlpTable();
+
+    // misc functions
+
+
+    /**
+     * @brief This function interpolates the table, and returns rates for the interpolated point.
+     *
+     * @param pbh
+     * @param glift
+     * @return Stream
+     */
+    Stream* interpolate(double pbh, double glift);
+
+
+    /**
+     * @brief Generates lists of the unique entries for glift and pbh, to be used by the interpolation algorithm
+     *
+     */
+    void process();
 
     // set functions
     void setWellName(const QString &n) {m_well_name = n;}
 
     // add functions
-    void addRow(double pbh, double glift, double oil, double gas, double wat);
+    void addRow(double glift, double pbh, double gas, double oil, double wat);
 
     // get functions
     const QString& wellName() const {return m_well_name;}

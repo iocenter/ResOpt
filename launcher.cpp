@@ -272,14 +272,16 @@ void Launcher::evaluateWell(Case *c, Well *w)
     p_simulator->launchSimulator();             // running the simulator
     p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
 
+    // finding the well in this copy of the model
+    Well *w_m = p_model->wellById(w->id());
 
     // setting the rates and pressures as constraints: qo, qg, qw, pbh
-    for(int i = 0; i < w->numberOfStreams(); ++i)
+    for(int i = 0; i < w_m->numberOfStreams(); ++i)
     {
-        c->addConstraintValue(w->stream(i)->oilRate());
-        c->addConstraintValue(w->stream(i)->gasRate());
-        c->addConstraintValue(w->stream(i)->waterRate());
-        c->addConstraintValue(w->stream(i)->pressure());
+        c->addConstraintValue(w_m->stream(i)->oilRate());
+        c->addConstraintValue(w_m->stream(i)->gasRate());
+        c->addConstraintValue(w_m->stream(i)->waterRate());
+        c->addConstraintValue(w_m->stream(i)->pressure());
     }
 
 

@@ -522,6 +522,19 @@ bool Model::resolveCapacityConnections()
 }
 
 //-----------------------------------------------------------------------------------------------
+// returns the well with the given id
+//-----------------------------------------------------------------------------------------------
+Well* Model::wellById(int comp_id)
+{
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        if(well(i)->id() == comp_id) return well(i);
+    }
+
+    return 0;
+}
+
+//-----------------------------------------------------------------------------------------------
 // Updates the separator constraints
 //-----------------------------------------------------------------------------------------------
 bool Model::updateCapacityConstraints()

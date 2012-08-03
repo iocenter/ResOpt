@@ -340,6 +340,15 @@ public:
      */
     int numberOfWells() const {return m_wells.size();}
 
+
+    /**
+     * @brief Returns the well with the specified id, 0 if not found
+     *
+     * @param id
+     * @return Well
+     */
+    Well* wellById(int comp_id);
+
     /**
      * @brief Returns Pipe number i
      *

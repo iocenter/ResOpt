@@ -83,7 +83,10 @@ SOURCES += main.cpp \
     evolutionarystrategyoptimizer.cpp \
     userconstraint.cpp \
     vlptable.cpp \
-    vlpsimulator.cpp
+    vlpsimulator.cpp \
+    dptable.cpp \
+    pipereader.cpp \
+    dptablecalculator.cpp
 
 HEADERS += \
     well.h \
@@ -131,4 +134,7 @@ HEADERS += \
     evolutionarystrategyoptimizer.h \
     userconstraint.h \
     vlpsimulator.h \
-    vlptable.h
+    vlptable.h \
+    dptable.h \
+    pipereader.h \
+    dptablecalculator.h

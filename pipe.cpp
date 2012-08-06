@@ -26,6 +26,7 @@
 #include "beggsbrillcalculator.h"
 #include "stream.h"
 #include "productionwell.h"
+#include "pipereader.h"
 
 using std::cout;
 using std::endl;
@@ -148,6 +149,14 @@ void Pipe::calculateBranchInletPressures()
 //-----------------------------------------------------------------------------------------------
 void Pipe::readInputFile()
 {
+
+    // creating a pipe reader
+    PipeReader reader;
+
+    // reading the file, getting back the calculator
+    p_calculator = reader.readFile(m_file_name);
+
+    /*
     // opening the input file
     QFile input(m_file_name);
 
@@ -274,7 +283,7 @@ void Pipe::readInputFile()
     cout << "Done reading for PIPE " << number() << ": All OK" << endl;
 
 
-
+*/
 
 }
 

@@ -45,6 +45,11 @@ Optimizer::Optimizer(Runner *r)
     connect(this, SIGNAL(finished()), p_runner, SIGNAL(optimizationFinished()));
 }
 
+Optimizer::~Optimizer()
+{
+    // nothing to delete
+}
+
 //-----------------------------------------------------------------------------------------------
 // sends off a queue of cases to the runner for evaluation
 //-----------------------------------------------------------------------------------------------

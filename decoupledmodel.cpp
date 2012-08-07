@@ -542,6 +542,12 @@ QVector<shared_ptr<Constraint> >& DecoupledModel::constraints()
             m_cons.push_back(mbc->waterConstraint());
 
         }
+
+        // getting the user defined constraints
+        for(int i = 0; i < numberOfUserDefinedConstraints(); ++i)
+        {
+            m_cons.push_back(userDefinedConstraint(i)->constraint());
+        }
     }
 
 

@@ -54,6 +54,12 @@ BonminInterface::BonminInterface(BonminOptimizer *o)
     m_cons = p_optimizer->runner()->model()->constraints();
 }
 
+BonminInterface::~BonminInterface()
+{
+    if(p_case_last != 0) delete p_case_last;
+    if(p_case_gradients != 0) delete p_case_gradients;
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // Returns the variable types to Bonmin

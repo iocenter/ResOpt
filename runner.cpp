@@ -66,7 +66,7 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       p_simulator(0),
       p_optimizer(0),
       p_summary(0),
-      m_number_of_runs(0),
+      m_number_of_runs(1),
       m_number_of_res_sim_runs(0),
       p_cases(0)
 {

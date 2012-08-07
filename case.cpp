@@ -28,10 +28,12 @@ namespace ResOpt
 {
 
 Case::Case()
+    : m_objective_value(0)
 {
 }
 
 Case::Case(Model *m)
+    : m_objective_value(0)
 {
     // adding real variables
     for(int i = 0; i < m->realVariables().size(); ++i)
@@ -49,6 +51,7 @@ Case::Case(Model *m)
 }
 
 Case::Case(const Case &c, bool cpy_output)
+    : m_objective_value(0)
 {
     for(int i = 0; i < c.numberOfRealVariables(); ++i)
     {
@@ -71,6 +74,7 @@ Case::Case(const Case &c, bool cpy_output)
 
 
     }
+
 
 }
 

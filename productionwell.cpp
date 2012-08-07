@@ -174,6 +174,13 @@ void ProductionWell::updateBhpConstraint()
             p_in += pipeConnection(j)->variable()->value() * pipeConnection(j)->pipe()->stream(i)->pressure();
             tot_frac += pipeConnection(j)->variable()->value();
         }
+
+        if(tot_frac == 0) // error checking if no routing to the well
+        {
+            tot_frac = 1;
+            p_in = 2 * stream(i)->pressure();
+        }
+
         p_in = p_in / tot_frac;
 
         // calculating constraint value
@@ -181,6 +188,8 @@ void ProductionWell::updateBhpConstraint()
         if(p_wf < 0.001) p_wf = 0.001;
 
         double c_ts = (p_wf - p_in) / p_wf;
+
+
 
         // updating the value of the constraint for this time
         bhpConstraint(i)->setValue(c_ts);

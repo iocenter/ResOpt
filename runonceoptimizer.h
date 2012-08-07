@@ -43,6 +43,7 @@ private:
 
 public:
     RunonceOptimizer(Runner *r);
+    virtual ~RunonceOptimizer();
 
 
     virtual void initialize();

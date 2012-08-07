@@ -90,6 +90,8 @@ private:
 public:
     BonminInterface(BonminOptimizer *o);
 
+    virtual ~BonminInterface();
+
 
 
     // overloaded functions specific to a TMINLP

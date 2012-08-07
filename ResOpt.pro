@@ -30,9 +30,18 @@ LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-lin
 # coinutils libraries (from coinutils_addlibs.txt):
 LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
 
+# NOMAD library
+LIBS += /home/aleksaju/nomad/nomad.3.5.1/lib/nomad.a
+
+# bonmin header files
 INCLUDEPATH += /home/aleksaju/bonmin/Bonmin-1.5.3/build/include/coin
+
+
+#NOMAD header files
+INCLUDEPATH += /home/aleksaju/nomad/nomad.3.5.1/src
+
 QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
-#QMAKE_LFLAGS += -Wl,--rpath -Wl,/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib
+
 TEMPLATE = app
 
 
@@ -86,7 +95,9 @@ SOURCES += main.cpp \
     vlpsimulator.cpp \
     dptable.cpp \
     pipereader.cpp \
-    dptablecalculator.cpp
+    dptablecalculator.cpp \
+    nomadoptimizer.cpp \
+    nomadevaluator.cpp
 
 HEADERS += \
     well.h \
@@ -137,4 +148,6 @@ HEADERS += \
     vlptable.h \
     dptable.h \
     pipereader.h \
-    dptablecalculator.h
+    dptablecalculator.h \
+    nomadoptimizer.h \
+    nomadevaluator.h

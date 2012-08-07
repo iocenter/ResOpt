@@ -54,6 +54,11 @@ RunonceOptimizer::RunonceOptimizer(Runner *r)
 {
 }
 
+RunonceOptimizer::~RunonceOptimizer()
+{
+    // nothing to do
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Initializes the optimizer

@@ -33,7 +33,6 @@
 
 #include <iostream>
 
-#include <QThread>
 
 using std::cout;
 using std::endl;
@@ -93,9 +92,6 @@ void CoupledModel::initialize()
 //-----------------------------------------------------------------------------------------------
 void CoupledModel::updateStreams()
 {
-
-    cout << "!!! Model thread = " << QThread::currentThreadId() << endl;
-
     cout << "Updating the streams for the pipe system..." << endl;
 
     // first need to empty all the streams in all pipes
@@ -394,6 +390,12 @@ QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
             m_cons += sep->waterConstraints();
             m_cons += sep->liquidConstraints();
 
+        }
+
+        // getting the user defined constraints
+        for(int i = 0; i < numberOfUserDefinedConstraints(); ++i)
+        {
+            m_cons.push_back(userDefinedConstraint(i)->constraint());
         }
     }
 

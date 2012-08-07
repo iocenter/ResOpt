@@ -18,6 +18,11 @@ BonminOptimizer::BonminOptimizer(Runner *r)
     : Optimizer(r)
 {}
 
+BonminOptimizer::~BonminOptimizer()
+{
+    // nothing to do, the SmartPtr will delete itself
+}
+
 //-----------------------------------------------------------------------------------------------
 // Initializes the optimizer
 //-----------------------------------------------------------------------------------------------

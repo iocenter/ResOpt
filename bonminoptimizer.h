@@ -65,6 +65,7 @@ private:
 
 public:
     BonminOptimizer(Runner *r);
+    virtual ~BonminOptimizer();
 
     virtual void initialize();
 

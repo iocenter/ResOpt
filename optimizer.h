@@ -55,6 +55,7 @@ private:
 
 public:
     explicit Optimizer(Runner *r);
+    virtual ~Optimizer();
 
     virtual void initialize() = 0;
 

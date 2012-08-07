@@ -481,10 +481,10 @@ void Runner::writeBestCaseToSummary(Case *c)
 
 
         // constraints
-        //for(int j = 0; j < c->numberOfConstraints(); ++j)
-        //{
-        //    out << c->constraintValue(j) << "\t";
-        //}
+        for(int j = 0; j < c->numberOfConstraints(); ++j)
+        {
+            out << c->constraintValue(j) << "\t";
+        }
 
         out << "\n\n";
 

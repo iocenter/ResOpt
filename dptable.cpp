@@ -46,6 +46,7 @@ void DpTable::process()
     qSort(m_entries_gas.begin(), m_entries_gas.end());
     qSort(m_entries_oil.begin(), m_entries_oil.end());
     qSort(m_entries_wat.begin(), m_entries_wat.end());
+
 }
 
 
@@ -87,7 +88,7 @@ QList<int> DpTable::findUpperEntries(double gas, double oil, double water)
     {
         if(m_entries_wat.at(i) > water)
         {
-            i_g = i;
+            i_w = i;
             break;
         }
     }
@@ -139,8 +140,11 @@ int DpTable::findTableIndex(int gas_entry, int oil_entry, int water_entry)
 //-----------------------------------------------------------------------------------------------
 double DpTable::interpolate(double gas, double oil, double water)
 {
+
+
     // processing the table if not already done
     if(m_entries_gas.size() == 0) process();
+
 
     // checking that the desired point lies within the table
     if(gas < m_entries_gas.at(0) || gas > m_entries_gas.at(m_entries_gas.size() - 1))
@@ -188,6 +192,7 @@ double DpTable::interpolate(double gas, double oil, double water)
     double yd = (oil - m_entries_oil.at(i_upper.at(1) - 1)) / (m_entries_oil.at(i_upper.at(1)) - m_entries_oil.at(i_upper.at(1) - 1));
     double zd = (water - m_entries_wat.at(i_upper.at(2) - 1)) / (m_entries_wat.at(i_upper.at(2)) - m_entries_wat.at(i_upper.at(2) - 1));
 
+
     // getting the indexes for the eight bounding points
     int i_000 = findTableIndex(i_upper.at(0) - 1, i_upper.at(1) - 1, i_upper.at(2) - 1);
     int i_010 = findTableIndex(i_upper.at(0) - 1, i_upper.at(1)    , i_upper.at(2) - 1);
@@ -211,6 +216,7 @@ double DpTable::interpolate(double gas, double oil, double water)
 
     // interpolating along z (water)
     double c = c_0 * (1 - zd) + c_1 * zd;
+
 
     return c;
 }

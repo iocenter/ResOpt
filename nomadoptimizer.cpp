@@ -80,9 +80,18 @@ void NomadOptimizer::start()
         const NOMAD::Eval_Point *best_feas = mads.get_best_feasible();
         if(best_feas != NULL)
         {
-            Case *c = p_evaluator->generateCase(*best_feas);
-            c->setObjectiveValue(-best_feas->get_bb_outputs()[0].value());
+            const NOMAD::Point outputs = best_feas->get_bb_outputs();
 
+            // the variable values
+            Case *c = p_evaluator->generateCase(*best_feas);
+
+            // the objective
+            c->setObjectiveValue(-outputs[0].value());
+
+            // the constraints
+            //for(int i = 1; i < outputs.size(); ++i) c->addConstraintValue(outputs[i].value());
+
+            // sending it to the runner
             sendBestCaseToRunner(c);
         }
 

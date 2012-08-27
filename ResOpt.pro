@@ -13,33 +13,7 @@ CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   += static
 
-# bonmin libraries:
-LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -lbonmin -lipopt -lCbc -lCgl -lOsiClp -lOsi -lClp -lCoinUtils
-
-# ipopt libraries (from ipopt_addlibs_cpp.txt):
-LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lipopt -ldl -lcoinmumps -lpthread -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
-
-# cgl libraries (from cgl_addlibs.txt):
-LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCgl -lOsiClp -lClp -lOsi -lcoinmumps -lpthread -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
-
-# osi libraries (from osi_addlibs.txt):
-LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lOsi -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
-
-# clp libraries (from clp_addlibs.txt):
-LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lClp -lcoinmumps -lpthread -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
-
-# coinutils libraries (from coinutils_addlibs.txt):
-LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
-
-# NOMAD library
-LIBS += /home/aleksaju/nomad/nomad.3.5.1/lib/nomad.a
-
-# bonmin header files
-INCLUDEPATH += /home/aleksaju/bonmin/Bonmin-1.5.3/build/include/coin
-
-
-#NOMAD header files
-INCLUDEPATH += /home/aleksaju/nomad/nomad.3.5.1/src
+include(resopt_libs.pri)
 
 QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
 

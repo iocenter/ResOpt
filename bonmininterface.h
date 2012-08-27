@@ -38,6 +38,7 @@ namespace ResOpt
 class Runner;
 class RealVariable;
 class BinaryVariable;
+class IntVariable;
 class Constraint;
 class BonminOptimizer;
 class Case;
@@ -55,6 +56,7 @@ private:
 
     QVector<shared_ptr<RealVariable> > m_vars_real;
     QVector<shared_ptr<BinaryVariable> > m_vars_binary;
+    QVector<shared_ptr<IntVariable> > m_vars_integer;
     QVector<shared_ptr<Constraint> > m_cons;
 
     QVector<double> m_grad_f;   // calculated values for df/dx

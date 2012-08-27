@@ -1,6 +1,7 @@
 #include "nomadevaluator.h"
 
 #include <tr1/memory>
+#include <iostream>
 
 #include "nomadoptimizer.h"
 #include "runner.h"
@@ -11,6 +12,8 @@
 #include "case.h"
 
 using std::tr1::shared_ptr;
+using std::endl;
+using std::cout;
 
 namespace ResOpt
 {
@@ -91,6 +94,14 @@ Case* NomadEvaluator::generateCase(const NOMAD::Eval_Point &x) const
         c->addBinaryVariableValue(x[var_num].value());
         ++var_num;
     }
+
+    for(int i = 0; i < p_optimizer->runner()->model()->integerVariables().size(); ++i)
+    {
+        c->addIntegerVariableValue(x[var_num].value());
+        ++var_num;
+    }
+
+
 
     return c;
 

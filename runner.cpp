@@ -39,6 +39,7 @@
 #include "objective.h"
 #include "binaryvariable.h"
 #include "realvariable.h"
+#include "intvariable.h"
 #include "constraint.h"
 #include "casequeue.h"
 #include "case.h"
@@ -230,25 +231,6 @@ void Runner::run()
     // starting the optimizer
     p_optimizer->start();
 
-// debug code
-
- /*
-    m_launchers.at(0)->reservoirSimulator()->generateInputFiles(m_launchers.at(0)->model());
-
-    VlpSimulator* vlp_sim = dynamic_cast<VlpSimulator*>(m_launchers.at(0)->reservoirSimulator());
-
-    VlpTable* vlp_tab = vlp_sim->vlpTable(0);
-
-    Stream *s = vlp_tab->interpolate(10.1, 60);
-
-    s->printToCout();
-
-
-
-
-    emit optimizationFinished();
-
-*/
 }
 
 
@@ -285,8 +267,6 @@ void Runner::evaluate(CaseQueue *cases, Component *comp)
         else break; // no more cases to run
 
     }
-
-
 
 }
 
@@ -335,6 +315,7 @@ void Runner::writeProblemDefToSummary()
 
         QVector<shared_ptr<BinaryVariable> >  binary_vars = p_model->binaryVariables();
         QVector<shared_ptr<RealVariable> > real_vars = p_model->realVariables();
+        QVector<shared_ptr<IntVariable> > int_vars = p_model->integerVariables();
         QVector<shared_ptr<Constraint> > cons = p_model->constraints();
 
 
@@ -344,7 +325,7 @@ void Runner::writeProblemDefToSummary()
         out << "Number of constraints           = " << cons.size() << "\n\n";
 
         out << "CONTINEOUS VARIABLES:" << "\n";
-        for(int i = 0; i < real_vars.size(); i++)
+        for(int i = 0; i < real_vars.size(); ++i)
         {
             out << "VAR_C" << i +1 << ": " << real_vars.at(i)->name();
             out << ", bounds: (" << real_vars.at(i)->min() << " < " << real_vars.at(i)->value() << " < " << real_vars.at(i)->max() << ")\n";
@@ -352,10 +333,19 @@ void Runner::writeProblemDefToSummary()
         out << "\n";
 
         out << "BINARY VARIABLES:" << "\n";
-        for(int i = 0; i < binary_vars.size(); i++)
+        for(int i = 0; i < binary_vars.size(); ++i)
         {
             out << "VAR_B" << i +1 << ": " << binary_vars.at(i)->name();
             out << ", bounds: (" << binary_vars.at(i)->min() << " < " << binary_vars.at(i)->value() << " < " << binary_vars.at(i)->max() << ")\n";
+        }
+
+        out << "\n";
+
+        out << "INTEGER VARIABLES:" << "\n";
+        for(int i = 0; i < int_vars.size(); ++i)
+        {
+            out << "VAR_I" << i +1 << ": " << int_vars.at(i)->name();
+            out << ", bounds: (" << int_vars.at(i)->min() << " < " << int_vars.at(i)->value() << " < " << int_vars.at(i)->max() << ")\n";
         }
 
         out << "\n";
@@ -377,17 +367,23 @@ void Runner::writeProblemDefToSummary()
         out << "#\t" << "OBJ\t";
 
 
-        for(int i = 0; i < real_vars.size(); i++)
+        for(int i = 0; i < real_vars.size(); ++i)
         {
             out << "VAR_C" << i +1 << "\t";
         }
 
-        for(int i = 0; i < binary_vars.size(); i++)
+        for(int i = 0; i < binary_vars.size(); ++i)
         {
             out << "VAR_B" << i + 1 << "\t";
         }
 
-        for(int i = 0; i < cons.size(); i++)
+        for(int i = 0; i < int_vars.size(); ++i)
+        {
+            out << "VAR_I" << i + 1 << "\t";
+        }
+
+
+        for(int i = 0; i < cons.size(); ++i)
         {
             out << "CON" << i +1 << "\t";
         }
@@ -430,6 +426,13 @@ void Runner::writeCasesToSummary()
                 out << c->binaryVariableValue(j) << "\t";
             }
 
+            // integer variables
+            for(int j = 0; j < c->numberOfIntegerVariables(); ++j)
+            {
+                out << c->integerVariableValue(j) << "\t";
+            }
+
+
             // constraints
             for(int j = 0; j < c->numberOfConstraints(); ++j)
             {
@@ -450,6 +453,7 @@ void Runner::writeCasesToSummary()
 
     }
 
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -464,6 +468,35 @@ void Runner::writeBestCaseToSummary(Case *c)
 
         out << "\nBEST CASE:\n";
 
+
+        // header
+
+        out << "#\t" << "OBJ\t";
+
+
+        for(int i = 0; i < c->numberOfRealVariables(); ++i)
+        {
+            out << "VAR_C" << i +1 << "\t";
+        }
+
+        for(int i = 0; i < c->numberOfBinaryVariables(); ++i)
+        {
+            out << "VAR_B" << i + 1 << "\t";
+        }
+
+        for(int i = 0; i < c->numberOfIntegerVariables(); ++i)
+        {
+            out << "VAR_I" << i + 1 << "\t";
+        }
+
+
+
+        out << "\n";
+
+
+        // data
+
+
         out << "xx" << "\t" << c->objectiveValue() << "\t";
 
         // real variables
@@ -477,6 +510,12 @@ void Runner::writeBestCaseToSummary(Case *c)
         for(int j = 0; j < c->numberOfBinaryVariables(); ++j)
         {
             out << c->binaryVariableValue(j) << "\t";
+        }
+
+        // integer variables
+        for(int j = 0; j < c->numberOfIntegerVariables(); ++j)
+        {
+            out << c->integerVariableValue(j) << "\t";
         }
 
 

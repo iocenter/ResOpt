@@ -4,6 +4,7 @@
 
 #include <QtAlgorithms>
 #include <iostream>
+#include <math.h>
 
 using std::cout;
 using std::endl;
@@ -48,7 +49,9 @@ Stream* VlpTable::interpolate(double pbh, double glift)
              << "P_MAX: " << m_pbh_entries.at(m_pbh_entries.size() - 1) << endl
              << "P_MIN: " << m_pbh_entries.at(0) << endl;
 
-        exit(1);
+        return new Stream(0, 0, 0, 0, pbh);
+
+
 
     }
 
@@ -61,7 +64,8 @@ Stream* VlpTable::interpolate(double pbh, double glift)
              << "Q_MAX: " << m_glift_entries.at(m_glift_entries.size() - 1) << endl
              << "Q_MIN: " << m_glift_entries.at(0) << endl;
 
-        exit(1);
+        return new Stream(0, 0, 0, 0, pbh);
+
 
     }
 
@@ -77,8 +81,8 @@ Stream* VlpTable::interpolate(double pbh, double glift)
     int i_Q11 = findTableIndex(upper_point.first - 1, upper_point.second - 1);
 
     // finding the weights
-    double t = (pbh - m_pbh.at(i_Q11)) / (m_pbh.at(i_Q21) - m_pbh.at(i_Q11));
-    double u = (glift - m_glift.at(i_Q11)) / (m_glift.at(i_Q12) - m_glift.at(i_Q11));
+    double t = (pbh - m_pbh.at(i_Q11)) / (m_pbh.at(i_Q22) - m_pbh.at(i_Q11));
+    double u = (glift - m_glift.at(i_Q11)) / (m_glift.at(i_Q22) - m_glift.at(i_Q11));
 
 
     // finding the gas rate
@@ -101,6 +105,36 @@ Stream* VlpTable::interpolate(double pbh, double glift)
 
 
     Stream *s = new Stream(0, qo, qg, qw, pbh);
+
+
+
+
+    if(isnan(qo))
+    {
+        cout << "interpolated qo is nan" << endl;
+
+        cout << "Well: " << wellName().toAscii().data() << endl;
+
+        cout << "glift = " << glift << endl;
+        cout << "pbh = " << pbh << endl;
+
+        cout << "t = " << t << endl;
+        cout << "u = " << t << endl;
+
+        cout << "pbh_11 = " << m_pbh.at(i_Q11) << endl;
+        cout << "pbh_21 = " << m_pbh.at(i_Q21) << endl;
+
+        cout << "pbh entries:" << endl;
+        for(int i = 0; i < m_pbh_entries.size(); ++i) cout << i << ": " << m_pbh_entries.at(i) << endl;
+
+        cout << "glift entries:" << endl;
+        for(int i = 0; i < m_glift_entries.size(); ++i) cout << i << ": " << m_glift_entries.at(i) << endl;
+
+
+
+        exit(1);
+    }
+
 
 
 
@@ -156,6 +190,10 @@ QPair<int,int> VlpTable::findUpperEntries(double pbh, double glift)
         }
 
     }
+
+    if(glift == m_glift_entries.at(m_glift_entries.size() -1)) i_gl = m_glift_entries.size() -1;
+    if(pbh == m_pbh_entries.at(m_pbh_entries.size() -1)) i_pbh = m_pbh_entries.size() -1;
+
 
     return qMakePair(i_pbh, i_gl);
 

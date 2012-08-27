@@ -46,6 +46,7 @@ class DecoupledModel : public Model
 private:
     QVector<shared_ptr<BinaryVariable> > m_vars_binary;     // vector containing all binary variables
     QVector<shared_ptr<RealVariable> > m_vars_real;         // vector containing all real variables
+    QVector<shared_ptr<IntVariable> > m_vars_integer;       // vector containing all integer variables
     QVector<shared_ptr<Constraint> > m_cons;                // vector containing all the constraints
 
     QVector<InputRateVariable*> m_rate_vars;            // all the varaibles for rate input to the different parts of the model
@@ -101,6 +102,7 @@ public:
 
     virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables();
     virtual QVector<shared_ptr<RealVariable> >& realVariables();
+    virtual QVector<shared_ptr<IntVariable> >& integerVariables();
     virtual QVector<shared_ptr<Constraint> >& constraints();
 
     virtual QVector<shared_ptr<RealVariable> > realVariables(Component *c);

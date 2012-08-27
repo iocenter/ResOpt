@@ -22,6 +22,13 @@
 #include "cumoilobjective.h"
 #include "stream.h"
 
+#include <math.h>
+#include <iostream>
+
+
+using std::cout;
+using std::endl;
+
 namespace ResOpt
 {
 
@@ -48,6 +55,17 @@ void CumoilObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 
         // adding the time step oil production to the cum
         cumoil += dt * s.at(i)->oilRate();
+
+
+        if(isnan(cumoil))
+        {
+            cout << "objective is nan..." << endl;
+
+            s.at(i)->printToCout();
+
+            exit(1);
+        }
+
 
     }
 

@@ -106,7 +106,7 @@ void ProductionWell::setupConstraints()
     }
 
     // the connection (routing) constraint
-    p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 1.0));
+    p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 0.0));
     p_connection_constraint->setName("Pipe routing constraint for well: " + name());
 
 

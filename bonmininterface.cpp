@@ -29,6 +29,7 @@
 #include "model.h"
 #include "realvariable.h"
 #include "binaryvariable.h"
+#include "intvariable.h"
 #include "constraint.h"
 #include "objective.h"
 #include "case.h"
@@ -51,6 +52,7 @@ BonminInterface::BonminInterface(BonminOptimizer *o)
 {
     m_vars_binary = p_optimizer->runner()->model()->binaryVariables();
     m_vars_real = p_optimizer->runner()->model()->realVariables();
+    m_vars_integer = p_optimizer->runner()->model()->integerVariables();
     m_cons = p_optimizer->runner()->model()->constraints();
 }
 
@@ -66,22 +68,30 @@ BonminInterface::~BonminInterface()
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
 {
-    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+    assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
 
     // the real (contineous) variables. this includes the well control variables
     int n_var = 0;
-    for(int i = 0; i < m_vars_real.size(); i++)
+    for(int i = 0; i < m_vars_real.size(); ++i)
     {
         var_types[n_var] = CONTINUOUS;
-        n_var++;
+        ++n_var;
     }
 
     // the binary variables. this includes the routing vars
-    for(int i = 0; i < m_vars_binary.size(); i++)
+    for(int i = 0; i < m_vars_binary.size(); ++i)
     {
         var_types[n_var] = BINARY;
-        n_var++;
+        ++n_var;
     }
+
+    // the integer variables. this includes separator install times
+    for(int i = 0; i < m_vars_integer.size(); ++i)
+    {
+        var_types[n_var] = INTEGER;
+        ++n_var;
+    }
+
 
 
 
@@ -93,22 +103,30 @@ bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
 //-----------------------------------------------------------------------------------------------
 bool BonminInterface::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_types)
 {
-    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+    assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
 
     // the real (contineous) variables. this includes the well control variables
     int n_var = 0;
-    for(int i = 0; i < m_vars_real.size(); i++)
+    for(int i = 0; i < m_vars_real.size(); ++i)
     {
         var_types[n_var] = Ipopt::TNLP::NON_LINEAR;
-        n_var++;
+        ++n_var;
     }
 
-    // the integer variables. this includes the routing vars
-    for(int i = 0; i < m_vars_binary.size(); i++)
+    // the binary variables. this includes the routing vars
+    for(int i = 0; i < m_vars_binary.size(); ++i)
     {
         var_types[n_var] = Ipopt::TNLP::NON_LINEAR;
-        n_var++;
+        ++n_var;
     }
+
+    // the integer variables. this includes the separator install times
+    for(int i = 0; i < m_vars_integer.size(); ++i)
+    {
+        var_types[n_var] = Ipopt::TNLP::NON_LINEAR;
+        ++n_var;
+    }
+
 
 
 
@@ -141,7 +159,7 @@ bool BonminInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
 {
     cout << "Giving bonmin the dimensions of the problem..." << endl;
 
-    n = m_vars_binary.size() + m_vars_real.size();     // number of variables
+    n = m_vars_binary.size() + m_vars_real.size() + m_vars_integer.size();     // number of variables
     m = m_cons.size();                              // number of constraints
 
     nnz_jac_g = m*n;        // dense Jacobian
@@ -163,7 +181,7 @@ bool BonminInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
 bool BonminInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
                              Index m, Number* g_l, Number* g_u)
 {
-    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+    assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
     assert(m == m_cons.size());
 
     int n_var = 0;  // variable index used by the optimizer (first real, then int)
@@ -177,11 +195,20 @@ bool BonminInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
         ++n_var;
     }
 
-    //setting integer variable bounds
+    //setting binary variable bounds
     for(int i = 0; i < m_vars_binary.size(); ++i)
     {
         x_l[n_var] = m_vars_binary.at(i)->min();   // lower bound
         x_u[n_var] = m_vars_binary.at(i)->max();	// upper bound
+
+        ++n_var;
+    }
+
+    //setting integer variable bounds
+    for(int i = 0; i < m_vars_integer.size(); ++i)
+    {
+        x_l[n_var] = m_vars_integer.at(i)->min();   // lower bound
+        x_u[n_var] = m_vars_integer.at(i)->max();	// upper bound
 
         ++n_var;
     }
@@ -205,7 +232,7 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
                                 Index m, bool init_lambda,
                                 Number* lambda)
 {
-    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+    assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
 
     // only expect to initialize x
     assert(init_x);
@@ -218,20 +245,29 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
     int n_var = 0;  // variable index used by the optimizer (first real, then binary)
 
     // setting the real variable starting points
-    for(int i = 0; i < m_vars_real.size(); i++)
+    for(int i = 0; i < m_vars_real.size(); ++i)
     {
         x[n_var] = m_vars_real.at(i)->value();  // current value = starting point
 
-        n_var++;
+        ++n_var;
     }
 
     //setting binary variable starting points
-    for(int i = 0; i < m_vars_binary.size(); i++)
+    for(int i = 0; i < m_vars_binary.size(); ++i)
     {
         x[n_var] = m_vars_binary.at(i)->value();  // current value = starting point
 
-        n_var++;
+        ++n_var;
     }
+
+    //setting integer variable starting points
+    for(int i = 0; i < m_vars_integer.size(); ++i)
+    {
+        x[n_var] = m_vars_integer.at(i)->value();  // current value = starting point
+
+        ++n_var;
+    }
+
 
 
 
@@ -461,7 +497,7 @@ bool BonminInterface::newVariableValues(Index n, const Number *x)
     if(p_case_last == 0) return true;
 
     // checking that the number of variables in the case correspons to n
-    int n_var_case = p_case_last->numberOfRealVariables() + p_case_last->numberOfBinaryVariables();
+    int n_var_case = p_case_last->numberOfRealVariables() + p_case_last->numberOfBinaryVariables() + p_case_last->numberOfIntegerVariables();
     if(n != n_var_case) return false;
 
     // checking if the real variables are the same
@@ -492,6 +528,22 @@ bool BonminInterface::newVariableValues(Index n, const Number *x)
             ++n_var;
         }
     }
+
+    // checking the integer variables, if nothing new was detected with the real or binary vars
+    if(!x_new)
+    {
+        for(int i = 0; i < p_case_last->numberOfIntegerVariables(); ++i)
+        {
+            if(x[n_var] != p_case_last->integerVariableValue(i))
+            {
+                x_new = true;
+                break;
+            }
+
+            ++n_var;
+        }
+    }
+
 
 
     return x_new;
@@ -530,10 +582,10 @@ double BonminInterface::perturbedVariableValue(double value, double max, double 
 void BonminInterface::calculateGradients(Index n, const Number *x)
 {
     // checking if the gradient vectors have the correct size
-    int n_grad = m_vars_binary.size() + m_vars_real.size();
+    int n_grad = m_vars_binary.size() + m_vars_real.size() + m_vars_integer.size();
     if(m_grad_f.size() != n_grad) m_grad_f = QVector<double>(n_grad);
 
-    int n_jac = (m_vars_binary.size() + m_vars_real.size())*m_cons.size();
+    int n_jac = (m_vars_binary.size() + m_vars_real.size() + m_vars_integer.size())*m_cons.size();
     if(m_jac_g.size() != n_jac) m_jac_g = QVector<double>(n_jac);
 
 
@@ -602,6 +654,28 @@ void BonminInterface::calculateGradients(Index n, const Number *x)
         case_queue->push_back(case_perturbed);
     }
 
+    // adding the integer variable perturbations
+    for(int i = 0; i < m_vars_integer.size(); ++i)
+    {
+        // calculating the perturbed value of the variable
+        int u_slack = m_vars_integer.at(i)->max() - m_vars_integer.at(i)->value();
+        int l_slack = m_vars_integer.at(i)->value() - m_vars_integer.at(i)->min();
+
+        int x_perturbed = (u_slack > l_slack) ? m_vars_integer.at(i)->value() + 1 : m_vars_integer.at(i)->value() -1;
+
+
+        // setting up a new case
+        Case *case_perturbed = new Case(*p_case_gradients);
+
+        // changing the value of the variable to the perturbe value
+        case_perturbed->setIntegerVariableValue(i, x_perturbed);
+
+        // adding the case to the queue
+        case_queue->push_back(case_perturbed);
+    }
+
+
+
     // sending the cases to the runner for evaluation
     p_optimizer->runCases(case_queue);
 
@@ -617,13 +691,6 @@ void BonminInterface::calculateGradients(Index n, const Number *x)
 
         // calculating the gradient of the objective
         double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
-
-        //cout << "x_base = " << p_case_gradients->realVariableValue(i) << endl;
-        //cout << "x_pert = " << case_queue->at(n_var)->realVariableValue(i) << endl;
-        //cout << "f_base = " << p_case_gradients->objectiveValue() << endl;
-        //cout << "f_pert = " << case_queue->at(n_var)->objectiveValue() << endl;
-
-        //cout << "df/dx" << n_var << " = " << dfdx << endl;
 
         // setting the value to the objective gradient vector
         m_grad_f.replace(n_var, dfdx);
@@ -672,6 +739,35 @@ void BonminInterface::calculateGradients(Index n, const Number *x)
         ++n_var;
     }
 
+    // calculating the gradients of the integer variables
+    for(int i = 0; i < p_case_gradients->numberOfIntegerVariables(); ++i)
+    {
+        // calculating the perturbation size of the variable
+        double dx = p_case_gradients->integerVariableValue(i) - case_queue->at(n_var)->integerVariableValue(i);
+
+        // calculating the gradient of the objective
+        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
+
+        // setting the value to the objective gradient vector
+        m_grad_f.replace(n_var, dfdx);
+
+
+        // calculating the gradients of the constraints
+        int entry = n_var*p_case_gradients->numberOfConstraints();
+        for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
+        {
+            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
+            m_jac_g.replace(entry, dcdx);
+            ++entry;
+
+
+        }
+
+
+        ++n_var;
+    }
+
+
     // deleting the perturbed cases
     for(int i = 0; i < case_queue->size(); ++i) delete case_queue->at(i);
     delete case_queue;
@@ -689,7 +785,9 @@ bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
     // fist checking if the gradients case has been initialized
     if(p_case_gradients == 0) return false;
 
-    if(p_case_gradients->numberOfRealVariables() == m_vars_real.size() && p_case_gradients->numberOfBinaryVariables() == m_vars_binary.size()) //checking if the gradient case is initialized
+    if(p_case_gradients->numberOfRealVariables() == m_vars_real.size()
+            && p_case_gradients->numberOfBinaryVariables() == m_vars_binary.size()
+            && p_case_gradients->numberOfIntegerVariables() == m_vars_integer.size()) //checking if the gradient case is initialized
     {
         // checking if the variable values are the same as the gradients case
         int n_var = 0;
@@ -721,6 +819,22 @@ bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
             ++n_var;
         }
 
+        if(new_x) return new_x;
+
+        // integer variables
+        for(int i = 0; i < p_case_gradients->numberOfIntegerVariables(); ++i)
+        {
+            if(x[n_var] != p_case_gradients->integerVariableValue(i))
+            {
+                new_x = true;
+                break;
+            }
+
+
+            ++n_var;
+        }
+
+
         return new_x;
 
     }
@@ -734,7 +848,7 @@ bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
 Case* BonminInterface::generateCase(Index n, const Number *x)
 {
     // checking that the problem has the right dimensions
-    assert(n == (m_vars_real.size() + m_vars_binary.size()));
+    assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
 
     // creating a new case
     Case *case_new = new Case();
@@ -743,18 +857,26 @@ Case* BonminInterface::generateCase(Index n, const Number *x)
     int n_var = 0;
 
     // real variables
-    for(int i = 0; i < m_vars_real.size(); i++)
+    for(int i = 0; i < m_vars_real.size(); ++i)
     {
         case_new->addRealVariableValue(x[n_var]);
         ++n_var;
     }
 
     // binary variables
-    for(int i = 0; i < m_vars_binary.size(); i++)
+    for(int i = 0; i < m_vars_binary.size(); ++i)
     {
         case_new->addBinaryVariableValue(x[n_var]);
         ++n_var;
     }
+
+    // integer variables
+    for(int i = 0; i < m_vars_integer.size(); ++i)
+    {
+        case_new->addIntegerVariableValue(x[n_var]);
+        ++n_var;
+    }
+
 
     return case_new;
 

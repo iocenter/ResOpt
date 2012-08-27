@@ -23,6 +23,7 @@
 #include "model.h"
 #include "realvariable.h"
 #include "binaryvariable.h"
+#include "intvariable.h"
 
 namespace ResOpt
 {
@@ -47,6 +48,13 @@ Case::Case(Model *m)
         addBinaryVariableValue(m->binaryVariables().at(i)->value());
     }
 
+    // adding integer variables
+    for(int i = 0; i < m->integerVariables().size(); ++i)
+    {
+        addIntegerVariableValue(m->integerVariables().at(i)->value());
+    }
+
+
 
 }
 
@@ -62,6 +70,13 @@ Case::Case(const Case &c, bool cpy_output)
     {
         m_binary_var_values.push_back(c.m_binary_var_values.at(i));
     }
+
+    for(int i = 0; i < c.numberOfIntegerVariables(); ++i)
+    {
+        m_integer_var_values.push_back(c.m_integer_var_values.at(i));
+    }
+
+
 
     if(cpy_output)  // copy the constraints and objective too
     {

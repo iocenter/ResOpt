@@ -143,6 +143,15 @@ public:
     virtual QVector<shared_ptr<RealVariable> >& realVariables() = 0;
 
 
+
+    /**
+     * @brief Returns a vector containing all the integer variables.
+     * @details These are the install time variables for the separators.
+     *
+     * @return QVector<shared_ptr<IntVariable> >
+     */
+    virtual QVector<shared_ptr<IntVariable> >& integerVariables() = 0;
+
     /**
      * @brief Returns a vector containing all the constraints defined within the model.
      * @details The constraints include well BHP constraints and capasity constraints

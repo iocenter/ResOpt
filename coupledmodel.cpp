@@ -341,10 +341,39 @@ QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables()
 
 
 //-----------------------------------------------------------------------------------------------
+// Collects all the integer variables
+//-----------------------------------------------------------------------------------------------
+QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables()
+{
+    if(m_vars_integer.size() == 0)
+    {
+
+        for(int i = 0; i < numberOfPipes(); ++i)     // looping through all the pipes
+        {
+            // checking if this is a separator
+            Separator *s = dynamic_cast<Separator*>(pipe(i));
+
+            if(s != 0)
+            {
+                if(s->installTime()->isVariable()) m_vars_integer.push_back(s->installTime());  // adding install time if it is a variable
+            }
+
+        }
+
+
+    }
+
+
+    return m_vars_integer;
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // Collects all the constraints
 //-----------------------------------------------------------------------------------------------
 QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
 {
+
     if(m_cons.size() == 0)
     {
 

@@ -28,11 +28,13 @@
 #include "case.h"
 #include "realvariable.h"
 #include "binaryvariable.h"
+#include "intvariable.h"
 #include "constraint.h"
 #include "objective.h"
 #include "component.h"
 #include "well.h"
 #include "pipe.h"
+#include "separator.h"
 
 #include "pressuredropcalculator.h"
 
@@ -98,7 +100,9 @@ void Launcher::evaluate(Case *c, Component *comp)
         // finding what type of component this is
 
         Pipe *p = dynamic_cast<Pipe*>(comp);
-        if(p != 0) evaluatePipe(c, p);  // this is a Pipe
+        Separator *s = dynamic_cast<Separator*>(comp);
+
+        if(p != 0 && s == 0) evaluatePipe(c, p);  // this is a Pipe
         else
         {
             Well *w = dynamic_cast<Well*>(comp);
@@ -121,6 +125,38 @@ void Launcher::evaluate(Case *c, Component *comp)
 //-----------------------------------------------------------------------------------------------
 void Launcher::evaluateEntireModel(Case *c)
 {
+    // checking that the case and the model have the same number of variables
+    if(c->numberOfRealVariables() != p_model->realVariables().size())
+    {
+        cout << endl << "###  Runtime Error  ###" << endl
+             << "When evaluating the model" << endl
+             << "The Case does not have the same number of real variables as the Model" << endl
+             << "CASE:  " << c->numberOfRealVariables() << endl
+             << "MODEL: " << p_model->realVariables().size() << endl;
+        exit(1);
+
+    }
+    if(c->numberOfBinaryVariables() != p_model->binaryVariables().size())
+    {
+        cout << endl << "###  Runtime Error  ###" << endl
+             << "When evaluating the model" << endl
+             << "The Case does not have the same number of binary variables as the Model" << endl
+             << "CASE:  " << c->numberOfBinaryVariables() << endl
+             << "MODEL: " << p_model->binaryVariables().size() << endl;
+        exit(1);
+
+    }
+    if(c->numberOfIntegerVariables() != p_model->integerVariables().size())
+    {
+        cout << endl << "###  Runtime Error  ###" << endl
+             << "When evaluating the model" << endl
+             << "The Case does not have the same number of integer variables as the Model" << endl
+             << "CASE:  " << c->numberOfIntegerVariables() << endl
+             << "MODEL: " << p_model->integerVariables().size() << endl;
+        exit(1);
+
+    }
+
 
 
     // checking if the reservoir simulator must be rerun
@@ -134,6 +170,10 @@ void Launcher::evaluateEntireModel(Case *c)
     for(int i = 0; i < p_model->binaryVariables().size(); ++i)  // binary variables
     {
         p_model->binaryVariables().at(i)->setValue(c->binaryVariableValue(i));
+    }
+    for(int i = 0; i < p_model->integerVariables().size(); ++i)  // binary variables
+    {
+        p_model->integerVariables().at(i)->setValue(c->integerVariableValue(i));
     }
 
     // the variable values have changed, so the status of the model is no longer up to date
@@ -157,8 +197,10 @@ void Launcher::evaluateEntireModel(Case *c)
     // update the streams in the pipe network
     p_model->updateStreams();
 
+
     // calculating pressures in the Pipe network
     p_model->calculatePipePressures();
+
 
     // updating the constraints (this must be done after the pressure calc)
     p_model->updateConstraints();
@@ -166,9 +208,9 @@ void Launcher::evaluateEntireModel(Case *c)
     // updating the objective
     p_model->updateObjectiveValue();
 
+
     // updating the status of the model
     p_model->setUpToDate(true);
-
 
     // copying back the results to the case
     for(int i = 0; i < p_model->constraints().size(); ++i)
@@ -177,6 +219,7 @@ void Launcher::evaluateEntireModel(Case *c)
     }
 
     c->setObjectiveValue(p_model->objective()->value());
+
 
 
 }

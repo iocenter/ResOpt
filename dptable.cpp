@@ -155,7 +155,9 @@ double DpTable::interpolate(double gas, double oil, double water)
              << "QG_MAX: " << m_entries_gas.at(m_entries_gas.size() - 1) << endl
              << "QG_MIN: " << m_entries_gas.at(0) << endl;
 
-        exit(1);
+        return 1000;
+
+
 
     }
     if(oil < m_entries_oil.at(0) || oil > m_entries_oil.at(m_entries_oil.size() - 1))
@@ -166,7 +168,8 @@ double DpTable::interpolate(double gas, double oil, double water)
              << "QO_MAX: " << m_entries_oil.at(m_entries_oil.size() - 1) << endl
              << "QO_MIN: " << m_entries_oil.at(0) << endl;
 
-        exit(1);
+        return 1000;
+
 
     }
     if(water < m_entries_wat.at(0) || water > m_entries_wat.at(m_entries_wat.size() - 1))
@@ -177,7 +180,8 @@ double DpTable::interpolate(double gas, double oil, double water)
              << "QW_MAX: " << m_entries_wat.at(m_entries_wat.size() - 1) << endl
              << "QW_MIN: " << m_entries_wat.at(0) << endl;
 
-        exit(1);
+        return 1000;
+
 
     }
 

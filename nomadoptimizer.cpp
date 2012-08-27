@@ -9,6 +9,7 @@
 #include "model.h"
 #include "binaryvariable.h"
 #include "realvariable.h"
+#include "intvariable.h"
 #include "constraint.h"
 #include "objective.h"
 #include "case.h"
@@ -65,6 +66,8 @@ void NomadOptimizer::start()
         // NOMAD initializations:
         NOMAD::begin(0, 0); // hope this works, was: begin(argc, argv)
 
+
+
         // parameters creation:
         generateParameters();
 
@@ -93,6 +96,8 @@ void NomadOptimizer::start()
 
             // sending it to the runner
             sendBestCaseToRunner(c);
+
+            delete c;
         }
 
     }
@@ -116,12 +121,10 @@ void NomadOptimizer::start()
 void NomadOptimizer::generateParameters()
 {
 
-
-
     p_param = new NOMAD::Parameters(*p_disp);
 
     // finding the number of variables
-    int n_var = runner()->model()->realVariables().size() + runner()->model()->binaryVariables().size();
+    int n_var = runner()->model()->realVariables().size() + runner()->model()->binaryVariables().size() + runner()->model()->integerVariables().size();
 
     p_param->set_DIMENSION (n_var);     // number of variables
 
@@ -169,6 +172,25 @@ void NomadOptimizer::generateParameters()
 
         ++var_num;
     }
+    for(int i = 0; i < runner()->model()->integerVariables().size(); ++i)
+    {
+        shared_ptr<IntVariable> v = runner()->model()->integerVariables().at(i);
+
+        // setting the type
+        p_param->set_BB_INPUT_TYPE(var_num, NOMAD::INTEGER);
+
+        // setting the starting point
+        sp[var_num] = v->value();
+
+        // setting the upper bound
+        ub[var_num] = v->max();
+
+        //setting the lower bound
+        lb[var_num] = v->min();
+
+        ++var_num;
+    }
+
 
 
     // setting the starting point, upper and lower bounds to the parameters

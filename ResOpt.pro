@@ -11,6 +11,7 @@ QT       -= gui
 TARGET = ResOpt
 CONFIG   += console
 CONFIG   -= app_bundle
+CONFIG   += static
 
 # bonmin libraries:
 LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -lbonmin -lipopt -lCbc -lCgl -lOsiClp -lOsi -lClp -lCoinUtils

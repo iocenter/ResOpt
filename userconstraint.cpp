@@ -5,11 +5,14 @@
 #include "constraint.h"
 #include "model.h"
 #include "well.h"
+#include "productionwell.h"
+#include "pipeconnection.h"
 #include "pipe.h"
 #include "separator.h"
 #include "stream.h"
 #include "intvariable.h"
 #include "realvariable.h"
+#include "binaryvariable.h"
 
 using std::cout;
 using std::endl;
@@ -183,6 +186,30 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
         else if(component.startsWith("O")) value = w->stream(time_step)->oilRate();
         else if(component.startsWith("W")) value = w->stream(time_step)->waterRate();
         else if(component.startsWith("P")) value = w->stream(time_step)->pressure();
+        else if(component.startsWith("L")) // gas lift
+        {
+            // checking if this is a production well
+            ProductionWell *prod_well = dynamic_cast<ProductionWell*>(w);
+
+            if(prod_well != 0)
+            {
+                // checking if the well has gas lift
+                if(prod_well->hasGasLift())
+                {
+                    // summing together the routing variables
+                    double routing = 0;
+                    for(int k = 0; k < prod_well->numberOfPipeConnections(); ++k)
+                    {
+                        routing += prod_well->pipeConnection(k)->variable()->value();
+                    }
+
+                    value = prod_well->gasLiftControl(time_step)->controlVar()->value() * routing;
+                }
+                else error("The well did not have gas lift when L was specified");
+            }
+            else error("L can only be specified for production wells");
+
+        }
         else error("Type of component not recognized: " + component);
 
     } // well

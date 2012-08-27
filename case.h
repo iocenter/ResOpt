@@ -44,6 +44,7 @@ class Case
 private:
     QVector<double> m_real_var_values;
     QVector<double> m_binary_var_values;
+    QVector<int> m_integer_var_values;
 
     QVector<double> m_constraint_values;
     double m_objective_value;
@@ -56,21 +57,28 @@ public:
     // add functions
     void addRealVariableValue(double v) {m_real_var_values.push_back(v);}
     void addBinaryVariableValue(double v) {m_binary_var_values.push_back(v);}
+    void addIntegerVariableValue(int v) {m_integer_var_values.push_back(v);}
 
     void addConstraintValue(double v) {m_constraint_values.push_back(v);}
 
     // set functions
     void setObjectiveValue(double v) {m_objective_value = v;}
+
     void setRealVariableValue(int i, double v) {m_real_var_values.replace(i,v);}
     void setBinaryVariableValue(int i, double v) {m_binary_var_values.replace(i,v);}
+    void setIntegerVariableValue(int i, int v) {m_integer_var_values.replace(i,v);}
 
     // get functions
     int numberOfRealVariables() const {return m_real_var_values.size();}
     int numberOfBinaryVariables() const {return m_binary_var_values.size();}
+    int numberOfIntegerVariables() const {return m_integer_var_values.size();}
+
     int numberOfConstraints() const {return m_constraint_values.size();}
 
     double realVariableValue(int i) const {return m_real_var_values.at(i);}
     double binaryVariableValue(int i) const {return m_binary_var_values.at(i);}
+    int integerVariableValue(int i) const {return m_integer_var_values.at(i);}
+
     double constraintValue(int i) const {return m_constraint_values.at(i);}
     double objectiveValue() const {return m_objective_value;}
 

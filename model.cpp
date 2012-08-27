@@ -663,7 +663,18 @@ void Model::updateObjectiveValue()
             // checking if this is a production well
             ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(j));
 
-            if(prod_well != 0) *s += *well(j)->stream(i);
+            if(prod_well != 0)
+            {
+                // adding up the routing variables for the well
+                double routing = 0;
+                for(int k = 0; k < prod_well->numberOfPipeConnections(); ++k) routing += prod_well->pipeConnection(k)->variable()->value();
+                if(routing > 1.0) routing = 1.0;
+
+                Stream well_str = *prod_well->stream(i);
+
+                *s += well_str * routing;
+            }
+
         }
 
         field_rates.push_back(s);

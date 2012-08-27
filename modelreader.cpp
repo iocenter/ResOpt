@@ -563,6 +563,14 @@ Well* ModelReader::readWell()
 
 
     }
+    if(l_name.contains("_"))
+    {
+        cout << endl << "### Error detected in input file! ###" << endl
+             << "The well NAME can not contain underscore (_)..." << endl
+             << "Well name: " <<l_name.toAscii().data() << endl;
+        exit(1);
+
+    }
 
 
     // everything ok, setting to reservoir

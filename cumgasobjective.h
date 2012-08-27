@@ -27,7 +27,7 @@ namespace ResOpt
 {
 
 /**
- * @brief Class for objectives that maximize gas cumulative production
+ * @brief Class for objectives that maximize gas cumulative production test
  *
  */
 class CumgasObjective : public Objective

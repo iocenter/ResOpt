@@ -13,6 +13,9 @@ CONFIG   += console
 CONFIG   -= app_bundle
 CONFIG   += static
 
+
+include(resopt_libs.pri)
+
 QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
 
 TEMPLATE = app

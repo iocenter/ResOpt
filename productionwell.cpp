@@ -75,8 +75,6 @@ ProductionWell::ProductionWell(const ProductionWell &w)
     }
 
 
-
-
 }
 
 

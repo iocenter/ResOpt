@@ -1483,6 +1483,21 @@ Pipe* ModelReader::readSeparator()
 
         if(list.at(0).startsWith("NUMBER")) l_number = list.at(1).toInt(&ok);                   // getting the id number of the separator
         else if(list.at(0).startsWith("OUTLETPIPE")) l_outlet_pipe = list.at(1).toInt(&ok);     // getting the outlet pipe number
+        else if(list.at(0).startsWith("TYPE"))                                                  // getting the type
+        {
+            if(list.at(1).startsWith("WATER")) p_sep->setType(Separator::WATER);
+            else if(list.at(1).startsWith("GAS")) p_sep->setType(Separator::GAS);
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "SEPARATOR TYPE not recognized..." << endl
+                     << "The TYPE can either be WATER or GAS" << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+            }
+        }
         else if(list.at(0).startsWith("COST"))                                                  // getting the cost
         {
             if(list.size() == 4)  // the right number of numbers

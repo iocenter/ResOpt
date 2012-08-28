@@ -272,19 +272,28 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
         else if(component.startsWith("OIL")) value = s->stream(time_step)->oilRate();
         else if(component.startsWith("WAT")) value = s->stream(time_step)->waterRate();
         else if(component.startsWith("P")) value = s->stream(time_step)->pressure();
-        else if(component.startsWith("REM")) // the amount of water removed from the separator
+        else if(component.startsWith("REM")) // the amount of water or gas removed from the separator
         {
-            double qw_remove = 0;
+            double q_remove = 0;
             if(time_step >= s->installTime()->value())
             {
-                // how much water should be removed
-                double qw_remove = s->stream(time_step)->waterRate() * s->removeFraction()->value();
-                if(qw_remove > s->removeCapacity()->value()) qw_remove = s->removeCapacity()->value();
-
+                // checking if this is a water or gas separator
+                if(s->type() == Separator::WATER)
+                {
+                    // how much water should be removed
+                    q_remove = s->stream(time_step)->waterRate() * s->removeFraction()->value();
+                    if(q_remove > s->removeCapacity()->value()) q_remove = s->removeCapacity()->value();
+                }
+                else if(s->type() == Separator::GAS)
+                {
+                    // how much gas should be removed
+                    q_remove = s->stream(time_step)->gasRate() * s->removeFraction()->value();
+                    if(q_remove > s->removeCapacity()->value()) q_remove = s->removeCapacity()->value();
+                }
 
             }
 
-            value = qw_remove;
+            value = q_remove;
 
         }
         else error("Type of component not recognized: " + component);

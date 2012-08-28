@@ -24,7 +24,12 @@ class PipeConnection;
  */
 class Separator : public Pipe
 {
+public:
+    enum TYPE {WATER, GAS};
+
 private:
+    TYPE m_type;
+
 
     Cost *p_cost;                               // the cost associated with installing the separator
     shared_ptr<IntVariable> p_install_time;     // the installation time of the separator
@@ -48,6 +53,8 @@ public:
     virtual void calculateInletPressure();
 
     // set functions
+
+    void setType(TYPE t) {m_type = t;}
     void setOutletConnection(PipeConnection *c) {p_outlet_connection = c;}
     void setCost(Cost *c) {p_cost = c;}
     void setInstallTime(shared_ptr<IntVariable> t) {p_install_time = t;}
@@ -55,6 +62,7 @@ public:
     void setRemoveCapacity(shared_ptr<RealVariable> c) {p_remove_capacity = c;}
 
     // get functions
+    TYPE type() {return m_type;}
     PipeConnection* outletConnection() {return p_outlet_connection;}
     Cost* cost() {return p_cost;}
     shared_ptr<IntVariable> installTime() {return p_install_time;}

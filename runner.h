@@ -73,6 +73,7 @@ private:
     Optimizer *p_optimizer;
 
     QFile *p_summary;
+    QFile *p_debug;
     int m_number_of_runs;
     int m_number_of_res_sim_runs;
     time_t m_start_time;
@@ -111,10 +112,12 @@ public:
     void initialize();
 
 
+    void printDebug(Launcher *l);
 
     // set functions
 
     void setSummaryFile(const QString &f);
+    void setDebugFile(const QString &f);
 
     void setOptimizer(Optimizer *o) {p_optimizer = o;}
     void setReservoirSimulator(ReservoirSimulator *s) {p_simulator = s;}

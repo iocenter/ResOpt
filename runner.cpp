@@ -33,6 +33,10 @@
 #include "stream.h"
 #include "pressuredropcalculator.h"
 #include "pipe.h"
+#include "endpipe.h"
+#include "midpipe.h"
+#include "separator.h"
+#include "pipeconnection.h"
 #include "reservoir.h"
 #include "bonminoptimizer.h"
 #include "runonceoptimizer.h"
@@ -67,6 +71,7 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       p_simulator(0),
       p_optimizer(0),
       p_summary(0),
+      p_debug(0),
       m_number_of_runs(1),
       m_number_of_res_sim_runs(0),
       p_cases(0)
@@ -80,6 +85,8 @@ Runner::~Runner()
     if(p_simulator != 0) delete p_simulator;
     if(p_reader != 0) delete p_reader;
     if(p_optimizer != 0) delete p_optimizer;
+    if(p_summary != 0) delete p_summary;
+    if(p_debug != 0) delete p_debug;
 
     for(int i = 0; i < m_launchers.size(); ++i) delete m_launchers.at(i);
 
@@ -293,6 +300,32 @@ void Runner::setSummaryFile(const QString &f)
     }
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Initializes the debug file
+//-----------------------------------------------------------------------------------------------
+void Runner::setDebugFile(const QString &f)
+{
+
+    p_debug = new QFile( "output/" + f);
+
+    if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qWarning("Could not connect to debug file: %s", p_debug->fileName().toAscii().data());
+
+        delete p_debug;
+        p_debug = 0;
+    }
+    else
+    {
+        // deleting content from previous launches
+        p_debug->resize(0);
+    }
+
+
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Writes the problem definition to the summary file
@@ -548,6 +581,9 @@ void Runner::writeBestCaseToSummary(Case *c)
 void Runner::onLauncherFinished(Launcher *l, Component *comp)
 {
 
+    // printing debug info if enabled
+    if(p_debug != 0) printDebug(l);
+
     // check if there are more cases to run
     Case *c = p_cases->next();
 
@@ -598,6 +634,153 @@ void Runner::onLauncherFinished(Launcher *l, Component *comp)
         }
 
     }
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// Prints debug information on the current model state
+//-----------------------------------------------------------------------------------------------
+void Runner::printDebug(Launcher *l)
+{
+    QTextStream out(p_debug);
+
+    Model *m = l->model();
+
+    out << "CURRENT MODEL STATE:" << "\n";
+    out << "###############################\n\n";
+
+
+    // looping through the wells
+    for(int i = 0; i < m->numberOfWells(); ++i)
+    {
+        Well *w = m->well(i);
+
+        out << "------------------------------\n";
+        out << "WELL: " << w->name() << "\n";
+        out << "------------------------------\n\n";
+
+        // printing controls
+        out << "------Controls-------\n";
+        for(int j = 0; j < w->numberOfControls(); ++j)
+        {
+            out << "time       = " << w->control(j)->endTime() << "\n";
+            out << "value      = " << w->control(j)->controlVar()->value() << "\n";
+
+            out << "type       = ";
+            if(w->control(j)->type() == WellControl::BHP) out << "BHP";
+            else if(w->control(j)->type() == WellControl::QGAS) out << "GAS";
+            else if(w->control(j)->type() == WellControl::QOIL) out << "OIL";
+            else if(w->control(j)->type() == WellControl::QWAT) out << "WATER";
+
+            out << "\n\n";
+        }
+
+        // checking if this is a production well
+        ProductionWell *prod_well = dynamic_cast<ProductionWell*>(w);
+
+        if(prod_well != 0)
+        {
+            if(prod_well->hasGasLift())
+            {
+                out << "------Gas Lift-------\n";
+                for(int j = 0; j < prod_well->numberOfGasLiftControls(); ++j)
+                {
+                    out << "time       = " << prod_well->gasLiftControl(j)->endTime() << "\n";
+                    out << "value      = " << prod_well->gasLiftControl(j)->controlVar()->value() << "\n\n";
+
+                }
+            }
+
+            out << "------Routing-------\n";
+            for(int j = 0; j < prod_well->numberOfPipeConnections(); ++j)
+            {
+                out << "destination pipe = " << prod_well->pipeConnection(j)->pipeNumber() << "\n";
+                out << "value            = " << prod_well->pipeConnection(j)->variable()->value() << "\n\n";
+            }
+
+        }
+
+        // looping through the streams
+        out << "------Rate Data-------\n";
+        for(int j = 0; j < w->numberOfStreams(); ++j)
+        {
+            Stream *s = w->stream(j);
+
+            out << "time       = " << s->time() << "\n";
+            out << "gas rate   = " << s->gasRate() << "\n";
+            out << "oil rate   = " << s->oilRate() << "\n";
+            out << "water rate = " << s->waterRate() << "\n";
+            out << "pressure   = " << s->pressure() << "\n\n";
+
+        }
+    }
+
+    // looping through the pipes
+    for(int i = 0; i < m->numberOfPipes(); ++i)
+    {
+        Pipe *p = m->pipe(i);
+
+        // checking what type of pipe
+        EndPipe *end_pipe = dynamic_cast<EndPipe*>(p);
+        MidPipe *mid_pipe = dynamic_cast<MidPipe*>(p);
+        Separator *sep = dynamic_cast<Separator*>(p);
+
+        out << "------------------------------\n";
+        if(end_pipe != 0)
+        {
+            out << "END PIPE: " << p->number() << "\n";
+            out << "------------------------------\n\n";
+
+            out << "Outlet pressure = " << end_pipe->outletPressure() << "\n\n";
+        }
+
+        else if(mid_pipe != 0)
+        {
+            out << "MID PIPE: " << p->number() << "\n";
+            out << "------------------------------\n\n";
+
+            out << "------Routing-------\n";
+            for(int j = 0; j < mid_pipe->numberOfOutletConnections(); ++j)
+            {
+                out << "destination pipe = " << mid_pipe->outletConnection(j)->pipeNumber() << "\n";
+                out << "value            = " << mid_pipe->outletConnection(j)->variable()->value() << "\n\n";
+            }
+        }
+        else if(sep != 0)
+        {
+            out << "SEPARATOR: " << p->number() << "\n";
+            out << "------------------------------\n\n";
+
+            out << "type              = ";
+            if(sep->type() == Separator::WATER) out << "WATER\n";
+            else if(sep->type() == Separator::GAS) out << "GAS\n";
+            out << "Downstream pipe   = " << sep->outletConnection()->pipeNumber() << "\n";
+            out << "Installation time = " << sep->installTime()->value() << "\n";
+            out << "Remove fraction   = " << sep->removeFraction()->value() << "\n";
+            out << "Max capacity      = " << sep->removeCapacity()->value() << "\n\n";
+
+        }
+
+
+
+        out << "------Rate Data-------\n";
+        // looping through the streams
+        for(int j = 0; j < p->numberOfStreams(); ++j)
+        {
+            Stream *s = p->stream(j);
+
+            out << "time       = " << s->time() << "\n";
+            out << "gas rate   = " << s->gasRate() << "\n";
+            out << "oil rate   = " << s->oilRate() << "\n";
+            out << "water rate = " << s->waterRate() << "\n";
+            out << "pressure   = " << s->pressure() << "\n\n";
+
+
+        }
+    }
+
+
+
 
 
 }

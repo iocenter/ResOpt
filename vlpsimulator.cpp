@@ -249,7 +249,15 @@ bool VlpSimulator::readOutput(Model *m)
             // finding the vlp table for the well
             VlpTable *table = findVlpTable(prod_well->name());
 
-            if(table == 0) return false;
+            if(table == 0)
+            {
+                cout << endl << "### Runtime Error ###" << endl
+                     << "Could not find the VLP table for well: " << prod_well->name().toAscii().data() << endl
+                     << "Does the well name match the name of the VLP table?" << endl << endl;
+
+                exit(1);
+
+            }
             else
             {
                 // found the table ok, checking if the well has gas lift

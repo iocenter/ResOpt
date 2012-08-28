@@ -61,7 +61,6 @@ SOURCES += main.cpp \
     cost.cpp \
     coupledmodel.cpp \
     decoupledmodel.cpp \
-    separator.cpp \
     inputratevariable.cpp \
     materialbalanceconstraint.cpp \
     component.cpp \
@@ -73,7 +72,8 @@ SOURCES += main.cpp \
     pipereader.cpp \
     dptablecalculator.cpp \
     nomadoptimizer.cpp \
-    nomadevaluator.cpp
+    nomadevaluator.cpp \
+    separator.cpp
 
 HEADERS += \
     well.h \
@@ -114,7 +114,6 @@ HEADERS += \
     cost.h \
     coupledmodel.h \
     decoupledmodel.h \
-    separator.h \
     inputratevariable.h \
     materialbalanceconstraint.h \
     component.h \
@@ -126,4 +125,5 @@ HEADERS += \
     pipereader.h \
     dptablecalculator.h \
     nomadoptimizer.h \
-    nomadevaluator.h
+    nomadevaluator.h \
+    separator.h

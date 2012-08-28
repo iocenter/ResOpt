@@ -14,7 +14,8 @@ namespace ResOpt
 {
 
 Separator::Separator()
-    : p_cost(0),
+    : m_type(WATER),
+      p_cost(0),
       p_outlet_connection(0)
 {
 }
@@ -22,6 +23,8 @@ Separator::Separator()
 Separator::Separator(const Separator &s)
     : Pipe(s)
 {
+    // copying base types
+    m_type = s.m_type;
 
     // copying pointed objects
     p_cost = new Cost(*s.p_cost);

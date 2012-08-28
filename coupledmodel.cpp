@@ -219,13 +219,27 @@ void CoupledModel::addStreamsUpstream(Separator *s)
         // checking if the separator is installed
         if(i >= s->installTime()->value())
         {
-            // how much water should be removed
-            double qw_remove = str.waterRate() * s->removeFraction()->value();
-            if(qw_remove > s->removeCapacity()->value()) qw_remove = s->removeCapacity()->value();
+            // checking if this is a water or gas separator
+            if(s->type() == Separator::WATER)
+            {
+                // how much water should be removed
+                double qw_remove = str.waterRate() * s->removeFraction()->value();
+                if(qw_remove > s->removeCapacity()->value()) qw_remove = s->removeCapacity()->value();
 
-            // subtracting the removed water
-            str.setWaterRate(str.waterRate() - qw_remove);
+                // subtracting the removed water
+                str.setWaterRate(str.waterRate() - qw_remove);
 
+            }
+            else if(s->type() == Separator::GAS)
+            {
+                // how much gas should be removed
+                double qg_remove = str.gasRate() * s->removeFraction()->value();
+                if(qg_remove > s->removeCapacity()->value()) qg_remove = s->removeCapacity()->value();
+
+                // subtracting the removed gas
+                str.setGasRate(str.gasRate() - qg_remove);
+
+            }
         }
 
         // adding the stream to the upstream pipe

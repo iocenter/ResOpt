@@ -58,7 +58,7 @@ private:
     *
     * @param p
      */
-    void addStreamsUpstream(MidPipe *p);
+    void addStreamsUpstream(MidPipe *p, Well *from_well, double flow_frac);
 
 
     /**
@@ -66,7 +66,7 @@ private:
      *
      * @param s
      */
-    void addStreamsUpstream(Separator *s);
+    void addStreamsUpstream(Separator *s, Well *from_well, double flow_frac);
 
 
 public:

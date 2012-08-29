@@ -115,8 +115,8 @@ void CoupledModel::updateStreams()
                 // checking if it is a midpipe or separator
                 MidPipe *p_mid = dynamic_cast<MidPipe*>(prod_well->pipeConnection(j)->pipe());
                 Separator *p_sep = dynamic_cast<Separator*>(prod_well->pipeConnection(j)->pipe());
-                if(p_mid != 0) addStreamsUpstream(p_mid);
-                else if(p_sep != 0) addStreamsUpstream(p_sep);
+                if(p_mid != 0) addStreamsUpstream(p_mid, prod_well, prod_well->pipeConnection(j)->variable()->value());
+                else if(p_sep != 0) addStreamsUpstream(p_sep, prod_well, prod_well->pipeConnection(j)->variable()->value());
 
 
             } // pipe connection
@@ -169,22 +169,25 @@ void CoupledModel::addStreamsUpstream(ProductionWell *w)
 //-----------------------------------------------------------------------------------------------
 // adds the rates from the pipe to all upstream connections
 //-----------------------------------------------------------------------------------------------
-void CoupledModel::addStreamsUpstream(MidPipe *p)
+void CoupledModel::addStreamsUpstream(MidPipe *p, Well *from_well, double flow_frac)
 {
     // looping through the pipes connected to the pipe
     for(int i = 0; i < p->numberOfOutletConnections(); ++i)
     {
         Pipe *upstream = p->outletConnection(i)->pipe();    // pointer to the upstream pipe
 
+        cout << "Adding rates from pipe #" << p->number() << " to pipe #" << upstream->number() << endl;
 
         // finding the flow fraction from this pipe to the upstream pipe
         double frac = p->outletConnection(i)->variable()->value();
+
+        double total_frac = frac*flow_frac;
 
 
         // looping through the streams, adding the rate from this pipe
         for(int j = 0; j < p->numberOfStreams(); ++j)
         {
-            Stream s = *p->stream(j) * frac;
+            Stream s = *from_well->stream(j) * total_frac;
 
 
             // adding the contribution to the upstream pipe
@@ -196,8 +199,8 @@ void CoupledModel::addStreamsUpstream(MidPipe *p)
         MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
         Separator *p_sep = dynamic_cast<Separator*>(upstream);
 
-        if(p_mid != 0) addStreamsUpstream(p_mid);
-        else if(p_sep != 0) addStreamsUpstream(p_sep);
+        if(p_mid != 0) addStreamsUpstream(p_mid, from_well, total_frac);
+        else if(p_sep != 0) addStreamsUpstream(p_sep, from_well, total_frac);
 
     }
 }
@@ -206,7 +209,7 @@ void CoupledModel::addStreamsUpstream(MidPipe *p)
 //-----------------------------------------------------------------------------------------------
 // adds the rates from the pipe to all upstream connections
 //-----------------------------------------------------------------------------------------------
-void CoupledModel::addStreamsUpstream(Separator *s)
+void CoupledModel::addStreamsUpstream(Separator *s, Well *from_well, double flow_frac)
 {
     // pointer to the upstream connected pipe
     Pipe *upstream = s->outletConnection()->pipe();
@@ -214,7 +217,7 @@ void CoupledModel::addStreamsUpstream(Separator *s)
     // looping through the streams, adding the contribution from the separator
     for(int i = 0; i < s->numberOfStreams(); ++i)
     {
-        Stream str = *s->stream(i);
+        Stream str = *from_well->stream(i) * flow_frac;
 
         // checking if the separator is installed
         if(i >= s->installTime()->value())
@@ -250,8 +253,8 @@ void CoupledModel::addStreamsUpstream(Separator *s)
     MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
     Separator *p_sep = dynamic_cast<Separator*>(upstream);
 
-    if(p_mid != 0) addStreamsUpstream(p_mid);
-    else if(p_sep != 0) addStreamsUpstream(p_sep);
+    if(p_mid != 0) addStreamsUpstream(p_mid, from_well, flow_frac);
+    else if(p_sep != 0) addStreamsUpstream(p_sep, from_well, flow_frac);
 
 }
 

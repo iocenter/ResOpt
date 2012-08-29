@@ -650,6 +650,40 @@ void Runner::printDebug(Launcher *l)
     out << "###############################\n\n";
 
 
+    // printing the rate matrix
+    out << "------------------------------\n";
+    out << "RATE MATRIX:\n";
+    out << "------------------------------\n\n";
+
+    // looping through the time steps
+    for(int i = 0; i < m->numberOfMasterScheduleTimes(); ++i)
+    {
+        // printing the header
+        out << "time = " << m->masterSchedule().at(i) << " days\n";
+
+        out << "COMP\t" << "QO\t" << "QG\t" << "QW\t" << "P\n";
+        out << "----\t" << "--\t" << "--\t" << "--\t" << "-\n";
+
+        // the wells
+        for(int j = 0; j < m->numberOfWells(); ++j)
+        {
+            Well *w = m->well(j);
+
+            out << w->name() << "\t" << w->stream(i)->oilRate() << "\t" << w->stream(i)->gasRate() << "\t" << w->stream(i)->waterRate() << "\t" << w->stream(i)->pressure() << "\n";
+        }
+
+        // the pipes
+        for(int j = 0; j < m->numberOfPipes(); ++j)
+        {
+            Pipe *p = m->pipe(j);
+
+            out << "#" << p->number() << "\t" << p->stream(i)->oilRate() << "\t" << p->stream(i)->gasRate() << "\t" << p->stream(i)->waterRate() << "\t" << p->stream(i)->pressure() << "\n";
+        }
+
+        out << "\n";
+    }
+
+
     // looping through the wells
     for(int i = 0; i < m->numberOfWells(); ++i)
     {
@@ -778,6 +812,8 @@ void Runner::printDebug(Launcher *l)
 
         }
     }
+
+
 
 
 

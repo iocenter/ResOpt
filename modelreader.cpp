@@ -56,6 +56,7 @@
 #include "runonceoptimizer.h"
 #include "bonminoptimizer.h"
 #include "nomadoptimizer.h"
+#include "ipoptoptimizer.h"
 
 #include "gprssimulator.h"
 #include "vlpsimulator.h"
@@ -1752,6 +1753,7 @@ void ModelReader::readOptimizer(Runner *r)
             if(list.at(1).startsWith("BONMIN")) o = new BonminOptimizer(r);
             else if(list.at(1).startsWith("RUNONCE")) o = new RunonceOptimizer(r);
             else if(list.at(1).startsWith("NOMAD")) o = new NomadOptimizer(r);
+            else if(list.at(1).startsWith("IPOPT")) o = new IpoptOptimizer(r);
         }
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations
         else if(list.at(0).startsWith("PERTURB")) l_perturb = list.at(1).toDouble(&ok);     // getting the perturbation size

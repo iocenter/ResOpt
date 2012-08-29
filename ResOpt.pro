@@ -73,7 +73,9 @@ SOURCES += main.cpp \
     dptablecalculator.cpp \
     nomadoptimizer.cpp \
     nomadevaluator.cpp \
-    separator.cpp
+    separator.cpp \
+    ipoptinterface.cpp \
+    ipoptoptimizer.cpp
 
 HEADERS += \
     well.h \
@@ -126,4 +128,6 @@ HEADERS += \
     dptablecalculator.h \
     nomadoptimizer.h \
     nomadevaluator.h \
-    separator.h
+    separator.h \
+    ipoptinterface.h \
+    ipoptoptimizer.h

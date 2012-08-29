@@ -64,8 +64,6 @@ private:
     Case *p_case_last;          // the last case that was run
     Case *p_case_gradients;     // case containing variable values where the gradient and jacobian was calculated
 
-
-
     /**
      * @brief Generates a Case based on the values in x.
      *
@@ -74,9 +72,6 @@ private:
      * @return Case
      */
     Case* generateCase(Index n, const Number *x);
-
-
-
 
     /**
      * @brief Checks if the variable values in x are the same as in the Modelc

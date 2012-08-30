@@ -1,5 +1,7 @@
 #include "ipoptoptimizer.h"
 #include "ipoptinterface.h"
+#include "runner.h"
+#include "model.h"
 
 #include <iostream>
 #include <QString>
@@ -27,6 +29,16 @@ void IpoptOptimizer::initialize()
 
     cout << "Initializing Ipopt..." << endl;
 
+    // Checking that the problem don't have any binary or integer variables
+    if (runner()->model()->binaryVariables().size() > 0
+            || runner()->model()->integerVariables().size() > 0)
+    {
+        cout << endl << "### Runtime Error ###" << endl
+             << "Ipopt cannot solve problems with binary or integer variables... " << endl
+             << "Please choose another solver." << endl << endl;
+        exit(1);
+    }
+
     // setting up the TNLP
     p_tnlp = new IpoptInterface(this);
 
@@ -41,6 +53,9 @@ void IpoptOptimizer::initialize()
     // app->Options()->SetNumericValue("tol", 1e-7);
     //app->Options()->SetStringValue("mu_strategy", "adaptive");
     app->Options()->SetStringValue("output_file", "output/ipopt.out");
+
+    // Solver options
+    app->Options()->SetIntegerValue("max_iter", maxIterations());
 
     // Derivative checks
     app->Options()->SetStringValue("check_derivatives_for_naninf", "yes"); // no (default) or yes (may produce a lot of output)

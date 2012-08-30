@@ -99,6 +99,11 @@ Runner::~Runner()
 //-----------------------------------------------------------------------------------------------
 void Runner::initialize()
 {
+    // checking if the output folder exists, creating if not.
+    QDir dir(".");
+    if(!dir.exists("output")) dir.mkdir("output");
+
+
     // reading the driver file
     p_model = p_reader->readDriverFile(this);
 

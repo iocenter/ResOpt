@@ -93,6 +93,8 @@ bool Launcher::initialize()
 void Launcher::evaluate(Case *c, Component *comp)
 {
 
+    cout << endl << "---- Starting model evaluation ----" << endl;
+
     if(comp == 0) evaluateEntireModel(c);   // the entire model should be evaluated
 
     else        // only a single component should be evaluated

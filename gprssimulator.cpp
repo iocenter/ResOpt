@@ -75,7 +75,6 @@ bool GprsSimulator::generateMainInputFile(Model *m)
 
     // starting to generate the file
 
-    cout << "Writing main GPRS file: " << main_file.fileName().toAscii().data() << endl;
 
     // field section
     *out_main << "# --- Field Data ----------------------------------" << "\n";
@@ -130,7 +129,6 @@ bool GprsSimulator::generateWellInputFile(Model *m)
 
     // starting to generate the file
 
-    cout << "Writing well GPRS file: " << well_file.fileName().toAscii().data() << endl;
 
     // looping through each well
     for(int i = 0; i < m->numberOfWells(); i++)
@@ -368,7 +366,6 @@ bool GprsSimulator::generateControlInputFile(Model *m)
 
     // starting to generate the file
 
-    cout << "Writing control GPRS file: " << ctrl_file.fileName().toAscii().data() << endl;
 
 
     *out_ctrl << "#TUNING\n"
@@ -551,7 +548,7 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
 
     // starting to read the file
 
-    cout << "Reading simulator output for WELL: " << w->name().toAscii().data() << "..." << endl;
+    //cout << "Reading simulator output for WELL: " << w->name().toAscii().data() << "..." << endl;
 
 
     QStringList list;
@@ -596,7 +593,7 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
 
     }
 
-    cout << "Read " << n_streams << " streams from the simulator..." << endl;
+   // cout << "Read " << n_streams << " streams from the simulator..." << endl;
 
 
     // now averaging the raw streams according to the control schedule
@@ -624,6 +621,13 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
             // checking that the last stream in the subset corresponds to the end time of the control
             if(raw_subset.at(raw_subset.size()-1)->time() < w->control(i)->endTime())
             {
+
+                cout << endl << "###  Warning  ###" << endl
+                     << "Problem detected with GPRS output..." << endl
+                     << "The simulator did not run to the end." << endl
+                     << "Last time step: " << raw_subset.at(raw_subset.size()-1)->time() << "(days)" << endl
+                     << "Expected: " << w->control(i)->endTime() << "(days)" << endl << endl;
+
                 // adding an empty stream for the remainder of the time
                 Stream *s_add = new Stream();
                 s_add->setGasRate(0);
@@ -634,14 +638,21 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
 
                 raw_subset.push_back(s_add);
 
-                cout << "Adding an empty stream for remainder of control time, the simulator probably didnt converge..." << endl;
+
+
             }
             avg_s->avg(raw_subset, t_start);
-        cout << "Created an average stream of " << raw_subset.size() << " raw streams for time " << t_start << " to " << w->control(i)->endTime() << endl;
 
         }
         else
         {
+            cout << endl << "###  Warning  ###" << endl
+                 << "Problem detected with GPRS output..." << endl
+                 << "The simulator did not run to the end." << endl
+                 << "Last time step: 0 (days)" << endl
+                 << "Expected: " << w->control(i)->endTime() << "(days)" << endl << endl;
+
+
             // didnt find any info from the simulator, just making an empty stream
             avg_s->setGasRate(0);
             avg_s->setOilRate(0);
@@ -649,7 +660,7 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
             avg_s->setPressure(0);
             avg_s->setTime(w->control(i)->endTime());
 
-            cout << "Adding an empty stream for the entire control time = " << w->control(i)->endTime() << ", the simulator probably didnt converge" << endl;
+
 
 
         }

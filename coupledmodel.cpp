@@ -176,7 +176,6 @@ void CoupledModel::addStreamsUpstream(MidPipe *p, Well *from_well, double flow_f
     {
         Pipe *upstream = p->outletConnection(i)->pipe();    // pointer to the upstream pipe
 
-        cout << "Adding rates from pipe #" << p->number() << " to pipe #" << upstream->number() << endl;
 
         // finding the flow fraction from this pipe to the upstream pipe
         double frac = p->outletConnection(i)->variable()->value();

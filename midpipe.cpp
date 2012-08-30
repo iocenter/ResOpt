@@ -96,8 +96,6 @@ bool MidPipe::midpipeConnectedUpstream()
 //-----------------------------------------------------------------------------------------------
 void MidPipe::calculateInletPressure()
 {
-    cout << "Calculating inlet pressures for PIPE: " << number() << endl;
-
     // checking if the outlet connections are defined
     if(numberOfOutletConnections() == 0)
     {

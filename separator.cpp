@@ -50,9 +50,6 @@ Separator::~Separator()
 //-----------------------------------------------------------------------------------------------
 void Separator::calculateInletPressure()
 {
-    cout << "Calculating inlet pressures for SEPARATOR: " << number() << endl;
-
-    // TODO: should calculate the average of the outlet pressures
 
     // checking if the outlet connection is defined
     if(p_outlet_connection == 0)

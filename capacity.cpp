@@ -176,8 +176,6 @@ void Capacity::setupConstraints(const QVector<double> &master_schedule)
 void Capacity::updateConstraints()
 {
 
-    cout << "Updating constraints for capacity: " << name().toAscii().data() << endl;
-
     // checking if any feed pipes are defined
     if(numberOfFeedPipes() > 0)
     {
@@ -220,14 +218,6 @@ void Capacity::updateConstraints()
     }
 
 
-    // printing if constraint is violated
-
-    //cout << "Separator: " << name().toAscii().data() << endl;
-    //cout << "Max gas = " << max_gas << endl;
-    //cout << "Max oil = " << max_oil << endl;
-    //cout << "Max wat = " << max_water << endl;
-
-    cout << "Done updating constraints for capacity: " << name().toAscii().data() << endl;
 
 }
 

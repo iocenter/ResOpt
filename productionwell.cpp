@@ -126,8 +126,6 @@ void ProductionWell::setName(const QString &n)
 //-----------------------------------------------------------------------------------------------
 void ProductionWell::updateBhpConstraint()
 {
-    cout << "Updating the BHP constraint for well " << name().toAscii().data() << endl;
-
 
     // checking that all the connected pipes have the same number of streams as the well
     for(int i = 0; i < numberOfPipeConnections(); ++i)
@@ -220,7 +218,6 @@ void ProductionWell::updateBhpConstraint()
 //-----------------------------------------------------------------------------------------------
 void ProductionWell::updatePipeConnectionConstraint()
 {
-    cout << "Updating the routing constraint for well " << name().toAscii().data() << endl;
 
     double c = 0;
 

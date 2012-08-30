@@ -66,7 +66,7 @@ private:
     *
     * @param p
      */
-    void addToMaterialBalanceStreamsUpstream(MidPipe *p);
+    void addToMaterialBalanceStreamsUpstream(MidPipe *p, Well *from_well, double flow_frac);
 
 
     /**
@@ -74,7 +74,7 @@ private:
      *
      * @param s
      */
-    void addToMaterialBalanceStreamsUpstream(Separator *s);
+    void addToMaterialBalanceStreamsUpstream(Separator *s, Well *from_well, double flow_frac);
 
 
     /**

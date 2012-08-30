@@ -240,8 +240,8 @@ void DecoupledModel::updateMaterialBalanceStreams()
                 // checking if it is a midpipe or separator
                 MidPipe *p_mid = dynamic_cast<MidPipe*>(prod_well->pipeConnection(j)->pipe());
                 Separator *p_sep = dynamic_cast<Separator*>(prod_well->pipeConnection(j)->pipe());
-                if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid);
-                else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep);
+                if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid, prod_well, prod_well->pipeConnection(i)->variable()->value());
+                else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep, prod_well, prod_well->pipeConnection(i)->variable()->value());
 
 
             } // pipe connection
@@ -287,7 +287,7 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(ProductionWell *w)
 //-----------------------------------------------------------------------------------------------
 // adds the rates from the pipe to all upstream connections
 //-----------------------------------------------------------------------------------------------
-void DecoupledModel::addToMaterialBalanceStreamsUpstream(MidPipe *p)
+void DecoupledModel::addToMaterialBalanceStreamsUpstream(MidPipe *p, Well *from_well, double flow_frac)
 {
     // looping through the pipes connected to the pipe
     for(int i = 0; i < p->numberOfOutletConnections(); ++i)
@@ -297,12 +297,13 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(MidPipe *p)
 
         // finding the flow fraction from this pipe to the upstream pipe
         double frac = p->outletConnection(i)->variable()->value();
-
+        double total_frac = frac * flow_frac;
 
         // looping through the streams, adding the rate from this pipe
         for(int j = 0; j < p->numberOfStreams(); ++j)
         {
-            Stream s = *p->stream(j) * frac;
+
+            Stream s = *from_well->stream(j) * total_frac;
 
 
             // finding the material balance constraint that corresponds to this pipe and time
@@ -318,8 +319,8 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(MidPipe *p)
         MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
         Separator *p_sep = dynamic_cast<Separator*>(upstream);
 
-        if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid);
-        else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep);
+        if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid, from_well, total_frac);
+        else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep, from_well, total_frac);
 
     }
 }
@@ -328,7 +329,7 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(MidPipe *p)
 //-----------------------------------------------------------------------------------------------
 // adds the rates from the pipe to all upstream connections
 //-----------------------------------------------------------------------------------------------
-void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s)
+void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s, Well *from_well, double flow_frac)
 {
     // pointer to the upstream connected pipe
     Pipe *upstream = s->outletConnection()->pipe();
@@ -336,7 +337,7 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s)
     // looping through the streams, adding the contribution from the separator
     for(int i = 0; i < s->numberOfStreams(); ++i)
     {
-        Stream str = *s->stream(i);
+        Stream str = *from_well->stream(i) * flow_frac;
 
         // checking if the separator is installed
         if(i >= s->installTime()->value())
@@ -376,8 +377,8 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s)
     MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
     Separator *p_sep = dynamic_cast<Separator*>(upstream);
 
-    if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid);
-    else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep);
+    if(p_mid != 0) addToMaterialBalanceStreamsUpstream(p_mid, from_well, flow_frac);
+    else if(p_sep != 0) addToMaterialBalanceStreamsUpstream(p_sep, from_well, flow_frac);
 
 }
 

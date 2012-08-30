@@ -40,7 +40,15 @@ void IpoptOptimizer::initialize()
     //       suitable for your optimization problem.
     // app->Options()->SetNumericValue("tol", 1e-7);
     //app->Options()->SetStringValue("mu_strategy", "adaptive");
-    //app->Options()->SetStringValue("output_file", "ipopt.out");
+    app->Options()->SetStringValue("output_file", "output/ipopt.out");
+
+    // Derivative checks
+    app->Options()->SetStringValue("check_derivatives_for_naninf", "yes"); // no (default) or yes (may produce a lot of output)
+    app->Options()->SetStringValue("derivative_test", "first-order"); // none (default)
+
+    // Quasi-Newton approximation of Hessian of Lagrangian
+    app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
+    //app->Options()->SetStringValue("limited_memory_update_type", "bfgs"); // BFGS (default) or SR1 (not working well)
 
     // Initialize the IpoptApplication and process the options
     ApplicationReturnStatus status;

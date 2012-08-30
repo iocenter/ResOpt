@@ -242,7 +242,7 @@ bool IpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
             calculateGradients(n,x);
         }
 
-        // copying gradients to BonMin
+        // copying gradients to Ipopt
         for(int i = 0; i < nele_jac; i++)
         {
             values[i] = m_jac_g.at(i);

@@ -25,9 +25,16 @@ namespace ResOpt
 {
 
 
-Cost::Cost()
+Cost::Cost() :
+    m_time(0),
+    m_const(0),
+    m_mult_frac(0),
+    m_mult_cap(0),
+    m_fraction(0),
+    m_capacity(0)
 {
 }
+
 
 //-----------------------------------------------------------------------------------------------
 // overloaded < operator (checks the time only)

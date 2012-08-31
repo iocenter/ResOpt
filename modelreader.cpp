@@ -414,6 +414,9 @@ Well* ModelReader::readWell()
     WellControl::contol_type l_bhp_inj = WellControl::QWAT;
     bool ok_bhp = false;
 
+    Cost *well_cost = 0;
+    shared_ptr<IntVariable> var_install;
+
 
 
 
@@ -426,6 +429,84 @@ Well* ModelReader::readWell()
         if(list.at(0).startsWith("NAME")) l_name = list.at(1);                                      // getting the reservoir name
         else if(list.at(0).startsWith("GROUP")) l_group = list.at(1);                               // getting the file name
         else if(list.at(0).startsWith("BHPLIMIT")) l_bhp_limit = list.at(1).toDouble(&ok_bhp);      // getting the BHP limit
+        else if(list.at(0).startsWith("COST"))                                                      // the cost
+        {
+
+            bool ok_cost = true;
+            double cost = list.at(1).toDouble(&ok_cost);
+
+            if(!ok_cost)
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                                << "Could not convert COST to number..." << endl
+                                << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+                exit(1);
+
+            }
+
+            well_cost = new Cost();
+            well_cost->setConstant(cost);
+
+
+        }
+        else if(list.at(0).startsWith("INSTALLTIME"))                                           // getting the installation time
+        {
+            var_install = shared_ptr<IntVariable>(new IntVariable(w));
+
+            bool ok = true;
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                int value = list.at(1).toInt(&ok);
+                var_install->setValue(value);
+                var_install->setMax(value);
+                var_install->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                int value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toInt(&ok1);
+                max = list.at(2).toInt(&ok2);
+                min = list.at(3).toInt(&ok3);
+
+                var_install->setValue(value);
+                var_install->setMax(max);
+                var_install->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "INSTALLTIME for WELL not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+
+            if(!ok)
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "INSTALLTIME for WELL not in correct format..." << endl
+                     << "Problem detected when converting to numbers."
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+
+        }
+
         else if(list.at(0).startsWith("BHPINJ"))                                                    // getting the default injection phase
         {
             if(list.at(1).startsWith("WATER")) l_bhp_inj = WellControl::QWAT;
@@ -574,11 +655,14 @@ Well* ModelReader::readWell()
     }
 
 
-    // everything ok, setting to reservoir
+    // everything ok, setting to well
     w->setName(l_name);
     w->setGroup(l_group);
     w->setBhpLimit(l_bhp_limit);
     w->setBhpInj(l_bhp_inj);
+
+    if(well_cost != 0) w->setCost(well_cost);
+    if(var_install != 0) w->setInstallTime(var_install);
 
 
 

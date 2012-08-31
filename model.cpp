@@ -230,6 +230,9 @@ bool Model::validate()
     }   // well
 
 
+
+
+
     return ok;
 }
 
@@ -683,6 +686,7 @@ void Model::updateObjectiveValue()
     // then collecting all the costs
     QVector<Cost*> costs;
 
+    // collecting the installation cost of the separators:
     for(int i = 0; i < numberOfPipes(); ++i)
     {
         Separator *p_sep = dynamic_cast<Separator*>(pipe(i));
@@ -693,7 +697,7 @@ void Model::updateObjectiveValue()
             p_sep->cost()->setCapacity(p_sep->removeCapacity()->value());
 
             // updating the time of the cost according to the variable
-            int time_cost = p_sep->installTime()->value() - 1;
+            int time_cost = p_sep->installTime()->value();
 
 
             if(time_cost <= 0) p_sep->cost()->setTime(0.0);
@@ -704,6 +708,39 @@ void Model::updateObjectiveValue()
             costs.push_back(p_sep->cost());
         }
     }
+
+    // collecting the installation cost of the wells:
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+
+        Well *w = well(i);
+
+        if(w->hasCost())
+        {
+
+            if(w->hasInstallTime())
+            {
+                // updating the time of the cost according to the variable
+                int time_cost = w->installTime()->value();
+
+
+                if(time_cost <= 0) w->cost()->setTime(0.0);
+                else if(time_cost >= m_master_schedule.size()) w->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1));
+                else w->cost()->setTime(m_master_schedule.at(time_cost));
+
+
+            }
+            else
+            {
+                w->cost()->setTime(0.0);
+            }
+
+            // adding the cost to the vector
+            costs.push_back(w->cost());
+        }
+
+    }
+
 
     qSort(costs.begin(), costs.end());  // sorting the costs wrt. time
 

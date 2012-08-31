@@ -244,8 +244,10 @@ bool VlpSimulator::readOutput(Model *m)
     {
         ProductionWell *prod_well = dynamic_cast<ProductionWell*>(m->well(i));
 
+        // checking if this is a production well. injection wells are ignored when vlp curves are used.
         if(prod_well != 0)
         {
+
             // finding the vlp table for the well
             VlpTable *table = findVlpTable(prod_well->name());
 
@@ -271,17 +273,29 @@ bool VlpSimulator::readOutput(Model *m)
                 // looping through the time steps
                 for(int j = 0; j < prod_well->numberOfControls(); ++j)
                 {
-                    // updating for this time step
-                    pbh = prod_well->control(j)->controlVar()->value();
-                    if(has_gas_lift) glift = prod_well->gasLiftControl(j)->controlVar()->value();
 
-                    // interpolating the vlp table
-                    Stream *s = table->interpolate(pbh, glift);
+                    // checking if the well is installed
+                    if(prod_well->isInstalled(j))
+                    {
 
-                    s->setTime(prod_well->control(j)->endTime());
+                        // updating for this time step
+                        pbh = prod_well->control(j)->controlVar()->value();
+                        if(has_gas_lift) glift = prod_well->gasLiftControl(j)->controlVar()->value();
 
-                    // setting the calculated rates to the well
-                    prod_well->setStream(j, s);
+                        // interpolating the vlp table
+                        Stream *s = table->interpolate(pbh, glift);
+
+                        s->setTime(prod_well->control(j)->endTime());
+
+                        // setting the calculated rates to the well
+                        prod_well->setStream(j, s);
+
+                    }
+                    else // the well is not installed, generating an empty stream
+                    {
+                        Stream *s = new Stream(prod_well->control(j)->endTime(), 0, 0, 0, 0);
+                        prod_well->setStream(j, s);
+                    }
                 }
             } // table ok
 

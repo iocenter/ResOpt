@@ -22,17 +22,20 @@
 #define WELL_H
 
 #include <QString>
+#include <tr1/memory>
 
 #include "component.h"
 #include "wellcontrol.h"
 
-
+using std::tr1::shared_ptr;
 
 
 namespace ResOpt
 {
 class WellConnection;
 class Stream;
+class Cost;
+class IntVariable;
 
 
 /**
@@ -59,6 +62,10 @@ private:
     QVector<WellConnection*> m_connections;     // the perforations of the well
     QVector<WellControl*> m_schedule;           // the control schedule of the well /**< TODO */
 
+    Cost *p_cost;                               // the cost associated with installing the well (only used if the install time is set
+    shared_ptr<IntVariable> p_install_time;     // the installation time of the separator
+
+
 
 
 public:
@@ -78,6 +85,10 @@ public:
      *
      */
     void initialize();
+
+    bool isInstalled(int i);
+    bool hasInstallTime() {return p_install_time != 0;}
+    bool hasCost() {return p_cost != 0;}
 
     // virtual functions
 
@@ -147,6 +158,10 @@ public:
      * @param t
      */
     void setBhpInj(WellControl::contol_type t) {m_bhp_inj = t;}
+
+    void setCost(Cost *c) {p_cost = c;}
+    void setInstallTime(shared_ptr<IntVariable> t) {p_install_time = t;}
+
 
 
 
@@ -229,6 +244,12 @@ public:
      * @return WellControl
      */
     WellControl* control(int i) {return m_schedule.at(i);}
+
+    Cost* cost() {return p_cost;}
+    shared_ptr<IntVariable> installTime() {return p_install_time;}
+
+
+
 
 
 

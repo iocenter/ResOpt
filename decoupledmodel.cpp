@@ -501,6 +501,7 @@ QVector<shared_ptr<IntVariable> >& DecoupledModel::integerVariables()
     if(m_vars_integer.size() == 0)
     {
 
+        // collecting the install time variables for the separators
         for(int i = 0; i < numberOfPipes(); ++i)     // looping through all the pipes
         {
             // checking if this is a separator
@@ -511,6 +512,16 @@ QVector<shared_ptr<IntVariable> >& DecoupledModel::integerVariables()
                 if(s->installTime()->isVariable()) m_vars_integer.push_back(s->installTime());  // adding install time if it is a variable
             }
 
+        }       
+
+        // collecting the install time variables for the wells
+        for(int i = 0 ; i < numberOfWells(); ++i)
+        {
+            // checking if the well has an install time variable
+            if(well(i)->hasInstallTime())
+            {
+                if(well(i)->installTime()->isVariable()) m_vars_integer.push_back(well(i)->installTime());  // adding install time if it is a variable
+            }
         }
 
 

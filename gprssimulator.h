@@ -25,13 +25,14 @@
 #include <QStringList>
 #include "reservoirsimulator.h"
 
-
+class QTextStream;
 
 
 namespace ResOpt
 {
 
 class Well;
+class WellControl;
 
 
 /**
@@ -44,6 +45,8 @@ class GprsSimulator : public ReservoirSimulator
 private:
     bool generateMainInputFile(Model *m);
     bool generateWellInputFile(Model *m);
+    void printWellControl(QTextStream *out, WellControl *wc);
+
     bool generateControlInputFile(Model *m);
 
     bool readWellOutput(Well *w, QString file_name);

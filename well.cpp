@@ -27,6 +27,8 @@
 #include "pipe.h"
 #include "constraint.h"
 #include "wellcontrol.h"
+#include "intvariable.h"
+#include "cost.h"
 
 
 using std::cout;
@@ -37,8 +39,8 @@ namespace ResOpt
 
 
 Well::Well()
-    : m_bhp_inj(WellControl::QWAT)
-
+    : m_bhp_inj(WellControl::QWAT),
+      p_cost(0)
 {
 
 
@@ -48,7 +50,8 @@ Well::Well()
 // copy constructor
 //-----------------------------------------------------------------------------------------------
 Well::Well(const Well &w)
-    : Component(w)
+    : Component(w),
+      p_cost(0)
 {
 
     // copying basic types
@@ -71,6 +74,12 @@ Well::Well(const Well &w)
     }
 
 
+
+    // copying the cost and install time
+    if(w.p_cost != 0) p_cost = new Cost(*w.p_cost);
+    if(w.p_install_time != 0) p_install_time = shared_ptr<IntVariable>(new IntVariable(*w.p_install_time));
+
+
 }
 
 
@@ -85,6 +94,8 @@ Well::~Well()
     {
         delete m_schedule.at(i);
     }
+
+    if(p_cost != 0) delete p_cost;
 
 
 }
@@ -109,6 +120,15 @@ void Well::initialize()
 void Well::addControl(WellControl *c)
 {
     m_schedule.push_back(c);
+}
+
+//-----------------------------------------------------------------------------------------------
+// checks if the well is installed at schedule entry i
+//-----------------------------------------------------------------------------------------------
+bool Well::isInstalled(int i)
+{
+    if(p_install_time == 0) return true;
+    else return (i >= p_install_time->value());
 }
 
 } // namespace ResOpt

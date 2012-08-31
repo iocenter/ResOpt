@@ -162,29 +162,37 @@ void ProductionWell::updateBhpConstraint()
         //
         // when the pipe pressure is higher than the bhp, the constraint is violated, and c < 0
 
-        // calculating the weighted average pressure
-        double p_in = 0;
-        double tot_frac = 0;
-        for(int j = 0; j < numberOfPipeConnections(); ++j)
+        double c_ts = 0.5;
+
+        // checking if the well is installed.
+        // the constraint value is set to 0.5 if the well is not installed
+        if(isInstalled(i))
         {
-            p_in += pipeConnection(j)->variable()->value() * pipeConnection(j)->pipe()->stream(i)->pressure();
-            tot_frac += pipeConnection(j)->variable()->value();
+
+            // calculating the weighted average pressure
+            double p_in = 0;
+            double tot_frac = 0;
+            for(int j = 0; j < numberOfPipeConnections(); ++j)
+            {
+                p_in += pipeConnection(j)->variable()->value() * pipeConnection(j)->pipe()->stream(i)->pressure();
+                tot_frac += pipeConnection(j)->variable()->value();
+            }
+
+            if(tot_frac == 0) // error checking if no routing to the well
+            {
+                tot_frac = 1;
+                p_in = 2 * stream(i)->pressure();
+            }
+
+            p_in = p_in / tot_frac;
+
+            // calculating constraint value
+            double p_wf = stream(i)->pressure();
+            if(p_wf < 0.001) p_wf = 0.001;
+
+            c_ts = (p_wf - p_in) / p_wf;
+
         }
-
-        if(tot_frac == 0) // error checking if no routing to the well
-        {
-            tot_frac = 1;
-            p_in = 2 * stream(i)->pressure();
-        }
-
-        p_in = p_in / tot_frac;
-
-        // calculating constraint value
-        double p_wf = stream(i)->pressure();
-        if(p_wf < 0.001) p_wf = 0.001;
-
-        double c_ts = (p_wf - p_in) / p_wf;
-
 
 
         // updating the value of the constraint for this time

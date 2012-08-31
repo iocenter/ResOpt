@@ -32,6 +32,7 @@
 #include "wellconnection.h"
 #include "wellcontrol.h"
 #include "realvariable.h"
+#include "intvariable.h"
 #include "stream.h"
 
 namespace ResOpt
@@ -180,34 +181,50 @@ bool GprsSimulator::generateWellInputFile(Model *m)
             {
                 WellControl *wc = w->control(k);
 
-                // the type of control
-                if(wc->type() == WellControl::BHP)  // BHP control
+                // checking if the well is installed
+                if(!w->isInstalled(k))
                 {
-                    *out_well << "  TBHP" << "\t"
-                          << start_time << "\t"
-                          << wc->endTime() << "\t\t"
-                          << wc->controlVar()->value() << "\n";
+                    // the well is not installed, printing zero rate
+                    *out_well << "  TORATE" << "\t"
+                              << start_time << "\t"
+                              << wc->endTime() << "\t"
+                              << "0.0" << "\t"
+                              << w->bhpLimit() << "\t"
+                              << m->reservoir()->oilDensity() << "\n";
 
                 }
-                else
+                else    // the well is installed
                 {
-                    // control type
-                    if(wc->type() == WellControl::QGAS) *out_well << "  TGRATE" << "\t";        // gas producer
-                    else if(wc->type() == WellControl::QOIL) *out_well << "  TORATE" << "\t";   // oil producer
-                    else *out_well << "  TWRATE" << "\t";                                       // water producer
 
-                    // times, rate, ++
-                    *out_well << start_time << "\t"
-                              << wc->endTime() << "\t"
-                              << wc->controlVar()->value() << "\t"
-                              << w->bhpLimit() << "\t";
+                    // the type of control
+                    if(wc->type() == WellControl::BHP)  // BHP control
+                    {
+                        *out_well << "  TBHP" << "\t"
+                                  << start_time << "\t"
+                                  << wc->endTime() << "\t\t"
+                                  << wc->controlVar()->value() << "\n";
 
-                    // density
-                    if(wc->type() == WellControl::QGAS) *out_well << m->reservoir()->gasDensity() << "\n";        // gas producer
-                    else if(wc->type() == WellControl::QOIL) *out_well << m->reservoir()->oilDensity() << "\n";   // oil producer
-                    else *out_well << m->reservoir()->waterDensity() << "\n";                                     // water producer
+                    }
+                    else
+                    {
+                        // control type
+                        if(wc->type() == WellControl::QGAS) *out_well << "  TGRATE" << "\t";        // gas producer
+                        else if(wc->type() == WellControl::QOIL) *out_well << "  TORATE" << "\t";   // oil producer
+                        else *out_well << "  TWRATE" << "\t";                                       // water producer
+
+                        // times, rate, ++
+                        *out_well << start_time << "\t"
+                                  << wc->endTime() << "\t"
+                                  << wc->controlVar()->value() << "\t"
+                                  << w->bhpLimit() << "\t";
+
+                        // density
+                        if(wc->type() == WellControl::QGAS) *out_well << m->reservoir()->gasDensity() << "\n";        // gas producer
+                        else if(wc->type() == WellControl::QOIL) *out_well << m->reservoir()->oilDensity() << "\n";   // oil producer
+                        else *out_well << m->reservoir()->waterDensity() << "\n";                                     // water producer
 
 
+                    }
                 }
 
                 // updating the start time
@@ -227,13 +244,14 @@ bool GprsSimulator::generateWellInputFile(Model *m)
             {
                 WellControl *wc = w->control(k);
 
-                // the type of control
-                if(wc->type() == WellControl::BHP)  // BHP control
+                // checking if the well is installed
+                if(!w->isInstalled(k))
                 {
+                    // the well is not installed, printing zero pressure
                     *out_well << "  TBHP" << "\t"
                           << start_time << "\t"
                           << wc->endTime() << "\t\t"
-                          << wc->controlVar()->value() << "\t\t"
+                          << "0.0" << "\t\t"
                           << n_phases << "\t";
 
                     // checking what phase should be injected, and what phases are present
@@ -263,56 +281,99 @@ bool GprsSimulator::generateWellInputFile(Model *m)
                     }
 
 
-
                 }
-                else
+
+                else    // the well is installed
                 {
-                    // control type
-                    if(wc->type() == WellControl::QGAS) *out_well << "  TGRATE" << "\t";        // gas injector
-                    else *out_well << "  TWRATE" << "\t";                                       // water injector
-
-                    // times, rate, ++
-                    *out_well << start_time << "\t"
-                              << wc->endTime() << "\t"
-                              << wc->controlVar()->value() << "\t"
-                              << w->bhpLimit() << "\t";
-
-                    // density
-                    if(wc->type() == WellControl::QGAS) *out_well << m->reservoir()->gasDensity() << "\t";        // gas producer
-                    else if(wc->type() == WellControl::QOIL) *out_well << m->reservoir()->oilDensity() << "\t";   // oil producer
-                    else *out_well << m->reservoir()->waterDensity() << "\t";                                     // water producer
-
-                    *out_well << n_phases << "\t";  // number of phases
 
 
-                    // checking what phase should be injected, and what phases are present
-                    bool gas = m->reservoir()->gasPhase();
-                    bool wat = m->reservoir()->waterPhase();
-
-
-                    if(n_phases == 3)   // gas oil water
+                    // the type of control
+                    if(wc->type() == WellControl::BHP)  // BHP control
                     {
-                        if(wc->type() == WellControl::QWAT)    // injecting water
+                        *out_well << "  TBHP" << "\t"
+                                  << start_time << "\t"
+                                  << wc->endTime() << "\t\t"
+                                  << wc->controlVar()->value() << "\t\t"
+                                  << n_phases << "\t";
+
+                        // checking what phase should be injected, and what phases are present
+                        bool gas = m->reservoir()->gasPhase();
+                        bool wat = m->reservoir()->waterPhase();
+
+
+                        if(n_phases == 3)   // gas oil water
                         {
-                            *out_well << "0.0\t0.0\t1.0" << "\n";
+                            if(w->bhpInj() == WellControl::QWAT)    // injecting water
+                            {
+                                *out_well << "0.0\t0.0\t1.0" << "\n";
+                            }
+                            else                                    // injecting gas
+                            {
+                                    *out_well << "1.0\t0.0\t0.0" << "\n";
+                            }
                         }
-                        else                                    // injecting gas
+                        else if(n_phases == 2) // gas oil, gas water, or oil water
                         {
-                            *out_well << "1.0\t0.0\t0.0" << "\n";
+                            if(gas && wat)
+                            {
+                                if(w->bhpInj() == WellControl::QWAT) *out_well << "0.0\t1.0" << "\n";
+                                else *out_well << "1.0\t0.0" << "\n";
+                            }
+                            else *out_well << "1.0\t0.0" << "\n";   // oil is never injected...
                         }
+
+
+
                     }
-                    else if(n_phases == 2) // gas oil, gas water, or oil water
+                    else
                     {
-                        if(gas && wat)
+                        // control type
+                        if(wc->type() == WellControl::QGAS) *out_well << "  TGRATE" << "\t";        // gas injector
+                        else *out_well << "  TWRATE" << "\t";                                       // water injector
+
+                        // times, rate, ++
+                        *out_well << start_time << "\t"
+                                  << wc->endTime() << "\t"
+                                  << wc->controlVar()->value() << "\t"
+                                  << w->bhpLimit() << "\t";
+
+                        // density
+                        if(wc->type() == WellControl::QGAS) *out_well << m->reservoir()->gasDensity() << "\t";        // gas producer
+                        else if(wc->type() == WellControl::QOIL) *out_well << m->reservoir()->oilDensity() << "\t";   // oil producer
+                        else *out_well << m->reservoir()->waterDensity() << "\t";                                     // water producer
+
+                        *out_well << n_phases << "\t";  // number of phases
+
+
+                        // checking what phase should be injected, and what phases are present
+                        bool gas = m->reservoir()->gasPhase();
+                        bool wat = m->reservoir()->waterPhase();
+
+
+                        if(n_phases == 3)   // gas oil water
                         {
-                            if(wc->type() == WellControl::QWAT) *out_well << "0.0\t1.0" << "\n";
-                            else *out_well << "1.0\t0.0" << "\n";
+                            if(wc->type() == WellControl::QWAT)    // injecting water
+                            {
+                                *out_well << "0.0\t0.0\t1.0" << "\n";
+                            }
+                            else                                    // injecting gas
+                            {
+                                *out_well << "1.0\t0.0\t0.0" << "\n";
+                            }
                         }
-                        else *out_well << "1.0\t0.0" << "\n";   // oil is never injected...
+                        else if(n_phases == 2) // gas oil, gas water, or oil water
+                        {
+                            if(gas && wat)
+                            {
+                                if(wc->type() == WellControl::QWAT) *out_well << "0.0\t1.0" << "\n";
+                                else *out_well << "1.0\t0.0" << "\n";
+                            }
+                            else *out_well << "1.0\t0.0" << "\n";   // oil is never injected...
+                        }
+
+
+
                     }
-
-
-
                 }
 
                 // updating the start time

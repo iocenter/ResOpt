@@ -709,6 +709,8 @@ void Model::updateObjectiveValue()
         }
     }
 
+    //test
+
     // collecting the installation cost of the wells:
     for(int i = 0; i < numberOfWells(); ++i)
     {

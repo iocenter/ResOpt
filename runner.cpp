@@ -311,6 +311,10 @@ void Runner::setSummaryFile(const QString &f)
 //-----------------------------------------------------------------------------------------------
 void Runner::setDebugFile(const QString &f)
 {
+    // checking if the output folder exists, creating if not.
+    QDir dir(".");
+    if(!dir.exists("output")) dir.mkdir("output");
+
 
     p_debug = new QFile( "output/" + f);
 

@@ -94,7 +94,7 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
         // add and discount cash flow to NPV
         double time_yr = s.at(i)->time() / 365;
 
-        npv += cf / pow(1-dcf(), time_yr);
+        npv += cf / pow(1+dcf(), time_yr);
 
 
 

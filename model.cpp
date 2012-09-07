@@ -654,34 +654,30 @@ void Model::readPipeFiles()
 //-----------------------------------------------------------------------------------------------
 void Model::updateObjectiveValue()
 {
-    // first adding together the streams from all the wells
     QVector<Stream*> field_rates;
 
-    for(int i = 0; i < m_wells.at(0)->numberOfStreams(); ++i)   // looping through the time steps
+    // finding the end pipes
+    QVector<EndPipe*> p_end_pipes;
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        EndPipe *p = dynamic_cast<EndPipe*>(pipe(i));
+        if(p != 0) p_end_pipes.push_back(p);
+    }
+
+    // adding together the streams from all the end pipes
+    for(int i = 0; i < masterSchedule().size(); ++i)
     {
         Stream *s = new Stream();
 
-        for(int j = 0; j < numberOfWells(); j++)    // looping through the wells
+        // looping through the end pipes
+        for(int j = 0; j < p_end_pipes.size(); ++j)
         {
-            // checking if this is a production well
-            ProductionWell *prod_well = dynamic_cast<ProductionWell*>(well(j));
-
-            if(prod_well != 0)
-            {
-                // adding up the routing variables for the well
-                double routing = 0;
-                for(int k = 0; k < prod_well->numberOfPipeConnections(); ++k) routing += prod_well->pipeConnection(k)->variable()->value();
-                if(routing > 1.0) routing = 1.0;
-
-                Stream well_str = *prod_well->stream(i);
-
-                *s += well_str * routing;
-            }
-
+            *s += *p_end_pipes.at(j)->stream(i);
         }
 
         field_rates.push_back(s);
     }
+
 
     // then collecting all the costs
     QVector<Cost*> costs;
@@ -709,7 +705,6 @@ void Model::updateObjectiveValue()
         }
     }
 
-    //test
 
     // collecting the installation cost of the wells:
     for(int i = 0; i < numberOfWells(); ++i)

@@ -47,6 +47,12 @@ NpvObjective::NpvObjective()
 //-----------------------------------------------------------------------------------------------
 void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 {
+    // printing the costs
+    for(int i = 0; i < c.size(); ++i)
+    {
+        cout << "COST = " << c.at(i)->value() << ", TIME = " << c.at(i)->time() << endl;
+    }
+
     // checking if the discount factor is entered as fraction or percent
     if(m_dcf >= 1.0)
     {
@@ -57,6 +63,19 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
     double npv = 0;
 
     int cost_place = 0;
+    bool add_more_costs = true;
+
+    // first adding the up front costs (costs where t < t0)
+    while(cost_place < c.size() && add_more_costs)
+    {
+        if(c.at(cost_place)->time() < s.at(0)->time())
+        {
+            npv -= c.at(cost_place)->value();
+            ++cost_place;
+        }
+        else add_more_costs = false;
+    }
+
 
     for(int i = 0; i < s.size(); i++)       // looping through each time step
     {
@@ -75,10 +94,10 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 
         // adding costs that fall within this time step
         double ts_cost = 0;
-        bool add_more_costs = true;
+        add_more_costs = true;
         while(cost_place < c.size() && add_more_costs)
         {
-            if(c.at(cost_place)->time() < s.at(i)->time())
+            if(c.at(cost_place)->time() <= s.at(i)->time())
             {
                 ts_cost += c.at(cost_place)->value();
                 ++cost_place;

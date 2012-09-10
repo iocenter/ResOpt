@@ -97,6 +97,15 @@ private:
     void writeCasesToSummary();
 
 
+    /**
+     * @brief Checks if any of the constraints are broken. Returns true if the solution is feasible.
+     *
+     * @param c
+     * @return bool
+     */
+    bool isFeasible(Case *c);
+
+
 
 
 public:

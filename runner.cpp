@@ -406,7 +406,7 @@ void Runner::writeProblemDefToSummary()
 
         // header
 
-        out << "#\t" << "OBJ\t";
+        out << "#\t" << "FEAS\t" << "OBJ\t";
 
 
         for(int i = 0; i < real_vars.size(); ++i)
@@ -454,7 +454,15 @@ void Runner::writeCasesToSummary()
         {
             Case *c = p_cases->at(i);
 
-            out << m_number_of_runs << "\t" << c->objectiveValue() << "\t";
+            // run #
+            out << m_number_of_runs << "\t";
+
+            // is feasible?
+            if(isFeasible(c)) out << "yes\t";
+            else out << "no\t";
+
+            // objective value
+            out << c->objectiveValue() << "\t";
 
             // real variables
             for(int j = 0; j < c->numberOfRealVariables(); ++j)
@@ -499,6 +507,32 @@ void Runner::writeCasesToSummary()
 }
 
 //-----------------------------------------------------------------------------------------------
+// Checks if the case is feasible
+//-----------------------------------------------------------------------------------------------
+bool Runner::isFeasible(Case *c)
+{
+    bool ok = true;
+    // first checking that the number of constraints match
+    if(c->numberOfConstraints() != model()->constraints().size()) return false;
+    else
+    {
+        for(int i = 0; i < c->numberOfConstraints(); ++i)
+        {
+            double max = model()->constraints().at(i)->max();
+            double min = model()->constraints().at(i)->min();
+
+            if(c->constraintValue(i) > max || c->constraintValue(i) < min)
+            {
+                ok = false;
+                break;
+            }
+        }
+    }
+
+    return ok;
+}
+
+//-----------------------------------------------------------------------------------------------
 // Writes the results of the best case to the summary file
 //-----------------------------------------------------------------------------------------------
 void Runner::writeBestCaseToSummary(Case *c)
@@ -513,7 +547,7 @@ void Runner::writeBestCaseToSummary(Case *c)
 
         // header
 
-        out << "#\t" << "OBJ\t";
+        out << "#\t\t" << "OBJ\t";
 
 
         for(int i = 0; i < c->numberOfRealVariables(); ++i)
@@ -539,7 +573,7 @@ void Runner::writeBestCaseToSummary(Case *c)
         // data
 
 
-        out << "xx" << "\t" << c->objectiveValue() << "\t";
+        out << "xx" << "\t\t" << c->objectiveValue() << "\t";
 
         // real variables
         for(int j = 0; j < c->numberOfRealVariables(); ++j)

@@ -454,6 +454,7 @@ Well* ModelReader::readWell()
         {
             var_install = shared_ptr<IntVariable>(new IntVariable(w));
 
+
             bool ok = true;
 
             if(list.size() == 2) // not a variable, only starting value specified
@@ -662,7 +663,11 @@ Well* ModelReader::readWell()
     w->setBhpInj(l_bhp_inj);
 
     if(well_cost != 0) w->setCost(well_cost);
-    if(var_install != 0) w->setInstallTime(var_install);
+    if(var_install != 0)
+    {
+        var_install->setName("Installation time variable for well: " + l_name);
+        w->setInstallTime(var_install);
+    }
 
 
 

@@ -47,6 +47,8 @@ private:
     Model *p_model;
     ReservoirSimulator *p_simulator;
 
+    int m_number_of_runs;
+
 
     /**
      * @brief Checks if the reservoir simulator must be rerun for the Case.

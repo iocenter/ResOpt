@@ -61,7 +61,8 @@ namespace ResOpt
 Launcher::Launcher(QObject *parent)
     : QObject(parent),
       p_model(0),
-      p_simulator(0)
+      p_simulator(0),
+      m_number_of_runs(0)
 {
 }
 
@@ -93,7 +94,7 @@ bool Launcher::initialize()
 void Launcher::evaluate(Case *c, Component *comp)
 {
 
-    cout << endl << "---- Starting model evaluation ----" << endl;
+    cout << endl << "---- Starting model evaluation # " << ++m_number_of_runs <<  " ----" << endl;
 
     if(comp == 0) evaluateEntireModel(c);   // the entire model should be evaluated
 

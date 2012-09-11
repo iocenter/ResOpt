@@ -697,7 +697,7 @@ void Model::updateObjectiveValue()
 
 
             if(time_cost <= 0) p_sep->cost()->setTime(0.0);
-            else if(time_cost >= m_master_schedule.size()) p_sep->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1));
+            else if(time_cost >= m_master_schedule.size()) p_sep->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1) + 1);
             else p_sep->cost()->setTime(m_master_schedule.at(time_cost));
 
             // adding the cost to the vector
@@ -722,7 +722,7 @@ void Model::updateObjectiveValue()
 
 
                 if(time_cost <= 0) w->cost()->setTime(0.0);
-                else if(time_cost >= m_master_schedule.size()) w->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1));
+                else if(time_cost >= m_master_schedule.size()) w->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1) + 1);
                 else w->cost()->setTime(m_master_schedule.at(time_cost));
 
 

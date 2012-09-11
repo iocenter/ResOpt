@@ -454,11 +454,13 @@ void Runner::writeCasesToSummary()
         {
             Case *c = p_cases->at(i);
 
+            bool feas = isFeasible(c);
+
             // run #
             out << m_number_of_runs << "\t";
 
             // is feasible?
-            if(isFeasible(c)) out << "yes\t";
+            if(feas) out << "yes\t";
             else out << "no\t";
 
             // objective value
@@ -484,9 +486,30 @@ void Runner::writeCasesToSummary()
 
 
             // constraints
-            for(int j = 0; j < c->numberOfConstraints(); ++j)
+
+            // if the solution is feasible:
+            if(feas)
             {
-                out << c->constraintValue(j) << "\t";
+                for(int j = 0; j < c->numberOfConstraints(); ++j)
+                {
+                    out << c->constraintValue(j) << "\t";
+                }
+            }
+
+            // if the solution is not feasible
+            else
+            {
+                for(int j = 0; j < c->numberOfConstraints(); ++j)
+                {
+                    double max = model()->constraints().at(j)->max();
+                    double min = model()->constraints().at(j)->min();
+
+                    if(c->constraintValue(j) > max || c->constraintValue(j) < min)
+                    {
+                        out << c->constraintValue(j) << "*\t";
+                    }
+                    else out << c->constraintValue(j) << "\t";
+                }
             }
 
             out << "\n";

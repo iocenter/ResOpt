@@ -228,18 +228,20 @@ void ProductionWell::updateBhpConstraint()
 //-----------------------------------------------------------------------------------------------
 void ProductionWell::updatePipeConnectionConstraint()
 {
-
-    double c = 0;
-
-    // looping through the pipe connections, adding the value of the variable
-    for(int i = 0; i < numberOfPipeConnections(); i++)
+    if(p_connection_constraint != 0)
     {
-        c += pipeConnection(i)->variable()->value();
+
+        double c = 0;
+
+        // looping through the pipe connections, adding the value of the variable
+        for(int i = 0; i < numberOfPipeConnections(); i++)
+        {
+            c += pipeConnection(i)->variable()->value();
+        }
+
+        // updating the value of the constraint
+        pipeConnectionConstraint()->setValue(c);
     }
-
-    // updating the value of the constraint
-    pipeConnectionConstraint()->setValue(c);
-
 }
 
 //-----------------------------------------------------------------------------------------------

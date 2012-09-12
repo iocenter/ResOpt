@@ -969,6 +969,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
 
                 var->setValue(frac);
                 var->setName("Routing variable for well: "+ w->name() + " to Pipe #" + QString::number(pipe_num));
+                var->setIsVariable(false);
                 pipe_con->setPipeNumber(pipe_num);
                 pipe_con->setVariable(var);
 
@@ -986,13 +987,63 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
 
             }
         }
+        else if(list.size() == 3 && !isEmpty(list)) // pipe#, fraction, BIN
+        {
+            // checking if the third argument is BIN
+            if(list.at(2).startsWith("BIN"))
+            {
+                bool ok1 = true;
+                bool ok2 = true;
+
+                int pipe_num = list.at(0).toInt(&ok1);
+                double frac = list.at(1).toDouble(&ok2);
+
+
+                // got all the numbers ok
+                if(ok1 && ok2)
+                {
+                    PipeConnection *pipe_con = new PipeConnection();
+                    shared_ptr<BinaryVariable> var(new BinaryVariable(w));
+
+                    var->setValue(frac);
+                    var->setName("Routing variable for well: "+ w->name() + " to Pipe #" + QString::number(pipe_num));
+                    var->setIsVariable(true);
+                    pipe_con->setPipeNumber(pipe_num);
+                    pipe_con->setVariable(var);
+
+
+                    w->addPipeConnection(pipe_con);
+                }
+                else     // error when reading numbers in the connections line
+                {
+                    cout << endl << "### Error detected in input file! ###" << endl
+                         << "The OUTLETPIPES entry could not be read..." << endl
+                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                    exit(1);
+
+
+                }
+
+            }
+
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The OUTLETPIPES entry does not have the right format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                exit(1);
+            }
+
+        }
 
         else        // wrong number of arguments on line
         {
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                     <<  "The OUTLETPIPES entry does not have the right format..."
+                     <<  "The OUTLETPIPES entry does not have the right format..." << endl
                      << "Last line: " << list.join(" ").toAscii().data() << endl;
 
                 exit(1);
@@ -1005,6 +1056,21 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
 
         list = processLine(m_driver_file.readLine());
 
+    }
+
+    // if the well has more than one connection, they should be considered variables
+    if(w->numberOfConnections() > 1)
+    {
+        for(int i = 0; i < w->numberOfConnections(); ++i)
+        {
+            w->pipeConnection(i)->variable()->setIsVariable(true);
+        }
+    }
+
+    // if the well only has one connection, and it is not a variable, the value should be 1.0
+    if(w->numberOfConnections() == 1)
+    {
+        if(!w->pipeConnection(0)->variable()->isVariable()) w->pipeConnection(0)->variable()->setValue(1.0);
     }
 
     return true;
@@ -1048,6 +1114,7 @@ bool ModelReader::readPipeConnections(MidPipe *p)
 
                 var->setValue(frac);
                 var->setName("Routing variable for Pipe #"+ QString::number(p->number()) + " to Pipe #" + QString::number(pipe_num));
+                var->setIsVariable(false);
                 pipe_con->setPipeNumber(pipe_num);
                 pipe_con->setVariable(var);
 
@@ -1067,13 +1134,64 @@ bool ModelReader::readPipeConnections(MidPipe *p)
 
             }
         }
+        else if(list.size() == 3 && !isEmpty(list)) // (pipe#, fraction, BIN)
+        {
+            // checking that the thrid item is BIN
+            if(list.at(2).startsWith("BIN"))
+            {
+                bool ok1 = true;
+                bool ok2 = true;
+
+                int pipe_num = list.at(0).toInt(&ok1);
+                double frac = list.at(1).toDouble(&ok2);
+
+
+                // got all the numbers ok
+                if(ok1  && ok2)
+                {
+
+                    PipeConnection *pipe_con = new PipeConnection();
+                    shared_ptr<BinaryVariable> var(new BinaryVariable(p));
+
+                    var->setValue(frac);
+                    var->setName("Routing variable for Pipe #"+ QString::number(p->number()) + " to Pipe #" + QString::number(pipe_num));
+                    var->setIsVariable(true);
+                    pipe_con->setPipeNumber(pipe_num);
+                    pipe_con->setVariable(var);
+
+
+                    p->addOutletConnection(pipe_con);
+
+
+                }
+                else     // error when reading numbers in the connections line
+                {
+                    cout << endl << "### Error detected in input file! ###" << endl
+                         << "The OUTLETPIPES entry could not be read..." << endl
+                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                    exit(1);
+
+
+                }
+
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The OUTLETPIPES entry does not have the right format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                exit(1);
+            }
+        }
 
         else        // wrong number of arguments on line
         {
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                     <<  "The OUTLETPIPES entry does not have the right format..."
+                     <<  "The OUTLETPIPES entry does not have the right format..." << endl
                      << "Last line: " << list.join(" ").toAscii().data() << endl;
 
                 exit(1);
@@ -1087,6 +1205,22 @@ bool ModelReader::readPipeConnections(MidPipe *p)
         list = processLine(m_driver_file.readLine());
 
     }
+
+    // if the pipe has more than one connection, they should be considered variables
+    if(p->numberOfOutletConnections() > 1)
+    {
+        for(int i = 0; i < p->numberOfOutletConnections(); ++i)
+        {
+            p->outletConnection(i)->variable()->setIsVariable(true);
+        }
+    }
+
+    // if the well only has one connection, and it is not a variable, the value should be 1.0
+    if(p->numberOfOutletConnections() == 1)
+    {
+        if(!p->outletConnection(0)->variable()->isVariable()) p->outletConnection(0)->variable()->setValue(1.0);
+    }
+
 
     return true;
 

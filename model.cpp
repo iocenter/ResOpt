@@ -294,13 +294,8 @@ bool Model::resolvePipeRouting()
 
             } // pipe connections for well i
 
-            // if the well only has one pipe connection, this should not be considered a variable
-            if(prod_well->numberOfPipeConnections() == 1)
-            {
-                prod_well->pipeConnection(0)->variable()->setIsVariable(false);
-                prod_well->pipeConnection(0)->variable()->setValue(1.0);
-            }
-            else if(prod_well->numberOfPipeConnections() == 0)
+            // checking that the well is at least connected to one pipe
+            if(prod_well->numberOfPipeConnections() == 0)
             {
                 cout << endl << "###  Runtime Error  ###" << endl
                      << "Well " << prod_well->name().toAscii().data() << endl
@@ -367,13 +362,8 @@ bool Model::resolvePipeRouting()
 
             } // connection k
 
-            // if the well only has one pipe connection, this should not be considered a variable
-            if(p_mid->numberOfOutletConnections() == 1)
-            {
-                p_mid->outletConnection(0)->variable()->setIsVariable(false);
-                p_mid->outletConnection(0)->variable()->setValue(1.0);
-            }
-            else if(p_mid->numberOfOutletConnections() == 0)
+            // checking that the pipe has at least one outlet connection
+            if(p_mid->numberOfOutletConnections() == 0)
             {
                 cout << endl << "###  Runtime Error  ###" << endl
                      << "Pipe " << p_mid->number() << endl

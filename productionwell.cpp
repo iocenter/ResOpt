@@ -60,7 +60,7 @@ ProductionWell::ProductionWell(const ProductionWell &w)
     }
 
     // the connection constraint
-    p_connection_constraint = shared_ptr<Constraint>(new Constraint(*w.p_connection_constraint));
+    if(w.p_connection_constraint != 0) p_connection_constraint = shared_ptr<Constraint>(new Constraint(*w.p_connection_constraint));
 
     // copying the pipe connections
     for(int i = 0; i < w.numberOfPipeConnections(); i++)
@@ -103,10 +103,12 @@ void ProductionWell::setupConstraints()
         m_bhp_constraints.push_back(bhp_con);
     }
 
-    // the connection (routing) constraint
+    // the connection (routing) constraint, only if the well can connect to more than one pipe
+    if(numberOfPipeConnections() > 1)
+    {
     p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 0.0));
     p_connection_constraint->setName("Pipe routing constraint for well: " + name());
-
+    }
 
 
 }

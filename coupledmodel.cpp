@@ -422,7 +422,10 @@ QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
             // checking if this is a production well
             ProductionWell* prod_well = dynamic_cast<ProductionWell*>(well(i));
 
-            if(prod_well != 0) m_cons.push_back(prod_well->pipeConnectionConstraint());
+            if(prod_well != 0)
+            {
+                if(prod_well->pipeConnectionConstraint() != 0) m_cons.push_back(prod_well->pipeConnectionConstraint());
+            }
         }
 
         // getting the mid pipe connection constraints

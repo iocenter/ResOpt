@@ -103,11 +103,19 @@ void ProductionWell::setupConstraints()
         m_bhp_constraints.push_back(bhp_con);
     }
 
-    // the connection (routing) constraint, only if the well can connect to more than one pipe
+    // the connection (routing) constraint, only if the well has active routing vars
     if(numberOfPipeConnections() > 1)
     {
-    p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 0.0));
-    p_connection_constraint->setName("Pipe routing constraint for well: " + name());
+        p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 0.0));
+        p_connection_constraint->setName("Pipe routing constraint for well: " + name());
+    }
+    else if(numberOfPipeConnections() == 1)
+    {
+        if(pipeConnection(0)->variable()->isVariable())
+        {
+            p_connection_constraint = shared_ptr<Constraint>(new Constraint(1.0, 1.0, 0.0));
+            p_connection_constraint->setName("Pipe routing constraint for well: " + name());
+        }
     }
 
 
@@ -180,13 +188,17 @@ void ProductionWell::updateBhpConstraint()
                 tot_frac += pipeConnection(j)->variable()->value();
             }
 
+
+
             if(tot_frac == 0) // error checking if no routing to the well
             {
                 tot_frac = 1;
-                p_in = 2 * stream(i)->pressure();
+                p_in =  0.0; // 2 * stream(i)->pressure();
             }
 
             p_in = p_in / tot_frac;
+
+
 
             // calculating constraint value
             double p_wf = stream(i)->pressure();

@@ -37,7 +37,7 @@ void MeOptimizer::initialize()
 //-----------------------------------------------------------------------------------------------
 void MeOptimizer::start()
 {
-    cout << "Starting RUN_ONCE..." << endl;
+    cout << "Starting ME..." << endl;
 
     // creating a case for the current values in the model
     Case *c = new Case(runner()->model());

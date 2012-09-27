@@ -7,6 +7,10 @@ namespace ResOpt
 
 class MeOptimizer : public Optimizer
 {
+
+private:
+    int m_installationtime;
+
 public:
     MeOptimizer(Runner *r);
     virtual ~MeOptimizer();
@@ -15,6 +19,10 @@ public:
     virtual void initialize();
 
     virtual void start();
+
+
+    int installTime() {return m_installationtime;}
+    void setInstallTime(int i) {m_installationtime = i;}
 };
 } // end namespace
 #endif // MEOPTIMIZER_H

@@ -76,7 +76,8 @@ SOURCES += main.cpp \
     separator.cpp \
     ipoptinterface.cpp \
     ipoptoptimizer.cpp \
-    meoptimizer.cpp
+    meoptimizer.cpp \
+    meevaluator.cpp
 
 HEADERS += \
     well.h \
@@ -132,4 +133,5 @@ HEADERS += \
     separator.h \
     ipoptinterface.h \
     ipoptoptimizer.h \
-    meoptimizer.h
+    meoptimizer.h \
+    meevaluator.h

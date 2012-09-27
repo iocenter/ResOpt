@@ -2,8 +2,14 @@
 #include <iostream>
 #include "case.h"
 #include "runner.h"
+#include <tr1/memory>   //for å vite hva shared pointer
+#include "realvariable.h"
+#include "intvariable.h"
+#include "binaryvariable.h"
+#include "model.h"
 
 
+using std::tr1::shared_ptr;
 using std::cout;
 using std::endl;
 
@@ -27,7 +33,10 @@ MeOptimizer::~MeOptimizer()
 void MeOptimizer::initialize()
 {
     // nothing to do here
-
+    // number of cont.variables
+    int numb_cvar = runner()->model()->realVariables().size();
+    QVector<shared_ptr<RealVariable> > real_var = runner()->model()->realVariables();
+    real_var.at(0)->max();
     cout << "Initializing RUN_ONCE..." << endl;
 }
 

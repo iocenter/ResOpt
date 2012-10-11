@@ -214,9 +214,16 @@ void NomadOptimizer::generateParameters()
     // setting the maximum number of iterations
     p_param->set_MAX_BB_EVAL(maxIterations());
 
+    p_param->read("nomad_param.dat");
+
 
     // parameters validation:
     p_param->check();
+
+    cout << "NOMAD Parameters:" << endl;
+    cout << *p_param << endl;
+
+
 
 }
 

@@ -75,9 +75,7 @@ SOURCES += main.cpp \
     nomadevaluator.cpp \
     separator.cpp \
     ipoptinterface.cpp \
-    ipoptoptimizer.cpp \
-    meoptimizer.cpp \
-    meevaluator.cpp
+    ipoptoptimizer.cpp
 
 HEADERS += \
     well.h \
@@ -132,6 +130,4 @@ HEADERS += \
     nomadevaluator.h \
     separator.h \
     ipoptinterface.h \
-    ipoptoptimizer.h \
-    meoptimizer.h \
-    meevaluator.h
+    ipoptoptimizer.h

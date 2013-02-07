@@ -2,6 +2,7 @@
 
 #include <exception>
 #include <tr1/memory>
+#include <QDir>
 
 #include "nomad.hpp"
 #include "nomadevaluator.h"
@@ -214,7 +215,18 @@ void NomadOptimizer::generateParameters()
     // setting the maximum number of iterations
     p_param->set_MAX_BB_EVAL(maxIterations());
 
-    p_param->read("nomad_param.dat");
+
+    // checking if the parameters file exits
+    QDir dir;
+
+    if(dir.exists("nomad_param.dat"))
+    {
+        cout << "### Found a NOMAD parameters file... ###" << endl;
+        p_param->read("nomad_param.dat");
+
+    }
+
+
 
 
     // parameters validation:

@@ -158,6 +158,15 @@ private:
 
 
     /**
+     * @brief Reads a BOOSTER definition from the driver file
+     *
+     * @return PressureBooster
+     */
+    Pipe* readPressureBooster();
+
+
+
+    /**
      * @brief Reads the optimizer section of the driver file, and sets the optimizer for the runner.
      *
      * @param r

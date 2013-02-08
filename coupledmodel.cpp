@@ -28,6 +28,7 @@
 #include "stream.h"
 #include "productionwell.h"
 #include "separator.h"
+#include "pressurebooster.h"
 #include "capacity.h"
 #include "userconstraint.h"
 
@@ -73,6 +74,11 @@ void CoupledModel::initialize()
     for(int i = 0; i < numberOfPipes(); ++i)
     {
         pipe(i)->initialize(masterSchedule());
+
+        // checking if this is a Booster
+        PressureBooster *p_boost = dynamic_cast<PressureBooster*>(pipe(i));
+        if(p_boost != 0) p_boost->setupCapacityConstraints(masterSchedule());   // if so, setting up the capacity constraints
+
     }
 
     // setting up the constraints for the capacities
@@ -80,6 +86,7 @@ void CoupledModel::initialize()
     {
         capacity(i)->setupConstraints(masterSchedule());
     }
+
 
     // initializing the user defined constraints
     for(int i = 0; i < numberOfUserDefinedConstraints(); ++i) userDefinedConstraint(i)->initialize();
@@ -112,11 +119,14 @@ void CoupledModel::updateStreams()
             // looping through the outlet connections of the well, doing the same
             for(int j = 0; j < prod_well->numberOfPipeConnections(); ++j)
             {
-                // checking if it is a midpipe or separator
+                // checking if it is a midpipe, separator or booster
                 MidPipe *p_mid = dynamic_cast<MidPipe*>(prod_well->pipeConnection(j)->pipe());
                 Separator *p_sep = dynamic_cast<Separator*>(prod_well->pipeConnection(j)->pipe());
+                PressureBooster *p_boost = dynamic_cast<PressureBooster*>(prod_well->pipeConnection(j)->pipe());
+
                 if(p_mid != 0) addStreamsUpstream(p_mid, prod_well, prod_well->pipeConnection(j)->variable()->value());
                 else if(p_sep != 0) addStreamsUpstream(p_sep, prod_well, prod_well->pipeConnection(j)->variable()->value());
+                else if(p_boost != 0) addStreamsUpstream(p_boost, prod_well, prod_well->pipeConnection(j)->variable()->value());
 
 
             } // pipe connection
@@ -197,16 +207,18 @@ void CoupledModel::addStreamsUpstream(MidPipe *p, Well *from_well, double flow_f
         // then checking if the outlet pipe connection is a midpipe or separator
         MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
         Separator *p_sep = dynamic_cast<Separator*>(upstream);
+        PressureBooster *p_boost = dynamic_cast<PressureBooster*>(upstream);
 
         if(p_mid != 0) addStreamsUpstream(p_mid, from_well, total_frac);
         else if(p_sep != 0) addStreamsUpstream(p_sep, from_well, total_frac);
+        else if(p_boost != 0) addStreamsUpstream(p_boost, from_well, total_frac);
 
     }
 }
 
 
 //-----------------------------------------------------------------------------------------------
-// adds the rates from the pipe to all upstream connections
+// adds the rates from the separator to all upstream connections
 //-----------------------------------------------------------------------------------------------
 void CoupledModel::addStreamsUpstream(Separator *s, Well *from_well, double flow_frac)
 {
@@ -251,9 +263,40 @@ void CoupledModel::addStreamsUpstream(Separator *s, Well *from_well, double flow
     // then checking if the upstream pipe is a midpipe or separator
     MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
     Separator *p_sep = dynamic_cast<Separator*>(upstream);
+    PressureBooster *p_boost = dynamic_cast<PressureBooster*>(upstream);
 
     if(p_mid != 0) addStreamsUpstream(p_mid, from_well, flow_frac);
     else if(p_sep != 0) addStreamsUpstream(p_sep, from_well, flow_frac);
+    else if(p_boost != 0) addStreamsUpstream(p_boost, from_well, flow_frac);
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// adds the rates from the booster to all upstream connections
+//-----------------------------------------------------------------------------------------------
+void CoupledModel::addStreamsUpstream(PressureBooster *b, Well *from_well, double flow_frac)
+{
+    // pointer to the upstream connected pipe
+    Pipe *upstream = b->outletConnection()->pipe();
+
+    // looping through the streams, adding the contribution from the separator
+    for(int i = 0; i < b->numberOfStreams(); ++i)
+    {
+        Stream str = *from_well->stream(i) * flow_frac;
+
+        // adding the stream to the upstream pipe
+        upstream->addToStream(i, str);
+    }
+
+    // then checking if the upstream pipe is a midpipe, separator, or booster
+    MidPipe *p_mid = dynamic_cast<MidPipe*>(upstream);
+    Separator *p_sep = dynamic_cast<Separator*>(upstream);
+    PressureBooster *p_boost = dynamic_cast<PressureBooster*>(upstream);
+
+    if(p_mid != 0) addStreamsUpstream(p_mid, from_well, flow_frac);
+    else if(p_sep != 0) addStreamsUpstream(p_sep, from_well, flow_frac);
+    else if(p_boost != 0) addStreamsUpstream(p_boost, from_well, flow_frac);
 
 }
 
@@ -340,15 +383,26 @@ QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables()
 
         }
 
-        for(int i = 0; i < numberOfPipes(); ++i)    // looping through the pipes, finding the separators
+        for(int i = 0; i < numberOfPipes(); ++i)    // looping through the pipes, finding the separators and boosters
         {
-            Separator *s = dynamic_cast<Separator*>(pipe(i));
 
-            if(s != 0)  // this is a separator
+            // checking if this is a Separator
+            Separator *s = dynamic_cast<Separator*>(pipe(i));
+            if(s != 0)
             {
                 if(s->removeFraction()->isVariable()) m_vars_real.push_back(s->removeFraction());
                 if(s->removeCapacity()->isVariable()) m_vars_real.push_back(s->removeCapacity());
             }
+
+            // checking if this is a Booster
+            PressureBooster *b = dynamic_cast<PressureBooster*>(pipe(i));
+            if(b != 0)
+            {
+                if(b->pressureVariable()->isVariable()) m_vars_real.push_back(b->pressureVariable());
+                if(b->capacityVariable()->isVariable()) m_vars_real.push_back(b->capacityVariable());
+            }
+
+
         }
 
     }
@@ -364,15 +418,21 @@ QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables()
     if(m_vars_integer.size() == 0)
     {
 
-        // collecting the install time variables for the separators
+        // collecting the install time variables for the separators and boosters
         for(int i = 0; i < numberOfPipes(); ++i)     // looping through all the pipes
         {
             // checking if this is a separator
             Separator *s = dynamic_cast<Separator*>(pipe(i));
-
             if(s != 0)
             {
                 if(s->installTime()->isVariable()) m_vars_integer.push_back(s->installTime());  // adding install time if it is a variable
+            }
+
+            // checking if this is a Booster
+            PressureBooster *b = dynamic_cast<PressureBooster*>(pipe(i));
+            if(b != 0)
+            {
+                if(b->installTime()->isVariable()) m_vars_integer.push_back(b->installTime());
             }
 
         }
@@ -428,18 +488,28 @@ QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
             }
         }
 
-        // getting the mid pipe connection constraints
+        // getting the pipe constraints (midpipe connection and booster capacity)
         for(int i = 0; i < numberOfPipes(); i++)
         {
             // checking if this is a mid pipe
             MidPipe *p_mid = dynamic_cast<MidPipe*>(pipe(i));
 
             if(p_mid != 0) m_cons.push_back(p_mid->outletConnectionConstraint());
+
+            // checking if this is a booster
+            PressureBooster* p_boost = dynamic_cast<PressureBooster*>(pipe(i));
+
+            if(p_boost != 0)
+            {
+                m_cons += p_boost->capacityConstraints();
+            }
+
+
         }
 
 
 
-        // getting the separator capacity constraints
+        // getting the capacity constraints
         for(int i = 0; i < numberOfCapacities(); ++i)
         {
             Capacity *sep = capacity(i);

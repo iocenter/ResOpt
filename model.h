@@ -94,6 +94,9 @@ private:
     bool updatePipeConstraints();
 
 
+    bool updateBoosterConstraints();
+
+
     /**
      * @brief Updates the user defined constraints
      *

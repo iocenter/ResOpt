@@ -36,6 +36,7 @@
 #include "endpipe.h"
 #include "midpipe.h"
 #include "separator.h"
+#include "pressurebooster.h"
 #include "pipeconnection.h"
 #include "reservoir.h"
 #include "bonminoptimizer.h"
@@ -47,6 +48,7 @@
 #include "constraint.h"
 #include "casequeue.h"
 #include "case.h"
+#include "cost.h"
 
 // needed for debug
 #include "productionwell.h"
@@ -824,6 +826,7 @@ void Runner::printDebug(Launcher *l)
         EndPipe *end_pipe = dynamic_cast<EndPipe*>(p);
         MidPipe *mid_pipe = dynamic_cast<MidPipe*>(p);
         Separator *sep = dynamic_cast<Separator*>(p);
+        PressureBooster *boost = dynamic_cast<PressureBooster*>(p);
 
         out << "------------------------------\n";
         if(end_pipe != 0)
@@ -857,7 +860,24 @@ void Runner::printDebug(Launcher *l)
             out << "Downstream pipe   = " << sep->outletConnection()->pipeNumber() << "\n";
             out << "Installation time = " << sep->installTime()->value() << "\n";
             out << "Remove fraction   = " << sep->removeFraction()->value() << "\n";
-            out << "Max capacity      = " << sep->removeCapacity()->value() << "\n\n";
+            out << "Max capacity      = " << sep->removeCapacity()->value() << "\n";
+            out << "Current cost      = " << sep->cost()->value() << "\n\n";
+
+        }
+
+        else if(boost != 0)
+        {
+            out << "BOOSTER: " << p->number() << "\n";
+            out << "------------------------------\n\n";
+
+
+            out << "Downstream pipe   = " << boost->outletConnection()->pipeNumber() << "\n";
+            out << "Installation time = " << model()->masterSchedule().at(boost->installTime()->value()) << "\n";
+            out << "Boost Pressure    = " << boost->pressureVariable()->value() << "\n";
+            out << "Max capacity      = " << boost->capacityVariable()->value() << "\n";
+            out << "Current cost      = " << boost->cost()->value() << "\n\n";
+
+
 
         }
 

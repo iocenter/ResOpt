@@ -34,6 +34,7 @@
 #include "midpipe.h"
 #include "endpipe.h"
 #include "separator.h"
+#include "pressurebooster.h"
 #include "stream.h"
 #include "productionwell.h"
 #include "pipeconnection.h"
@@ -247,11 +248,11 @@ bool Model::resolvePipeRouting()
     bool ok = true;
 
     // first cleaning up the current feeds connected to the pipes
-    for(int k = 0; k < m_pipes.size(); k++) m_pipes.at(k)->cleanFeedConnections();
+    for(int k = 0; k < m_pipes.size(); ++k) m_pipes.at(k)->cleanFeedConnections();
 
 
     // connecting the wells
-    for(int i = 0; i < m_wells.size(); i++)     // looping through each well
+    for(int i = 0; i < m_wells.size(); ++i)     // looping through each well
     {
 
         // checking if this is a production well
@@ -262,7 +263,7 @@ bool Model::resolvePipeRouting()
         {
 
             // looping through the pipe connections for the well
-            for(int k = 0; k < prod_well->numberOfPipeConnections(); k++)
+            for(int k = 0; k < prod_well->numberOfPipeConnections(); ++k)
             {
                 bool connection_ok;
                 int pipe_num = prod_well->pipeConnection(k)->pipeNumber();
@@ -311,9 +312,10 @@ bool Model::resolvePipeRouting()
     // connecting the pipes
     for(int i = 0; i < m_pipes.size(); i++)     // looping through the pipes
     {
-        // only the MidPipe and Separator types should be checked
+        // only the MidPipe, Separator, and PressureBooster types should be checked
         MidPipe *p_mid = dynamic_cast<MidPipe*>(m_pipes.at(i));
         Separator *p_sep = dynamic_cast<Separator*>(m_pipes.at(i));
+        PressureBooster *p_boost = dynamic_cast<PressureBooster*>(m_pipes.at(i));
 
         if(p_mid != 0)  // this is a MidPipe
         {
@@ -416,6 +418,49 @@ bool Model::resolvePipeRouting()
             }
         } // separator
 
+        else if(p_boost != 0) // this is a PressureBooster
+        {
+
+            bool pipe_ok = false;
+
+            int pipe_num = p_boost->outletConnection()->pipeNumber();
+
+            // checking if it is connected to it self
+            if(pipe_num == p_boost->number())
+            {
+                cout << endl << "###  Runtime Error  ###" << endl
+                     << "Booster " << pipe_num << " is connected to itself!" << endl << endl;
+
+                exit(1);
+            }
+
+            // looping through the pipes to find the correct one
+            for(int j = 0; j < numberOfPipes(); ++j)
+            {
+                if(pipe_num == pipe(j)->number())
+                {
+                    p_boost->outletConnection()->setPipe(pipe(j));
+                    pipe(j)->addFeedPipe(p_boost);
+
+                    pipe_ok = true;
+                    break;
+                }
+
+            }
+
+            // checking if the pipe - pipe connection was ok
+            if(!pipe_ok)
+            {
+                cout << endl << "###  Runtime Error  ###" << endl
+                     << "Booster to Pipe connection could not be established..." << endl
+                     << "BOOSTER:         " << pipe_num << endl
+                     << "DOWNSTREAM PIPE: " << pipe(i)->number() << endl;
+
+                exit(1);
+
+            }
+        } // booster
+
     }   // pipe i
 
 
@@ -500,9 +545,9 @@ bool Model::resolveCapacityConnections()
             if(!pipe_ok)
             {
                 cout << endl << "###  Runtime Error  ###" << endl
-                     << "Separator to Pipe connection could not be established..." << endl
-                     << "PIPE: " << pipe_num << endl
-                     << "SEPARATOR: " << s->name().toAscii().data() << endl;
+                     << "Capacity to Pipe connection could not be established..." << endl
+                     << "PIPE:     " << pipe_num << endl
+                     << "CAPACITY: " << s->name().toAscii().data() << endl;
 
                 exit(1);
 
@@ -528,7 +573,7 @@ Well* Model::wellById(int comp_id)
 }
 
 //-----------------------------------------------------------------------------------------------
-// Updates the separator constraints
+// Updates the capacity constraints
 //-----------------------------------------------------------------------------------------------
 bool Model::updateCapacityConstraints()
 {
@@ -575,13 +620,33 @@ bool Model::updatePipeConstraints()
 {
     bool ok = true;
 
-    for(int i = 0; i < numberOfPipes(); i++)
+    for(int i = 0; i < numberOfPipes(); ++i)
     {
         // checking if this is a mid pipe
         MidPipe *p_mid = dynamic_cast<MidPipe*>(pipe(i));
         if(p_mid != 0)
         {
             p_mid->updateOutletConnectionConstraint();
+        }
+    }
+
+    return ok;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Updates the Booster capacity constraints
+//-----------------------------------------------------------------------------------------------
+bool Model::updateBoosterConstraints()
+{
+    bool ok = true;
+
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        // checking if this is a booster
+        PressureBooster *p_boost = dynamic_cast<PressureBooster*>(pipe(i));
+        if(p_boost != 0)
+        {
+            p_boost->updateCapacityConstraints();
         }
     }
 
@@ -613,6 +678,7 @@ bool Model::updateCommonConstraints()
     if(!updateCapacityConstraints()) ok = false;
     if(!updateWellConstaints()) ok = false;
     if(!updatePipeConstraints()) ok = false;
+    if(!updateBoosterConstraints()) ok = false;
     if(!updateUserDefinedConstraints()) ok = false;
 
     return ok;
@@ -626,11 +692,12 @@ void Model::readPipeFiles()
 {
     for(int i = 0; i < numberOfPipes(); i++)
     {
-        // this should not be done for separators
+        // this should not be done for separators or boosters
 
         Separator *sep = dynamic_cast<Separator*>(pipe(i));
+        PressureBooster *boost = dynamic_cast<PressureBooster*>(pipe(i));
 
-        if(sep == 0) pipe(i)->readInputFile();
+        if(sep == 0 && boost == 0) pipe(i)->readInputFile();
     }
 }
 
@@ -672,7 +739,7 @@ void Model::updateObjectiveValue()
     // then collecting all the costs
     QVector<Cost*> costs;
 
-    // collecting the installation cost of the separators:
+    // collecting the cost of the separators:
     for(int i = 0; i < numberOfPipes(); ++i)
     {
         Separator *p_sep = dynamic_cast<Separator*>(pipe(i));
@@ -692,6 +759,29 @@ void Model::updateObjectiveValue()
 
             // adding the cost to the vector
             costs.push_back(p_sep->cost());
+        }
+    }
+
+    // collecting the cost of the separators:
+    for(int i = 0; i < numberOfPipes(); ++i)
+    {
+        PressureBooster *p_boost = dynamic_cast<PressureBooster*>(pipe(i));
+        if(p_boost != 0)
+        {
+            // updating the pressure and capacity in the cost according to the variable values in the booster
+            p_boost->cost()->setFraction(p_boost->pressureVariable()->value());
+            p_boost->cost()->setCapacity(p_boost->capacityVariable()->value());
+
+            // updating the time of the cost according to the variable
+            int time_cost = p_boost->installTime()->value();
+
+
+            if(time_cost <= 0) p_boost->cost()->setTime(0.0);
+            else if(time_cost >= m_master_schedule.size()) p_boost->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1) + 1);
+            else p_boost->cost()->setTime(m_master_schedule.at(time_cost));
+
+            // adding the cost to the vector
+            costs.push_back(p_boost->cost());
         }
     }
 
@@ -727,6 +817,8 @@ void Model::updateObjectiveValue()
         }
 
     }
+
+
 
 
     qSort(costs.begin(), costs.end());  // sorting the costs wrt. time

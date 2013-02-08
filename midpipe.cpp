@@ -186,6 +186,8 @@ void MidPipe::updateOutletConnectionConstraint()
     {
         c += outletConnection(i)->variable()->value();
     }
+
+    p_connection_constraint->setValue(c);
 }
 
 } // namespace ResOpt

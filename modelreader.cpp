@@ -44,6 +44,7 @@
 #include "endpipe.h"
 #include "midpipe.h"
 #include "separator.h"
+#include "pressurebooster.h"
 #include "capacity.h"
 #include "pipeconnection.h"
 #include "cost.h"
@@ -60,6 +61,7 @@
 
 #include "gprssimulator.h"
 #include "vlpsimulator.h"
+#include "mrstbatchsimulator.h"
 
 
 using std::tr1::shared_ptr;
@@ -154,6 +156,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("OPTIMIZER")) readOptimizer(r);                                       // optimizer
             else if(list.at(1).startsWith("MASTERSCHEDULE")) p_model->setMasterSchedule(readMasterSchedule());  // master schedule
             else if(list.at(1).startsWith("SEPARATOR")) p_model->addPipe(readSeparator());                      // separator
+            else if(list.at(1).startsWith("BOOSTER")) p_model->addPipe(readPressureBooster());                  // booster
             else if(list.at(1).startsWith("CONSTRAINTS")) readUserDefinedConstraints(p_model);                  // user defined constraints
 
         }
@@ -162,6 +165,7 @@ Model* ModelReader::readDriverFile(Runner *r)
         {
             if(list.at(1).startsWith("GPRS")) r->setReservoirSimulator(new GprsSimulator());
             else if(list.at(1).startsWith("VLP")) r->setReservoirSimulator(new VlpSimulator());
+            else if(list.at(1).startsWith("MRST_BATCH")) r->setReservoirSimulator(new MrstBatchSimulator());
             else
             {
                 cout << endl << "### Error detected in input file! ###" << endl
@@ -1947,6 +1951,262 @@ Pipe* ModelReader::readSeparator()
     return p_sep;
 
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// Reads a booster definition
+//-----------------------------------------------------------------------------------------------
+Pipe* ModelReader::readPressureBooster()
+{
+
+    cout << "Reading booster definition..." << endl;
+
+    PressureBooster *p_boost = new PressureBooster();
+    QStringList list;
+
+    bool ok = true;
+    int l_number = -1;
+    int l_outlet_pipe = -1;
+    double l_cost_constant = -1.0;
+    double l_cost_fraction = -1.0;
+    double l_cost_capacity = -1.0;
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !(list.at(0).startsWith("END") && list.at(1).startsWith("BOOSTER")))
+    {
+
+
+
+        if(list.at(0).startsWith("NUMBER")) l_number = list.at(1).toInt(&ok);                   // getting the id number of the booster
+        else if(list.at(0).startsWith("OUTLETPIPE")) l_outlet_pipe = list.at(1).toInt(&ok);     // getting the outlet pipe number
+        else if(list.at(0).startsWith("COST"))                                                  // getting the cost
+        {
+            if(list.size() == 4)  // the right number of numbers
+            {
+                bool ok1, ok2, ok3 = true;
+                l_cost_constant = list.at(1).toDouble(&ok1);
+                l_cost_fraction = list.at(2).toDouble(&ok2);
+                l_cost_capacity = list.at(3).toDouble(&ok3);
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "COST for BOOSTER not in correct format..." << endl
+                     << "The COST keyword must be followed by three numbers: constant term, pressure multiplier, capacity multiplier" << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+        }
+        else if(list.at(0).startsWith("INSTALLTIME"))                                           // getting the installation time
+        {
+            shared_ptr<IntVariable> var_install = shared_ptr<IntVariable>(new IntVariable(p_boost));
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                int value = list.at(1).toInt(&ok);
+                var_install->setValue(value);
+                var_install->setMax(value);
+                var_install->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                int value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toInt(&ok1);
+                max = list.at(2).toInt(&ok2);
+                min = list.at(3).toInt(&ok3);
+
+                var_install->setValue(value);
+                var_install->setMax(max);
+                var_install->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "INSTALLTIME for BOOSTER not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+
+                exit(1);
+
+            }
+
+            p_boost->setInstallTime(var_install);
+
+        }
+
+        else if(list.at(0).startsWith("PRESSUREBOOST"))                                           // getting the boost pressure
+        {
+
+            shared_ptr<RealVariable> var_pressure = shared_ptr<RealVariable>(new RealVariable(p_boost));
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                double value = list.at(1).toDouble(&ok);
+                var_pressure->setValue(value);
+                var_pressure->setMax(value);
+                var_pressure->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                double value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toDouble(&ok1);
+                max = list.at(2).toDouble(&ok2);
+                min = list.at(3).toDouble(&ok3);
+
+                var_pressure->setValue(value);
+                var_pressure->setMax(max);
+                var_pressure->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "PRESSUREBOOST keyword for BOOSTER not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                exit(1);
+
+            }
+
+            p_boost->setPressureVariable(var_pressure);
+
+        } // PRESSUREBOOST kwrd
+
+        else if(list.at(0).startsWith("CAPACITY"))                                           // getting the capacity
+        {
+
+            shared_ptr<RealVariable> var_capacity = shared_ptr<RealVariable>(new RealVariable(p_boost));
+
+            if(list.size() == 2) // not a variable, only starting value specified
+            {
+                double value = list.at(1).toDouble(&ok);
+                var_capacity->setValue(value);
+                var_capacity->setMax(value);
+                var_capacity->setMin(value);
+
+            }
+            else if(list.size() == 4)   // value, max, and min specified
+            {
+                double value, max, min = 0;
+                bool ok1, ok2, ok3 = true;
+
+                value = list.at(1).toDouble(&ok1);
+                max = list.at(2).toDouble(&ok2);
+                min = list.at(3).toDouble(&ok3);
+
+                var_capacity->setValue(value);
+                var_capacity->setMax(max);
+                var_capacity->setMin(min);
+
+
+                if(!ok1 || !ok2 || !ok3) ok = false;
+
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "CAPACITY keyword for BOOSTER not in correct format..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                exit(1);
+
+            }
+
+            p_boost->setCapacityVariable(var_capacity);
+
+        } // CAPACITY kwrd
+
+
+        else
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Not understood in current context." << endl << endl;
+
+                exit(1);
+            }
+        }
+
+        if(!ok) break;
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    if(!ok)                                             // error with number reading
+    {
+        cout << endl << "### Error detected in input file! ###" << endl
+        << "BOOSTER definition is incomplete..." << endl
+        << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+        exit(1);
+
+    }
+
+
+
+    // everything is ok, setting common parameters
+
+    p_boost->setNumber(l_number);
+
+
+    // the cost
+    Cost *c = new Cost();
+    c->setConstant(l_cost_constant);
+    c->setFractionMultiplier(l_cost_fraction);
+    c->setCapacityMultiplier(l_cost_capacity);
+
+    c->setFraction(p_boost->pressureVariable()->value());
+    c->setCapacity(p_boost->capacityVariable()->value());
+
+    p_boost->setCost(c);
+
+    // the outlet connection
+    PipeConnection *p_con = new PipeConnection();
+    p_con->setPipeNumber(l_outlet_pipe);
+
+    shared_ptr<BinaryVariable> routing_var = shared_ptr<BinaryVariable>(new BinaryVariable(p_boost));
+    routing_var->setValue(1.0);
+    routing_var->setIsVariable(false);
+    routing_var->setName("Dummy variable for booster outlet connection");
+    p_con->setVariable(routing_var);
+
+    p_boost->setOutletConnection(p_con);
+
+    // setting the names of the removal variables
+    p_boost->installTime()->setName("Installation time variable for booster #" + QString::number(l_number));
+    p_boost->pressureVariable()->setName("Pressure variable for booster #" + QString::number(l_number));
+    p_boost->capacityVariable()->setName("Capacity variable for booster #" + QString::number(l_number));
+
+
+
+    return p_boost;
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Reads the optimizer definition

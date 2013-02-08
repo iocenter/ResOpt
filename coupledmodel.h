@@ -29,6 +29,7 @@ namespace ResOpt
 class ProductionWell;
 class MidPipe;
 class Separator;
+class PressureBooster;
 
 
 /**
@@ -67,6 +68,14 @@ private:
      * @param s
      */
     void addStreamsUpstream(Separator *s, Well *from_well, double flow_frac);
+
+    /**
+     * @brief Adds the streams flowing from this booster to the upstream connected pipe
+     *
+     * @param b
+     */
+    void addStreamsUpstream(PressureBooster *b, Well *from_well, double flow_frac);
+
 
 
 public:

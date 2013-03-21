@@ -250,7 +250,8 @@ void Launcher::evaluatePipe(Case *c, Pipe *p)
     Stream *s = new Stream(0, c->realVariableValue(0), c->realVariableValue(1), c->realVariableValue(2), 0);
 
     // calculating the pressure drop
-    double dp = p->calculator()->pressureDrop(s, c->realVariableValue(3));
+    // TODO: the hardcoding of METRIC here is not right!
+    double dp = p->calculator()->pressureDrop(s, c->realVariableValue(3), Stream::METRIC);
 
     // setting the pressure drop as the objective
     c->setObjectiveValue(dp);
@@ -324,10 +325,10 @@ void Launcher::evaluateWell(Case *c, Well *w)
     // setting the rates and pressures as constraints: qo, qg, qw, pbh
     for(int i = 0; i < w_m->numberOfStreams(); ++i)
     {
-        c->addConstraintValue(w_m->stream(i)->oilRate());
-        c->addConstraintValue(w_m->stream(i)->gasRate());
-        c->addConstraintValue(w_m->stream(i)->waterRate());
-        c->addConstraintValue(w_m->stream(i)->pressure());
+        c->addConstraintValue(w_m->stream(i)->oilRate(true));
+        c->addConstraintValue(w_m->stream(i)->gasRate(true));
+        c->addConstraintValue(w_m->stream(i)->waterRate(true));
+        c->addConstraintValue(w_m->stream(i)->pressure(true));
     }
 
 

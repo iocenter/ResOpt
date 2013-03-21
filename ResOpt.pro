@@ -5,18 +5,21 @@
 #-------------------------------------------------
 
 QT       += core
-
-QT       -= gui
+QT       += gui
+QT       += svg
 
 TARGET = ResOpt
 CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG   += app_bundle
 CONFIG   += static
 
 
 include(resopt_libs.pri)
 
-QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
+#QMAKE_CXXFLAGS_WARN_OFF -= -Wunused-parameter
+
+QMAKE_CXXFLAGS_WARN_ON=-w
+QMAKE_CFLAGS_WARN_ON=-w
 
 TEMPLATE = app
 
@@ -77,7 +80,17 @@ SOURCES += main.cpp \
     ipoptinterface.cpp \
     ipoptoptimizer.cpp \
     mrstbatchsimulator.cpp \
-    pressurebooster.cpp
+    pressurebooster.cpp \
+    gui/mainwindow.cpp \
+    gui/modelscene.cpp \
+    gui/connector.cpp \
+    gui/modelitemseparator.cpp \
+    gui/modelitemprodwell.cpp \
+    gui/modeliteminjwell.cpp \
+    gui/modelitem.cpp \
+    gui/modelitemmidpipe.cpp \
+    gui/modelitemendpipe.cpp \
+    gui/modelitempressurebooster.cpp
 
 HEADERS += \
     well.h \
@@ -134,4 +147,17 @@ HEADERS += \
     ipoptinterface.h \
     ipoptoptimizer.h \
     mrstbatchsimulator.h \
-    pressurebooster.h
+    pressurebooster.h \
+    gui/mainwindow.h \
+    gui/modelscene.h \
+    gui/connector.h \
+    gui/modelitemseparator.h \
+    gui/modelitemprodwell.h \
+    gui/modeliteminjwell.h \
+    gui/modelitem.h \
+    gui/modelitemmidpipe.h \
+    gui/modelitemendpipe.h \
+    gui/modelitempressurebooster.h
+
+RESOURCES += \
+    gui/images.qrc

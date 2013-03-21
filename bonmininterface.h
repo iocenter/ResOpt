@@ -54,6 +54,7 @@ class BonminInterface : public TMINLP
 private:
     BonminOptimizer *p_optimizer;
 
+
     QVector<shared_ptr<RealVariable> > m_vars_real;
     QVector<shared_ptr<BinaryVariable> > m_vars_binary;
     QVector<shared_ptr<IntVariable> > m_vars_integer;

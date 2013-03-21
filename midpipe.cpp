@@ -129,13 +129,14 @@ void MidPipe::calculateInletPressure()
         for(int k = 0; k < numberOfOutletConnections(); k++)
         {
             frac += outletConnection(k)->variable()->value();
-            p_out += outletConnection(k)->pipe()->stream(i)->pressure()*outletConnection(k)->variable()->value();
+            Stream *s = outletConnection(k)->pipe()->stream(i);
+            p_out += s->pressure(stream(i)->inputUnits())*outletConnection(k)->variable()->value();
         }
 
         p_out = p_out / frac;
 
 
-        double dp = calculator()->pressureDrop(stream(i), p_out);    // the pressure drop in the pipe
+        double dp = calculator()->pressureDrop(stream(i), p_out, stream(i)->inputUnits());    // the pressure drop in the pipe
 
         stream(i)->setPressure(dp + p_out);      // setting the inlet pressure for the time step
     }

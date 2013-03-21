@@ -43,9 +43,13 @@ class WellControl;
 class MrstBatchSimulator : public ReservoirSimulator
 {
 private:
-    bool generateControlInputFile(Model *m);
 
-    bool readWellOutput(Well *w, QString file_name);
+    bool m_first_launch;
+
+    bool generateControlInputFile(Model *m);
+    bool generateEclIncludeFile(Model *m);
+    bool generateMRSTScript(Model *m);
+
 
     QStringList processLine(const QString &line);
 

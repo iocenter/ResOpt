@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/new/images">
+        <file alias="sep">img/separator.png</file>
+        <file alias="injwell">img/injwell.png</file>
+        <file alias="prodwell">img/prodwell.png</file>
+        <file alias="sep_svg">img/separator.svg</file>
+        <file alias="prod_svg">img/prodwell.svg</file>
+        <file alias="inj_svg">img/injwell.svg</file>
+        <file alias="endpipe_svg">img/endpipe.svg</file>
+        <file alias="midpipe_svg">img/midpipe.svg</file>
+        <file alias="booster_svg">img/booster.svg</file>
+    </qresource>
+</RCC>

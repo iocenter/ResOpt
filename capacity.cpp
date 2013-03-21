@@ -209,10 +209,10 @@ void Capacity::updateConstraints()
             }
 
             // setting new values if the cons are defined
-            if(m_max_oil >= 0) m_cons_oil.at(i)->setValue(s.oilRate());
-            if(m_max_gas >= 0) m_cons_gas.at(i)->setValue(s.gasRate());
-            if(m_max_water >= 0) m_cons_water.at(i)->setValue(s.waterRate());
-            if(m_max_liquid >= 0) m_cons_liquid.at(i)->setValue(s.oilRate() + s.waterRate());
+            if(m_max_oil >= 0) m_cons_oil.at(i)->setValue(s.oilRate(true));
+            if(m_max_gas >= 0) m_cons_gas.at(i)->setValue(s.gasRate(true));
+            if(m_max_water >= 0) m_cons_water.at(i)->setValue(s.waterRate(true));
+            if(m_max_liquid >= 0) m_cons_liquid.at(i)->setValue(s.oilRate(true) + s.waterRate(true));
 
         }
     }

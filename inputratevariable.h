@@ -52,6 +52,7 @@ public:
     InputRateVariable();
 
 
+
     // misc functions
 
     /**

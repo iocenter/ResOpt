@@ -179,12 +179,15 @@ EOF
 
 
 #include <QtCore>
+#include <QtGui/QApplication>
 #include <iostream>
 
 
 #include "runner.h"
+#include "gui/mainwindow.h"
 
 using namespace ResOpt;
+using namespace ResOptGui;
 using std::cout;
 using std::endl;
 
@@ -192,30 +195,46 @@ using std::endl;
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
 
+    QCoreApplication *a = 0;
     Runner *r = 0;
 
     if(argc == 2)
     {
+
+        a = new QCoreApplication(argc, argv);
         r = new Runner(argv[1]);
-        QObject::connect(r,SIGNAL(optimizationFinished()), &a, SLOT(quit()));
+
+        QObject::connect(r,SIGNAL(optimizationFinished()), a, SLOT(quit()));
         QTimer::singleShot(0, r, SLOT(run()));
     }
     else if(argc == 1)
     {
+        // to launch in GUI mode
+
+        a = new QApplication(argc, argv);
+
+        MainWindow *p_mw = new MainWindow();
+
+        p_mw->show();
+
+        // to launch in console mode with default driver file name
+        /*
+        a = new QCoreApplication(argc, argv);
         r = new Runner("driver.dat");
-        QObject::connect(r,SIGNAL(optimizationFinished()), &a, SLOT(quit()));
+
+        QObject::connect(r,SIGNAL(optimizationFinished()), a, SLOT(quit()));
         QTimer::singleShot(0, r, SLOT(run()));
+        */
 
     }
     else
     {
         cout << "Wrong input arguments!" << endl
              << "Correct usage: .\\ResOpt driver_file" << endl;
-        a.exit(1);
+        a->exit(1);
     }
 
     
-    return a.exec();
+    return a->exec();
 }

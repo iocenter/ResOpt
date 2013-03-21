@@ -45,6 +45,8 @@ private:
     double m_gas_rate; /**< TODO */
     double m_pressure;
 
+    units m_input_units;
+
 public:
 /**
  * @brief
@@ -55,7 +57,7 @@ public:
 
     // misc functions
 
-    void printToCout();
+    void printToCout() const;
 
 
     /**
@@ -103,6 +105,8 @@ public:
      */
     void setPressure(double p) {m_pressure = p;}
 
+    void setInputUnits(Stream::units u) {m_input_units = u;}
+
     // get functions
 
     /**
@@ -117,21 +121,24 @@ public:
      *
      * @return oil rate in bbl/d
      */
-    double oilRate(Stream::units u = Stream::FIELD) const;
+    double oilRate(Stream::units u) const;
+    double oilRate(bool input_units) const;
 
     /**
      * @brief Returns the water rate for the time step
      *
      * @return water rate in bbl/d
      */
-    double waterRate(Stream::units u = Stream::FIELD) const;
+    double waterRate(Stream::units u) const;
+    double waterRate(bool input_units) const;
 
     /**
      * @brief Returns the gas rate for the time step
      *
      * @return gas rate in mcf/d
      */
-    double gasRate(Stream::units u = Stream::FIELD) const;
+    double gasRate(Stream::units u) const;
+    double gasRate(bool input_units) const;
 
 
     /**
@@ -139,7 +146,10 @@ public:
      *
      * @return double
      */
-    double pressure() const {return m_pressure;}
+    double pressure(Stream::units u) const;
+    double pressure(bool input_units) const;
+
+    Stream::units inputUnits() const {return m_input_units;}
 
 
     // overloaded operators

@@ -737,7 +737,7 @@ void Runner::printDebug(Launcher *l)
         {
             Well *w = m->well(j);
 
-            out << w->name() << "\t" << w->stream(i)->oilRate() << "\t" << w->stream(i)->gasRate() << "\t" << w->stream(i)->waterRate() << "\t" << w->stream(i)->pressure() << "\n";
+            out << w->name() << "\t" << w->stream(i)->oilRate(true) << "\t" << w->stream(i)->gasRate(true) << "\t" << w->stream(i)->waterRate(true) << "\t" << w->stream(i)->pressure(true) << "\n";
         }
 
         // the pipes
@@ -745,7 +745,7 @@ void Runner::printDebug(Launcher *l)
         {
             Pipe *p = m->pipe(j);
 
-            out << "#" << p->number() << "\t" << p->stream(i)->oilRate() << "\t" << p->stream(i)->gasRate() << "\t" << p->stream(i)->waterRate() << "\t" << p->stream(i)->pressure() << "\n";
+            out << "#" << p->number() << "\t" << p->stream(i)->oilRate(true) << "\t" << p->stream(i)->gasRate(true) << "\t" << p->stream(i)->waterRate(true) << "\t" << p->stream(i)->pressure(true) << "\n";
         }
 
         out << "\n";
@@ -808,11 +808,15 @@ void Runner::printDebug(Launcher *l)
         {
             Stream *s = w->stream(j);
 
-            out << "time       = " << s->time() << "\n";
-            out << "gas rate   = " << s->gasRate() << "\n";
-            out << "oil rate   = " << s->oilRate() << "\n";
-            out << "water rate = " << s->waterRate() << "\n";
-            out << "pressure   = " << s->pressure() << "\n\n";
+            QString ql_unit = (s->inputUnits() == Stream::FIELD) ? " (bbl/d)" : " (m^3/d)";
+            QString qg_unit = (s->inputUnits() == Stream::FIELD) ? " (mcf/d)" : " (m^3/d)";
+            QString p_unit = (s->inputUnits() == Stream::FIELD) ? " (psia)" : " (bara)";
+
+            out << "time       = " << s->time() << " (days)" << "\n";
+            out << "gas rate   = " << s->gasRate(true) << qg_unit.toAscii().data() << "\n";
+            out << "oil rate   = " << s->oilRate(true) << ql_unit.toAscii().data() <<  "\n";
+            out << "water rate = " << s->waterRate(true) << ql_unit.toAscii().data() << "\n";
+            out << "pressure   = " << s->pressure(true) << p_unit.toAscii().data() << "\n\n";
 
         }
     }
@@ -834,7 +838,9 @@ void Runner::printDebug(Launcher *l)
             out << "END PIPE: " << p->number() << "\n";
             out << "------------------------------\n\n";
 
-            out << "Outlet pressure = " << end_pipe->outletPressure() << "\n\n";
+            QString p_unit_out = (end_pipe->outletUnit() == Stream::METRIC) ? " (bara)" : " (psia)";
+
+            out << "Minimum outlet pressure = " << end_pipe->outletPressure() << p_unit_out.toAscii().data() << "\n\n";
         }
 
         else if(mid_pipe != 0)
@@ -889,11 +895,16 @@ void Runner::printDebug(Launcher *l)
         {
             Stream *s = p->stream(j);
 
-            out << "time       = " << s->time() << "\n";
-            out << "gas rate   = " << s->gasRate() << "\n";
-            out << "oil rate   = " << s->oilRate() << "\n";
-            out << "water rate = " << s->waterRate() << "\n";
-            out << "pressure   = " << s->pressure() << "\n\n";
+            QString ql_unit = (s->inputUnits() == Stream::FIELD) ? " (bbl/d)" : " (m^3/d)";
+            QString qg_unit = (s->inputUnits() == Stream::FIELD) ? " (mcf/d)" : " (m^3/d)";
+            QString p_unit = (s->inputUnits() == Stream::FIELD) ? " (psia)" : " (bara)";
+
+            out << "time            = " << s->time() << " (days)" << "\n";
+            out << "gas rate        = " << s->gasRate(true) << qg_unit.toAscii().data() << "\n";
+            out << "oil rate        = " << s->oilRate(true) << ql_unit.toAscii().data() <<  "\n";
+            out << "water rate      = " << s->waterRate(true) << ql_unit.toAscii().data() << "\n";
+            out << "inlet pressure  = " << s->pressure(true) << p_unit.toAscii().data() << "\n\n";
+
 
 
         }

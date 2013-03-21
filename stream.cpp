@@ -35,7 +35,8 @@ Stream::Stream()
       m_oil_rate(0.0),
       m_water_rate(0.0),
       m_gas_rate(0.0),
-      m_pressure(0.0)
+      m_pressure(0.0),
+      m_input_units(Stream::FIELD)
 {
 }
 
@@ -44,7 +45,8 @@ Stream::Stream(double t, double qo, double qg, double qw, double p)
       m_oil_rate(qo),
       m_water_rate(qw),
       m_gas_rate(qg),
-      m_pressure(p)
+      m_pressure(p),
+      m_input_units(Stream::FIELD)
 {}
 
 //-----------------------------------------------------------------------------------------------
@@ -64,10 +66,10 @@ void Stream::avg(const QVector<Stream *> &input, double t_start)
     double cum_pres = 0;
     for(int i = 0; i < input.size(); ++i)
     {
-        cum_gas += input.at(i)->gasRate() * (input.at(i)->time() - ts_start);
-        cum_oil += input.at(i)->oilRate() * (input.at(i)->time() - ts_start);
-        cum_water += input.at(i)->waterRate() * (input.at(i)->time() - ts_start);
-        cum_pres += input.at(i)->pressure() * (input.at(i)->time() - ts_start);
+        cum_gas += input.at(i)->gasRate(inputUnits()) * (input.at(i)->time() - ts_start);
+        cum_oil += input.at(i)->oilRate(inputUnits()) * (input.at(i)->time() - ts_start);
+        cum_water += input.at(i)->waterRate(inputUnits()) * (input.at(i)->time() - ts_start);
+        cum_pres += input.at(i)->pressure(inputUnits()) * (input.at(i)->time() - ts_start);
 
         ts_start = input.at(i)->time();
     }
@@ -84,14 +86,16 @@ void Stream::avg(const QVector<Stream *> &input, double t_start)
 //-----------------------------------------------------------------------------------------------
 // Prints the stream info to cout
 //-----------------------------------------------------------------------------------------------
-void Stream::printToCout()
+void Stream::printToCout() const
 {
     cout << "Stream data:" << endl;
     cout << "TIME       = " << time() << endl;
-    cout << "GAS RATE   = " << gasRate() << endl;
-    cout << "OIL RATE   = " << oilRate() << endl;
-    cout << "WATER RATE = " << waterRate() << endl;
-    cout << "PRESSURE   = " << pressure() << endl << endl;
+    cout << "GAS RATE   = " << gasRate(inputUnits()) << endl;
+    cout << "OIL RATE   = " << oilRate(inputUnits()) << endl;
+    cout << "WATER RATE = " << waterRate(inputUnits()) << endl;
+    cout << "PRESSURE   = " << pressure(inputUnits()) << endl;
+    if(inputUnits() == Stream::METRIC) cout << "UNITS      = METRIC" << endl << endl;
+    else cout << "UNITS      = FIELD" << endl << endl;
 
 }
 
@@ -100,9 +104,22 @@ void Stream::printToCout()
 //-----------------------------------------------------------------------------------------------
 double Stream::gasRate(Stream::units u) const
 {
-    if(u == Stream::FIELD) return m_gas_rate;
-    else if(u == Stream::METRIC) return m_gas_rate * 28.3168466;
-    else return -1.0;
+    if(u != m_input_units)
+    {
+        if(u == Stream::METRIC) return m_gas_rate * 28.3168466;
+        else return m_gas_rate /  28.3168466;
+    }
+    else return m_gas_rate;
+}
+
+double Stream::gasRate(bool input_units) const
+{
+    if(input_units) return m_gas_rate;
+    else
+    {
+        if(inputUnits() == Stream::METRIC) return gasRate(Stream::FIELD);
+        else return gasRate(Stream::METRIC);
+    }
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -110,20 +127,72 @@ double Stream::gasRate(Stream::units u) const
 //-----------------------------------------------------------------------------------------------
 double Stream::oilRate(Stream::units u) const
 {
-    if(u == Stream::FIELD) return m_oil_rate;
-    else if(u == Stream::METRIC) return m_oil_rate * 0.158987295;
-    else return -1.0;
+    if(u != m_input_units)
+    {
+        if(u == Stream::METRIC) return m_oil_rate * 0.158987295;
+        else return m_oil_rate /  0.158987295;
+    }
+    else return m_oil_rate;
 }
+
+double Stream::oilRate(bool input_units) const
+{
+    if(input_units) return m_oil_rate;
+    else
+    {
+        if(inputUnits() == Stream::METRIC) return oilRate(Stream::FIELD);
+        else return oilRate(Stream::METRIC);
+    }
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Returns the water rate
 //-----------------------------------------------------------------------------------------------
 double Stream::waterRate(Stream::units u) const
 {
-    if(u == Stream::FIELD) return m_water_rate;
-    else if(u == Stream::METRIC) return m_water_rate * 0.158987295;
-    else return -1.0;
+    if(u != m_input_units)
+    {
+        if(u == Stream::METRIC) return m_water_rate * 0.158987295;
+        else return m_water_rate /  0.158987295;
+    }
+    else return m_water_rate;
 }
+
+double Stream::waterRate(bool input_units) const
+{
+    if(input_units) return m_water_rate;
+    else
+    {
+        if(inputUnits() == Stream::METRIC) return waterRate(Stream::FIELD);
+        else return waterRate(Stream::METRIC);
+    }
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Returns the pressure
+//-----------------------------------------------------------------------------------------------
+double Stream::pressure(Stream::units u) const
+{
+    if(u != m_input_units)
+    {
+        if(u == Stream::METRIC) return m_pressure / 14.5037738;
+        else return m_pressure * 14.5037738;
+    }
+    else return m_pressure;
+}
+
+double Stream::pressure(bool input_units) const
+{
+    if(input_units) return m_pressure;
+    else
+    {
+        if(inputUnits() == Stream::METRIC) return pressure(Stream::FIELD);
+        else return pressure(Stream::METRIC);
+    }
+}
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -134,10 +203,11 @@ Stream& Stream::operator =(const Stream &rhs)
     if(this != &rhs)
     {
         setTime(rhs.time());
-        setGasRate(rhs.gasRate());
-        setOilRate(rhs.oilRate());
-        setWaterRate(rhs.waterRate());
-        setPressure(rhs.pressure());
+        setGasRate(rhs.gasRate(inputUnits()));
+        setOilRate(rhs.oilRate(inputUnits()));
+        setWaterRate(rhs.waterRate(inputUnits()));
+        setPressure(rhs.pressure(inputUnits()));
+        setInputUnits(rhs.inputUnits());
     }
 
     return *this;
@@ -148,11 +218,18 @@ Stream& Stream::operator =(const Stream &rhs)
 //-----------------------------------------------------------------------------------------------
 Stream& Stream::operator +=(const Stream& rhs)
 {
+
     setTime(rhs.time());
-    setGasRate(gasRate() + rhs.gasRate());
-    setOilRate(oilRate() + rhs.oilRate());
-    setWaterRate(waterRate() + rhs.waterRate());
     setPressure(0.0);
+
+    // setting the rates with the same units as the lhs
+    setGasRate(gasRate(rhs.inputUnits()) + rhs.gasRate(rhs.inputUnits()));
+    setOilRate(oilRate(rhs.inputUnits()) + rhs.oilRate(rhs.inputUnits()));
+    setWaterRate(waterRate(rhs.inputUnits()) + rhs.waterRate(rhs.inputUnits()));
+
+    // setting the units
+    setInputUnits(rhs.inputUnits());
+
 
     return *this;
 }
@@ -174,9 +251,9 @@ const Stream Stream::operator +(const Stream &rhs) const
 const Stream Stream::operator *(const double &rhs) const
 {
     Stream result = *this;
-    result.setGasRate(result.gasRate()*rhs);
-    result.setOilRate(result.oilRate()*rhs);
-    result.setWaterRate(result.waterRate()*rhs);
+    result.setGasRate(result.gasRate(result.inputUnits())*rhs);
+    result.setOilRate(result.oilRate(result.inputUnits())*rhs);
+    result.setWaterRate(result.waterRate(result.inputUnits())*rhs);
 
     return result;
 }

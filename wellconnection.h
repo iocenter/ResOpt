@@ -33,6 +33,10 @@ class WellConnection
 {
 private:
     int m_cell; /**< TODO */
+    int m_i;
+    int m_j;
+    int m_k1;
+    int m_k2;
     int m_wi; /**< TODO */
 
 public:
@@ -49,6 +53,10 @@ public:
      * @param i
      */
     void setCell(int i) {m_cell = i;}
+    void setI(int i) {m_i = i;}
+    void setJ(int j) {m_j = j;}
+    void setK1(int k1) {m_k1 = k1;}
+    void setK2(int k2) {m_k2 = k2;}
 
     /**
      * @brief Sets the connection well index
@@ -65,6 +73,10 @@ public:
      * @return int
      */
     int cell() const {return m_cell;}
+    int i() const {return m_i;}
+    int j() const {return m_j;}
+    int k1() const {return m_k1;}
+    int k2() const {return m_k2;}
 
     /**
      * @brief Returns the well index for the connection

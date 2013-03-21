@@ -80,7 +80,7 @@ public:
      * @param p_outlet
      * @return double
      */
-    virtual double pressureDrop(Stream *s, double p_outlet);
+    virtual double pressureDrop(Stream *s, double p_outlet, Stream::units unit);
 
     // set functions
 

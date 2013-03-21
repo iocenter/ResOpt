@@ -184,7 +184,7 @@ void ProductionWell::updateBhpConstraint()
             double tot_frac = 0;
             for(int j = 0; j < numberOfPipeConnections(); ++j)
             {
-                p_in += pipeConnection(j)->variable()->value() * pipeConnection(j)->pipe()->stream(i)->pressure();
+                p_in += pipeConnection(j)->variable()->value() * pipeConnection(j)->pipe()->stream(i)->pressure(stream(i)->inputUnits());
                 tot_frac += pipeConnection(j)->variable()->value();
             }
 
@@ -201,7 +201,7 @@ void ProductionWell::updateBhpConstraint()
 
 
             // calculating constraint value
-            double p_wf = stream(i)->pressure();
+            double p_wf = stream(i)->pressure(true);
             if(p_wf < 0.001) p_wf = 0.001;
 
             c_ts = (p_wf - p_in) / p_wf;

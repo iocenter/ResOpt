@@ -182,10 +182,10 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
         if(w == 0) error("Could not find a well named " + id);
 
         // now checking what type of rate to extract
-        if(component.startsWith("G")) value = w->stream(time_step)->gasRate();
-        else if(component.startsWith("O")) value = w->stream(time_step)->oilRate();
-        else if(component.startsWith("W")) value = w->stream(time_step)->waterRate();
-        else if(component.startsWith("P")) value = w->stream(time_step)->pressure();
+        if(component.startsWith("G")) value = w->stream(time_step)->gasRate(true);
+        else if(component.startsWith("O")) value = w->stream(time_step)->oilRate(true);
+        else if(component.startsWith("W")) value = w->stream(time_step)->waterRate(true);
+        else if(component.startsWith("P")) value = w->stream(time_step)->pressure(true);
         else if(component.startsWith("L")) // gas lift
         {
             // checking if this is a production well
@@ -233,10 +233,10 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
         if(p == 0) error("Could not find a pipe with id = " + id);
 
         // now checking what type of rate to extract
-        if(component.startsWith("GAS")) value = p->stream(time_step)->gasRate();
-        else if(component.startsWith("OIL")) value = p->stream(time_step)->oilRate();
-        else if(component.startsWith("WAT")) value = p->stream(time_step)->waterRate();
-        else if(component.startsWith("P")) value = p->stream(time_step)->pressure();
+        if(component.startsWith("GAS")) value = p->stream(time_step)->gasRate(true);
+        else if(component.startsWith("OIL")) value = p->stream(time_step)->oilRate(true);
+        else if(component.startsWith("WAT")) value = p->stream(time_step)->waterRate(true);
+        else if(component.startsWith("P")) value = p->stream(time_step)->pressure(true);
         else error("Type of component not recognized: " + component);
 
 
@@ -268,10 +268,10 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
         if(s == 0) error("Component #" + id + " is not a separator");
 
         // now checking what type of rate to extract
-        if(component.startsWith("GAS")) value = s->stream(time_step)->gasRate();
-        else if(component.startsWith("OIL")) value = s->stream(time_step)->oilRate();
-        else if(component.startsWith("WAT")) value = s->stream(time_step)->waterRate();
-        else if(component.startsWith("P")) value = s->stream(time_step)->pressure();
+        if(component.startsWith("GAS")) value = s->stream(time_step)->gasRate(true);
+        else if(component.startsWith("OIL")) value = s->stream(time_step)->oilRate(true);
+        else if(component.startsWith("WAT")) value = s->stream(time_step)->waterRate(true);
+        else if(component.startsWith("P")) value = s->stream(time_step)->pressure(true);
         else if(component.startsWith("REM")) // the amount of water or gas removed from the separator
         {
             double q_remove = 0;
@@ -281,13 +281,13 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
                 if(s->type() == Separator::WATER)
                 {
                     // how much water should be removed
-                    q_remove = s->stream(time_step)->waterRate() * s->removeFraction()->value();
+                    q_remove = s->stream(time_step)->waterRate(true) * s->removeFraction()->value();
                     if(q_remove > s->removeCapacity()->value()) q_remove = s->removeCapacity()->value();
                 }
                 else if(s->type() == Separator::GAS)
                 {
                     // how much gas should be removed
-                    q_remove = s->stream(time_step)->gasRate() * s->removeFraction()->value();
+                    q_remove = s->stream(time_step)->gasRate(true) * s->removeFraction()->value();
                     if(q_remove > s->removeCapacity()->value()) q_remove = s->removeCapacity()->value();
                 }
 

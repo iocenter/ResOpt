@@ -516,6 +516,7 @@ Well* ModelReader::readWell()
         {
             if(list.at(1).startsWith("WATER")) l_bhp_inj = WellControl::QWAT;
             else if(list.at(1).startsWith("GAS")) l_bhp_inj = WellControl::QGAS;
+            else if(list.at(1).startsWith("OIL")) l_bhp_inj = WellControl::QOIL;
         }
         else if(list.at(0).startsWith("TYPE"))                                                      // getting the type of well
         {
@@ -913,6 +914,45 @@ bool ModelReader::readWellConnections(Well *w)
 
             }
         }
+        else if(list.size() == 5) // correct number of elements (i, j, k1, k2, PI)
+        {
+            // checking the numbers
+            QVector<double> nums;
+            bool ok = true;
+
+            for(int i = 0; i < 5; ++i)
+            {
+                nums.push_back(list.at(i).toDouble(&ok));
+                if(!ok) break;
+            }
+
+            // got all the numbers ok
+            if(ok)
+            {
+
+                WellConnection *con = new WellConnection();
+
+                con->setI(nums.at(0));
+                con->setJ(nums.at(1));
+                con->setK1(nums.at(2));
+                con->setK2(nums.at(3));
+                con->setWellIndex(nums.at(4));
+
+                w->addConnection(con);
+            }
+            else     // error when reading numbers in the connections line
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The CONNECTIONS entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+
 
         else        // wrong number of arguments on line
         {
@@ -1383,7 +1423,25 @@ Pipe* ModelReader::readPipe()
 
                     exit(1);
                 }
+
                 p_end->setOutletPressure(l_outletpressure);
+
+                // checking if there is a unit definition for the pressure
+                if(list.size() > 2)
+                {
+                    if(list.at(2).startsWith("BAR"))
+                    {
+                        cout << "Setting OUTLETPRESSURE uniuts to BAR..." << endl;
+                        p_end->setOutletUnit(Stream::METRIC);
+                    }
+                    else if(list.at(2).startsWith("PSI"))
+                    {
+                        cout << "Setting OUTLETPRESSURE uniuts to PSI..." << endl;
+                        p_end->setOutletUnit(Stream::FIELD);
+                    }
+                }
+
+
                 p = p_end;
 
             }

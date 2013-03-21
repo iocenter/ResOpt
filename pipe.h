@@ -94,9 +94,18 @@ public:
     virtual void calculateInletPressure() = 0;
 
 
+    /**
+     * @brief Resests the rates and pressures in all the streams to zero
+     *
+     */
+    virtual void emptyStreams();
+
+
+    virtual void initialize(const QVector<double> &schedule);
+
+
     // misc functions
 
-    void initialize(const QVector<double> &schedule);
 
 
     /**
@@ -125,12 +134,6 @@ public:
     void readInputFile();
 
 
-
-    /**
-     * @brief Resests the rates and pressures in all the streams to zero
-     *
-     */
-    void emptyStreams();
 
 
     // add functions

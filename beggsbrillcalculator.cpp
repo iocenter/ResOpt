@@ -54,7 +54,7 @@ BeggsBrillCalculator::~BeggsBrillCalculator()
 //-----------------------------------------------------------------------------------------------
 double BeggsBrillCalculator::superficialGasVelocity(Stream *s, double p, double z)
 {
-    double gas_rate_surface = s->gasRate() / 86.4;   // the gas rate in Sft^3 / s
+    double gas_rate_surface = s->gasRate(Stream::FIELD) / 86.4;   // the gas rate in Sft^3 / s
     double b_g = p * 288.71 / 1.01 / (temperature() + 273.15) / z;
 
     double gas_rate = gas_rate_surface / b_g;       // the gas rate at pipe conditions, ft^3/s
@@ -70,10 +70,11 @@ double BeggsBrillCalculator::superficialGasVelocity(Stream *s, double p, double 
 //-----------------------------------------------------------------------------------------------
 double BeggsBrillCalculator::superficialLiquidVelocity(Stream *s)
 {
-    double liquid_rate = s->oilRate() + s->waterRate();     // liquid rate in bbl / d
+    double liquid_rate = s->oilRate(Stream::FIELD) + s->waterRate(Stream::FIELD);     // liquid rate in bbl / d
 
 
-    double liquid_rate_ft = 5.61458333 * liquid_rate / 86400;      // the liquid rate in ft^3 / s
+     double liquid_rate_ft = 5.61458333 * liquid_rate / 86400;      // the liquid rate in ft^3 / s
+    //double liquid_rate_ft = 5.61458333 * liquid_rate / 24;      // the liquid rate in ft^3 / hr
 
     double r_ft = diameter() / 0.3048 / 2;          // pipe radius in ft
 
@@ -193,8 +194,8 @@ double BeggsBrillCalculator::gasViscosity(double p, double z)
 //-----------------------------------------------------------------------------------------------
 double BeggsBrillCalculator::liquidViscosity(Stream *s)
 {
-    double oil_rate = s->oilRate();
-    double water_rate = s->waterRate();
+    double oil_rate = s->oilRate(Stream::FIELD);
+    double water_rate = s->waterRate(Stream::FIELD);
 
     if((oil_rate + water_rate) < 1e-6) oil_rate = 1.0;
 
@@ -207,15 +208,18 @@ double BeggsBrillCalculator::liquidViscosity(Stream *s)
 //-----------------------------------------------------------------------------------------------
 // calculates the inlet pressure of the pipe
 //-----------------------------------------------------------------------------------------------
-double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
+double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units unit)
 {
     // checking if the rates are zero
-    double total_rate = s->gasRate() + s->oilRate() + s->waterRate();
+    double total_rate = s->gasRate(Stream::FIELD) + s->oilRate(Stream::FIELD) + s->waterRate(Stream::FIELD);
     if(total_rate <= 0) return 0.0;
 
     // else getting on with the calculations
 
-    double p_psi = p * 14.5038;                         // pressure in psi
+    double p_psi = p;
+    if(unit == Stream::METRIC) p_psi = p * 14.5037738;  // pressure in psi
+
+
     double d_in = diameter() * 39.3700787;              // pipe diameter in inches
     double g = 32.2;                                    // gravitational constant (ft / s^2)
     double z_fac = gasZFactor(gasSpecificGravity(), temperature(), p);      // gas z-factor
@@ -404,14 +408,16 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     double ftp = fn * exp(s_term);      // the friction factor
 
 
+
     // calculating pressure drop due to friction
 
-    double dp_f = 1.294e-3 * (ftp * den_ns * pow(vm,2)) / (d_in);
+    double dp_f = 5.176e-3 * (ftp * den_ns * pow(vm,2)) / (d_in);
 
 
     // calculating acceleration term
 
     double ek = 2.16e-4 * (den_ns * vm * vsg) / p_psi;
+
 
 
     // calculating total pressure drop
@@ -421,9 +427,15 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p)
     // double dp_tot_bar = dp_tot / 14.5038 / 0.3048;       // total pressure drop in bar / m
 
 
+    // converting length from m to ft
 
-    return dp_tot * length() / 0.3048;   // pressure drop in psi
+    double length_ft = length() * 3.28;
 
+    // total pressure drop in psi
+    double dp_psi_tot = dp_tot * length_ft;
+
+    if(unit == Stream::FIELD) return dp_psi_tot;
+    else return dp_psi_tot / 14.5037738;
 
 }
 

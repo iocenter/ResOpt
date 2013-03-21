@@ -91,9 +91,9 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
         else dt = s.at(i)->time() - s.at(i-1)->time();
 
         // calculate cash flow
-        cf = dt * (s.at(i)->gasRate() * gasPrice());        // gas
-        cf += dt * (s.at(i)->oilRate() * oilPrice());       // oil
-        cf += dt * (s.at(i)->waterRate() * waterPrice());   // water
+        cf = dt * (s.at(i)->gasRate(s.at(i)->inputUnits()) * gasPrice());        // gas
+        cf += dt * (s.at(i)->oilRate(s.at(i)->inputUnits()) * oilPrice());       // oil
+        cf += dt * (s.at(i)->waterRate(s.at(i)->inputUnits()) * waterPrice());   // water
 
         // adding costs that fall within this time step
         double ts_cost = 0;

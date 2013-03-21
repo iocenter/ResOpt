@@ -346,20 +346,20 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s, Well *fro
             if(s->type() == Separator::WATER)
             {
                 // how much water should be removed
-                double qw_remove = str.waterRate() * s->removeFraction()->value();
+                double qw_remove = str.waterRate(true) * s->removeFraction()->value();
                 if(qw_remove > s->removeCapacity()->value()) qw_remove = s->removeCapacity()->value();
 
                 // subtracting the removed water
-                str.setWaterRate(str.waterRate() - qw_remove);
+                str.setWaterRate(str.waterRate(true) - qw_remove);
             }
             else if(s->type() == Separator::GAS)
             {
                 // how much gas should be removed
-                double qg_remove = str.gasRate() * s->removeFraction()->value();
+                double qg_remove = str.gasRate(true) * s->removeFraction()->value();
                 if(qg_remove > s->removeCapacity()->value()) qg_remove = s->removeCapacity()->value();
 
                 // subtracting the removed gas
-                str.setGasRate(str.gasRate() - qg_remove);
+                str.setGasRate(str.gasRate(true) - qg_remove);
             }
 
         }

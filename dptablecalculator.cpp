@@ -25,9 +25,9 @@ DpTableCalculator::~DpTableCalculator()
 //-----------------------------------------------------------------------------------------------
 // calculates the pressure drop
 //-----------------------------------------------------------------------------------------------
-double DpTableCalculator::pressureDrop(Stream *s, double p_outlet)
+double DpTableCalculator::pressureDrop(Stream *s, double p_outlet, Stream::units unit)
 {
-    return p_dp_table->interpolate(s->gasRate(), s->oilRate(), s->waterRate());
+    return p_dp_table->interpolate(s->gasRate(true), s->oilRate(true), s->waterRate(true));
 }
 
 } // namespace ResOpt

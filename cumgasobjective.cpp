@@ -46,7 +46,7 @@ void CumgasObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
         else dt = s.at(i)->time() - s.at(i-1)->time();
 
         // adding the time step gas production to the cum
-        cumgas += dt * s.at(i)->gasRate();
+        cumgas += dt * s.at(i)->gasRate(s.at(i)->inputUnits());
 
     }
 

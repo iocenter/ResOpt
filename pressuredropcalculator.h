@@ -22,10 +22,10 @@
 #ifndef PRESSUREDROPCALCULATOR_H
 #define PRESSUREDROPCALCULATOR_H
 
+#include "stream.h"
+
 namespace ResOpt
 {
-
-class Stream;
 
 
 /**
@@ -40,7 +40,7 @@ public:
 
     virtual PressureDropCalculator* clone() const = 0;
 
-    virtual double pressureDrop(Stream *s, double p_outlet) = 0;
+    virtual double pressureDrop(Stream *s, double p_outlet, Stream::units unit) = 0;
 };
 
 } // namespace ResOpt

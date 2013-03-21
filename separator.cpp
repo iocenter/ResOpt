@@ -25,6 +25,7 @@ Separator::Separator(const Separator &s)
 {
     // copying base types
     m_type = s.m_type;
+    m_remaining_capacity = s.m_remaining_capacity;
 
     // copying pointed objects
     p_cost = new Cost(*s.p_cost);
@@ -44,6 +45,39 @@ Separator::~Separator()
     if(p_outlet_connection != 0) delete p_outlet_connection;
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// initializes the separator
+//-----------------------------------------------------------------------------------------------
+void Separator::initialize(const QVector<double> &schedule)
+{
+    Pipe::initialize(schedule);
+
+    m_remaining_capacity.fill(p_remove_capacity->value(), schedule.size());
+}
+
+//-----------------------------------------------------------------------------------------------
+// empties the streams, and resets the remaining capacities
+//-----------------------------------------------------------------------------------------------
+void Separator::emptyStreams()
+{
+    Pipe::emptyStreams();
+
+    m_remaining_capacity.fill(p_remove_capacity->value());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// reduces the remaining capacity for time step i
+//-----------------------------------------------------------------------------------------------
+void Separator::reduceRemainingCapacity(int i, double q)
+{
+    double remaining = m_remaining_capacity.at(i);
+
+    remaining = (q > remaining) ? 0 : (remaining - q);
+
+    m_remaining_capacity.replace(i, remaining);
+}
 
 //-----------------------------------------------------------------------------------------------
 // calculates the inlet pressure of the separator
@@ -79,7 +113,7 @@ void Separator::calculateInletPressure()
     for(int i = 0; i < numberOfStreams(); i++)
     {
         // getting the outlet pressure
-        double p_out = outletConnection()->pipe()->stream(i)->pressure();
+        double p_out = outletConnection()->pipe()->stream(i)->pressure(stream(i)->inputUnits());
 
         // setting inlet pressure = outlet pressure
         stream(i)->setPressure(p_out);

@@ -23,6 +23,7 @@
 #define ENDPIPE_H
 
 #include "pipe.h"
+#include "stream.h"
 
 namespace ResOpt
 {
@@ -41,6 +42,7 @@ class EndPipe : public Pipe
 {
 private:
     double m_outletpressure;
+    Stream::units m_outlet_unit;
 
 public:
     EndPipe();
@@ -63,6 +65,7 @@ public:
      * @param p
      */
     void setOutletPressure(double p) {m_outletpressure = p;}
+    void setOutletUnit(Stream::units u) {m_outlet_unit = u;}
 
 
     // get functions
@@ -73,6 +76,7 @@ public:
      * @return double
      */
     double outletPressure() const {return m_outletpressure;}
+    Stream::units outletUnit() const {return m_outlet_unit;}
 };
 
 

@@ -54,7 +54,7 @@ void CumoilObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
         else dt = s.at(i)->time() - s.at(i-1)->time();
 
         // adding the time step oil production to the cum
-        cumoil += dt * s.at(i)->oilRate();
+        cumoil += dt * s.at(i)->oilRate(s.at(i)->inputUnits());
 
 
         if(isnan(cumoil))

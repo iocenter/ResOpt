@@ -33,7 +33,8 @@ using std::cout;
 using std::endl;
 
 EndPipe::EndPipe()
-    : m_outletpressure(-1.0)
+    : m_outletpressure(-1.0),
+      m_outlet_unit(Stream::FIELD)
 {
 }
 
@@ -41,6 +42,7 @@ EndPipe::EndPipe(const EndPipe &p)
     : Pipe(p)
 {
     m_outletpressure = p.m_outletpressure;
+    m_outlet_unit = p.m_outlet_unit;
 
 }
 
@@ -56,7 +58,15 @@ void EndPipe::calculateInletPressure()
     // looping through the time steps
     for(int i = 0; i < numberOfStreams(); i++)
     {
-        double dp = calculator()->pressureDrop(stream(i), outletPressure());    // the pressure drop in the pipe
+        // checking that the outlet pressure unit matches the stream
+        double out_pres = outletPressure();
+        if(outletUnit() != stream(i)->inputUnits())
+        {
+            if(outletUnit() == Stream::METRIC) out_pres = outletPressure()*14.5037738;
+            else out_pres = outletPressure() / 14.5037738;
+        }
+
+        double dp = calculator()->pressureDrop(stream(i), outletPressure(), stream(i)->inputUnits());    // the pressure drop in the pipe
 
         stream(i)->setPressure(dp + outletPressure());      // setting the inlet pressure for the time step
     }

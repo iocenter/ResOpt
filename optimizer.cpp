@@ -48,6 +48,7 @@ Optimizer::Optimizer(Runner *r)
 Optimizer::~Optimizer()
 {
     // nothing to delete
+    cout << "Optimizer destructor" << endl;
 }
 
 //-----------------------------------------------------------------------------------------------

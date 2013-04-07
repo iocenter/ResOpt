@@ -88,6 +88,9 @@ bool Launcher::initialize()
 
 }
 
+
+
+
 //-----------------------------------------------------------------------------------------------
 // Running the model, calculating results
 //-----------------------------------------------------------------------------------------------
@@ -117,7 +120,7 @@ void Launcher::evaluate(Case *c, Component *comp)
 
 
     // letting the runner know the evaluation has finished
-    emit finished(this, comp);
+    emit finished(this, comp, c);
 
 
 }

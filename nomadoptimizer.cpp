@@ -190,6 +190,8 @@ void NomadOptimizer::generateParameters()
         lb[var_num] = v->min();
 
         ++var_num;
+
+
     }
 
 

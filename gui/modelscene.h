@@ -24,6 +24,7 @@ class ModelItemMidPipe;
 class ModelItemEndPipe;
 class ModelItemSeparator;
 class ModelItemPressureBooster;
+class ModelItemCapacity;
 
 
 class ModelScene : public QGraphicsScene
@@ -40,8 +41,17 @@ private:
     QList<ModelItemEndPipe*> m_endpipe_items;
     QList<ModelItemSeparator*> m_separator_items;
     QList<ModelItemPressureBooster*> m_pressurebooster_items;
+    QList<ModelItemCapacity*> m_capacity_items;
+
+
+    void addUpstreamToScene(ModelItemProdWell *prod_item);
+    void addUpstreamToScene(ModelItemPressureBooster *booster_item);
+    void addUpstreamToScene(ModelItemSeparator *sep_item);
+    void addUpstreamToScene(ModelItemMidPipe *mid_item);
+
 
     ModelItem* addModelItem(Component *c);
+    void addCapacities(Model *m);
 
     void setItemPosition(ModelItem *i);
 
@@ -50,14 +60,11 @@ public:
 
     void buildSceneFromModel(Model *m);
 
-    void addUpstreamToScene(ModelItemProdWell *prod_item);
-    void addUpstreamToScene(ModelItemPressureBooster *booster_item);
-    void addUpstreamToScene(ModelItemSeparator *sep_item);
-    void addUpstreamToScene(ModelItemMidPipe *mid_item);
 
     ModelItem* itemFromComponent(Component *c);
     
 signals:
+    void sendMsg(QString);
     
 public slots:
     

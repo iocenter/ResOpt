@@ -10,16 +10,23 @@
 namespace ResOptGui
 {
 
-Connector::Connector(ModelItem *startItem, ModelItem *endItem, bool active, QGraphicsItem *parent, QGraphicsScene *scene)
+Connector::Connector(ModelItem *startItem, ModelItem *endItem, bool active, ConnectionFace con_face, QGraphicsItem *parent, QGraphicsScene *scene)
     : QGraphicsLineItem(parent, scene),
       p_start_item(startItem),
-      p_end_item(endItem)
+      p_end_item(endItem),
+      m_con_face(con_face)
 {
 
 
-
-    if(active) setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
-    else setPen(QPen(Qt::lightGray, 2, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+    if(con_face == SideConnection)
+    {
+        if(active) setPen(QPen(Qt::black, 2, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+        else setPen(QPen(Qt::lightGray, 2, Qt::DashLine, Qt::RoundCap, Qt::RoundJoin));
+    }
+    else
+    {
+        setPen(QPen(Qt::red, 1, Qt::SolidLine, Qt::RoundCap, Qt::RoundJoin));
+    }
 
     // setting the line
     updatePosition();
@@ -40,14 +47,35 @@ void Connector::updatePosition()
     QPointF start_x = p_start_item->mapToScene(p_start_item->boundingRect().topRight());
     QPointF start_y = p_start_item->mapToScene(p_start_item->boundingRect().center());
 
-    QPointF start(start_x.x(), start_y.y());
-
+    QPointF start;
+    if(m_con_face == SideConnection)
+    {
+        //start(start_x.x(), start_y.y());
+        start.setX(start_x.x());
+        start.setY(start_y.y());
+    }
+    else
+    {
+        start.setX(start_y.x());
+        start.setY(start_x.y());
+    }
 
     // calculating the end position
-    QPointF end_x = p_end_item->mapToScene(p_end_item->boundingRect().topLeft());
+    QPointF end_x = p_end_item->mapToScene(p_end_item->boundingRect().bottomLeft());
     QPointF end_y = p_end_item->mapToScene(p_end_item->boundingRect().center());
 
-    QPointF end(end_x.x(), end_y.y());
+    QPointF end;
+    if(m_con_face == SideConnection)
+    {
+        //QPointF end(end_x.x(), end_y.y());
+        end.setX(end_x.x());
+        end.setY(end_y.y());
+    }
+    else
+    {
+        end.setX(end_y.x());
+        end.setY(end_x.y());
+    }
 
 
 

@@ -66,6 +66,7 @@ public:
     // get functions
     int numberOfStreams() const {return m_streams.size();}
     Stream* stream(int i) {return m_streams.at(i);}
+    QVector<Stream*> streams() {return m_streams;}
 
     int id() {return m_id;}
 

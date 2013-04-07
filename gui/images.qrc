@@ -9,5 +9,6 @@
         <file alias="endpipe_svg">img/endpipe.svg</file>
         <file alias="midpipe_svg">img/midpipe.svg</file>
         <file alias="booster_svg">img/booster.svg</file>
+        <file alias="cap_svg">img/capacity.svg</file>
     </qresource>
 </RCC>

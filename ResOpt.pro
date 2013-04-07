@@ -90,7 +90,16 @@ SOURCES += main.cpp \
     gui/modelitem.cpp \
     gui/modelitemmidpipe.cpp \
     gui/modelitemendpipe.cpp \
-    gui/modelitempressurebooster.cpp
+    gui/modelitempressurebooster.cpp \
+    gui/inspectorseparator.cpp \
+    gui/modelitemcapacity.cpp \
+    gui/inspectorvariable.cpp \
+    gui/console.cpp \
+    gui/plot.cpp \
+    gui/qcustomplot.cpp \
+    gui/plotstreams.cpp \
+    gui/inspectoroptimizer.cpp \
+    gui/inspectorprodwell.cpp
 
 HEADERS += \
     well.h \
@@ -157,7 +166,16 @@ HEADERS += \
     gui/modelitem.h \
     gui/modelitemmidpipe.h \
     gui/modelitemendpipe.h \
-    gui/modelitempressurebooster.h
+    gui/modelitempressurebooster.h \
+    gui/inspectorseparator.h \
+    gui/modelitemcapacity.h \
+    gui/inspectorvariable.h \
+    gui/console.h \
+    gui/plot.h \
+    gui/qcustomplot.h \
+    gui/plotstreams.h \
+    gui/inspectoroptimizer.h \
+    gui/inspectorprodwell.h
 
 RESOURCES += \
     gui/images.qrc

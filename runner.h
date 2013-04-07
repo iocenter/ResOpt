@@ -79,9 +79,10 @@ private:
     time_t m_start_time;
 
     CaseQueue *p_cases;
+    Launcher *p_last_run_launcher;
 
 
-    void initializeLaunchers();
+
 
     /**
      * @brief Writes the problem definition to the summary file
@@ -120,8 +121,12 @@ public:
      */
     void initialize();
 
+    void initializeLaunchers();
+
 
     void printDebug(Launcher *l);
+
+    void transferModelStateFromLauncher();
 
     // set functions
 
@@ -133,6 +138,7 @@ public:
 
     // get functions
     Model* model() {return p_model;}
+    Optimizer* optimizer() {return p_optimizer;}
 
 
 
@@ -145,7 +151,7 @@ public slots:
      *
      * @param l
      */
-    void onLauncherFinished(Launcher *l, Component *comp);
+    void onLauncherFinished(Launcher *l, Component *comp, Case *finished_case);
 
     /**
      * @brief Starts the Optimizer
@@ -188,6 +194,7 @@ signals:
     void optimizationFinished();
     void casesFinished();
     void sendCase(Case *c, Component *comp);
+    void newCaseFinished(Case *c);
 
 };
 

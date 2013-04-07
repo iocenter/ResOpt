@@ -24,6 +24,11 @@
 
 #include "model.h"
 
+#include "realvariable.h"
+#include "binaryvariable.h"
+#include "intvariable.h"
+#include "constraint.h"
+
 namespace ResOpt
 {
 class ProductionWell;
@@ -91,12 +96,23 @@ public:
     virtual void updateStreams();
     virtual bool updateConstraints();
 
-    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables();
-    virtual QVector<shared_ptr<RealVariable> >& realVariables();
-    virtual QVector<shared_ptr<IntVariable> >& integerVariables();
-    virtual QVector<shared_ptr<Constraint> >& constraints();
+    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables(bool force_refresh = false);
+    virtual QVector<shared_ptr<RealVariable> >& realVariables(bool force_refresh = false);
+    virtual QVector<shared_ptr<IntVariable> >& integerVariables(bool force_refresh = false);
+    virtual QVector<shared_ptr<Constraint> >& constraints(bool force_refresh = false);
 
     virtual QVector<shared_ptr<RealVariable> > realVariables(Component *c);
+
+    virtual int numberOfRealVariables() const {return m_vars_real.size();}
+    virtual int numberOfBinaryVariables() const {return m_vars_binary.size();}
+    virtual int numberOfIntegerVariables() const {return m_vars_integer.size();}
+    virtual int numberOfConstraints() const {return m_cons.size();}
+
+    virtual double realVariableValue(int i) const {return m_vars_real.at(i)->value();}
+    virtual double binaryVariableValue(int i) const {return m_vars_binary.at(i)->value();}
+    virtual double integerVariableValue(int i) const {return m_vars_integer.at(i)->value();}
+    virtual double constraintValue(int i) const {return m_cons.at(i)->value();}
+
 };
 
 

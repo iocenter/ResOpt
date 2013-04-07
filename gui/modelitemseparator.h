@@ -18,6 +18,9 @@ class ModelItemSeparator : public ModelItem
 private:
     Separator *p_separator;
 
+protected:
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
 public:
 
     ModelItemSeparator(Separator *sep, const QString &file_name = ":new/images/sep_svg", QGraphicsItem *parent = 0);

@@ -386,11 +386,12 @@ void DecoupledModel::addToMaterialBalanceStreamsUpstream(Separator *s, Well *fro
 //-----------------------------------------------------------------------------------------------
 // Collects all the binary variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<BinaryVariable> >& DecoupledModel::binaryVariables()
+QVector<shared_ptr<BinaryVariable> >& DecoupledModel::binaryVariables(bool force_refresh)
 {
 
-    if(m_vars_binary.size() == 0)
+    if(m_vars_binary.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_vars_binary.resize(0);
 
         // finding well routnig variables
         for(int i = 0; i < numberOfWells(); i++)
@@ -436,10 +437,11 @@ QVector<shared_ptr<BinaryVariable> >& DecoupledModel::binaryVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the real variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<RealVariable> >& DecoupledModel::realVariables()
+QVector<shared_ptr<RealVariable> >& DecoupledModel::realVariables(bool force_refresh)
 {
-    if(m_vars_real.size() == 0)
+    if(m_vars_real.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_vars_real.resize(0);
 
         // getting the control variables for the wells
         for(int i = 0; i < numberOfWells(); ++i)     // looping through all the wells
@@ -495,11 +497,12 @@ QVector<shared_ptr<RealVariable> >& DecoupledModel::realVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the integer variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<IntVariable> >& DecoupledModel::integerVariables()
+QVector<shared_ptr<IntVariable> >& DecoupledModel::integerVariables(bool force_refresh)
 {
 
-    if(m_vars_integer.size() == 0)
+    if(m_vars_integer.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_vars_integer.resize(0);
 
         // collecting the install time variables for the separators
         for(int i = 0; i < numberOfPipes(); ++i)     // looping through all the pipes
@@ -533,12 +536,13 @@ QVector<shared_ptr<IntVariable> >& DecoupledModel::integerVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the constraints
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<Constraint> >& DecoupledModel::constraints()
+QVector<shared_ptr<Constraint> >& DecoupledModel::constraints(bool force_refresh)
 {
     // TODO: the part of this function that is common between Coupled and Decoupled model should be put back into the Model class
 
-    if(m_cons.size() == 0)
+    if(m_cons.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_cons.resize(0);
 
         // getting the well bhp constraints
         for(int i = 0; i < numberOfWells(); ++i)

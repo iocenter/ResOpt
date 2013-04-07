@@ -73,6 +73,7 @@ public:
 
     // set functions
     void setModel(Model *m) {p_model = m;}
+
     void setReservoirSimulator(ReservoirSimulator *s) {p_simulator = s;}
 
     // get functions
@@ -87,7 +88,7 @@ signals:
      *
      * @param source
      */
-    void finished(Launcher *source, Component *comp);
+    void finished(Launcher *source, Component *comp, Case *finished_case);
 
     void runningReservoirSimulator();
 

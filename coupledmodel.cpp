@@ -103,7 +103,7 @@ void CoupledModel::updateStreams()
 
     // first need to empty all the streams in all pipes
     for(int i = 0; i < numberOfPipes(); ++i) pipe(i)->emptyStreams();
-
+    cout << "done emptying streams.." << endl;
 
     // starting with the production wells, feeding the rates to the connected pipes
     for(int i = 0; i < numberOfWells(); ++i)
@@ -132,6 +132,8 @@ void CoupledModel::updateStreams()
             } // pipe connection
         } // production well
     } // well
+
+    cout << "done with updateStreams()..." << endl;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -311,12 +313,13 @@ void CoupledModel::addStreamsUpstream(PressureBooster *b, Well *from_well, doubl
 //-----------------------------------------------------------------------------------------------
 // Collects all the binary variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<BinaryVariable> >& CoupledModel::binaryVariables()
+QVector<shared_ptr<BinaryVariable> >& CoupledModel::binaryVariables(bool force_refresh)
 {
 
 
-    if(m_vars_binary.size() == 0)
+    if(m_vars_binary.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_vars_binary.resize(0);
 
         // finding well routnig variables
         for(int i = 0; i < numberOfWells(); i++)
@@ -362,11 +365,12 @@ QVector<shared_ptr<BinaryVariable> >& CoupledModel::binaryVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the real variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables()
+QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables(bool force_refresh)
 {
 
-    if(m_vars_real.size() == 0)
+    if(m_vars_real.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_vars_real.resize(0);
 
         for(int i = 0; i < numberOfWells(); ++i)     // looping through all the wells
         {
@@ -420,10 +424,11 @@ QVector<shared_ptr<RealVariable> >& CoupledModel::realVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the integer variables
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables()
+QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables(bool force_refresh)
 {
-    if(m_vars_integer.size() == 0)
+    if(m_vars_integer.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_vars_integer.resize(0);
 
         // collecting the install time variables for the separators and boosters
         for(int i = 0; i < numberOfPipes(); ++i)     // looping through all the pipes
@@ -465,11 +470,12 @@ QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables()
 //-----------------------------------------------------------------------------------------------
 // Collects all the constraints
 //-----------------------------------------------------------------------------------------------
-QVector<shared_ptr<Constraint> >& CoupledModel::constraints()
+QVector<shared_ptr<Constraint> >& CoupledModel::constraints(bool force_refresh)
 {
 
-    if(m_cons.size() == 0)
+    if(m_cons.size() == 0 || force_refresh)
     {
+        if(force_refresh) m_cons.resize(0);
 
         // getting the well bhp constraints
         for(int i = 0; i < numberOfWells(); ++i)

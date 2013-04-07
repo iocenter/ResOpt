@@ -135,7 +135,7 @@ public:
      *
      * @return QVector<BinaryVariable *>
      */
-    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables() = 0;
+    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables(bool force_refresh = false) = 0;
 
     /**
      * @brief Returns a vector containing all the real variables defined within the model.
@@ -143,7 +143,7 @@ public:
      *
      * @return QVector<RealVariable *>
      */
-    virtual QVector<shared_ptr<RealVariable> >& realVariables() = 0;
+    virtual QVector<shared_ptr<RealVariable> >& realVariables(bool force_refresh = false) = 0;
 
 
 
@@ -153,7 +153,7 @@ public:
      *
      * @return QVector<shared_ptr<IntVariable> >
      */
-    virtual QVector<shared_ptr<IntVariable> >& integerVariables() = 0;
+    virtual QVector<shared_ptr<IntVariable> >& integerVariables(bool force_refresh = false) = 0;
 
     /**
      * @brief Returns a vector containing all the constraints defined within the model.
@@ -161,7 +161,7 @@ public:
      *
      * @return QVector<Constraint *>
      */
-    virtual QVector<shared_ptr<Constraint> >& constraints() = 0;
+    virtual QVector<shared_ptr<Constraint> >& constraints(bool force_refresh = false) = 0;
 
 
     /**
@@ -191,9 +191,19 @@ public:
     virtual bool updateConstraints() = 0;
 
 
+    virtual int numberOfRealVariables() const = 0;
+    virtual int numberOfBinaryVariables() const = 0;
+    virtual int numberOfIntegerVariables() const = 0;
+    virtual int numberOfConstraints() const = 0;
 
+    virtual double realVariableValue(int i) const = 0;
+    virtual double binaryVariableValue(int i) const = 0;
+    virtual double integerVariableValue(int i) const = 0;
+    virtual double constraintValue(int i) const = 0;
 
     // misc functions
+
+
 
     /**
      * @brief Makes sure that the Model is set up propperly.
@@ -405,6 +415,8 @@ public:
     Objective* objective() {return p_obj;}
 
     bool isUpToDate() const {return m_up_to_date;}
+
+    Model& operator=(const Model &rhs);
 };
 
 } // namespace ResOpt

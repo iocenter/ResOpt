@@ -834,4 +834,64 @@ void Model::updateObjectiveValue()
     for(int i = 0; i < field_rates.size(); i++) delete field_rates.at(i);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Assignment operator
+//-----------------------------------------------------------------------------------------------
+Model& Model::operator =(const Model &rhs)
+{
+    bool ok = this->numberOfWells() == rhs.numberOfWells() &&
+            this->numberOfPipes() == rhs.numberOfPipes() &&
+            this->numberOfRealVariables() == rhs.numberOfRealVariables() &&
+            this->numberOfBinaryVariables() == rhs.numberOfBinaryVariables() &&
+            this->numberOfIntegerVariables() == rhs.numberOfIntegerVariables() &&
+            this->numberOfConstraints() == rhs.numberOfConstraints();
+
+    if(this != &rhs && ok)
+    {
+        // updating wells
+        for(int i = 0; i < numberOfWells(); ++i)
+        {
+            // looping through the streams
+            for(int j = 0; j < well(i)->numberOfStreams(); ++j)
+            {
+                *well(i)->stream(j) = *rhs.well(i)->stream(j);
+                well(i)->stream(j)->setPressure(rhs.well(i)->stream(j)->pressure(true));
+            }
+
+        }
+
+        // updating pipes
+        for(int i = 0; i < numberOfPipes(); ++i)
+        {
+            // looping through the streams
+            for(int j = 0; j < pipe(i)->numberOfStreams(); ++j)
+            {
+                *pipe(i)->stream(j) = *rhs.pipe(i)->stream(j);
+                pipe(i)->stream(j)->setPressure(rhs.pipe(i)->stream(j)->pressure(true));
+            }
+
+        }
+
+        // updating real variable values
+        for(int i = 0; i < numberOfRealVariables(); ++i) realVariables().at(i)->setValue(rhs.realVariableValue(i));
+
+        // updating binary variable values
+        for(int i = 0; i < numberOfBinaryVariables(); ++i) binaryVariables().at(i)->setValue(rhs.binaryVariableValue(i));
+
+        // updating integer variable values
+        for(int i = 0; i < numberOfIntegerVariables(); ++i) integerVariables().at(i)->setValue(rhs.integerVariableValue(i));
+
+        // updating constraint values
+        for(int i = 0; i < numberOfConstraints(); ++i) constraints().at(i)->setValue(rhs.constraintValue(i));
+
+
+
+
+    }
+
+    return *this;
+}
+
+
 } // namespace ResOpt

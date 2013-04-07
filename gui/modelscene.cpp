@@ -6,6 +6,7 @@
 #include "modelitemmidpipe.h"
 #include "modelitemendpipe.h"
 #include "modelitempressurebooster.h"
+#include "modelitemcapacity.h"
 #include "connector.h"
 
 #include "model.h"
@@ -16,6 +17,7 @@
 #include "endpipe.h"
 #include "separator.h"
 #include "pressurebooster.h"
+#include "capacity.h"
 #include "binaryvariable.h"
 
 using ResOpt::ProductionWell;
@@ -25,6 +27,7 @@ using ResOpt::Separator;
 using ResOpt::MidPipe;
 using ResOpt::EndPipe;
 using ResOpt::PressureBooster;
+using ResOpt::Capacity;
 using ResOpt::BinaryVariable;
 
 #include <iostream>
@@ -119,9 +122,13 @@ void ModelScene::buildSceneFromModel(Model *m)
         }
 
 
-        m_current_y = (i+1)*150;
+        m_current_y = (i+1)*80;
 
     }
+
+
+    // adding the capacities to the scene
+    addCapacities(m);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -130,7 +137,7 @@ void ModelScene::buildSceneFromModel(Model *m)
 void ModelScene::addUpstreamToScene(ModelItemProdWell *prod_item)
 {
 
-    m_current_y += 75;
+    m_current_y += 30;
 
     ProductionWell *prod_well = prod_item->productionWell();
 
@@ -456,6 +463,32 @@ ModelItem* ModelScene::addModelItem(Component *c)
 
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Adds the capacities to the scene
+//-----------------------------------------------------------------------------------------------
+void ModelScene::addCapacities(Model *m)
+{
+
+    for(int i = 0; i < m->numberOfCapacities(); ++i)
+    {
+        ModelItemCapacity *cap_item = new ModelItemCapacity(m->capacity(i));
+        cap_item->setPos(i*100 + 300, 0);
+
+        addItem(cap_item);
+        m_capacity_items.append(cap_item);
+
+        // adding connectors
+        for(int j = 0; j < cap_item->capacity()->numberOfFeedPipes(); ++j)
+        {
+            ModelItem *feed = itemFromComponent(cap_item->capacity()->feedPipe(j));
+
+            Connector *con = new Connector(feed, cap_item, true, Connector::TopConnection);
+            addItem(con);
+        }
+    }
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // sets the position of the model item on the scene

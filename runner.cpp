@@ -76,7 +76,8 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       p_debug(0),
       m_number_of_runs(1),
       m_number_of_res_sim_runs(0),
-      p_cases(0)
+      p_cases(0),
+      p_last_run_launcher(0)
 {
     p_reader = new ModelReader(driver_file);
 }
@@ -165,6 +166,21 @@ void Runner::initialize()
 //-----------------------------------------------------------------------------------------------
 void Runner::initializeLaunchers()
 {
+    //test code
+    for(int i = 0; i < m_launchers.size(); ++i) delete m_launchers.at(i);
+    m_launchers.resize(0);
+
+    for(int i = 0; i < m_threads.size(); ++i)
+    {
+        //m_threads.at(i)->terminate();
+        delete m_threads.at(i);
+    }
+    m_threads.resize(0);
+
+    m_launcher_running.resize(0);
+
+
+
     // setting up the launchers and asociated threads
     for(int i = 0; i < p_optimizer->parallelRuns(); ++i)
     {
@@ -210,7 +226,7 @@ void Runner::initializeLaunchers()
         }
 
         // connecting signals and slots
-        connect(l, SIGNAL(finished(Launcher*, Component*)), this, SLOT(onLauncherFinished(Launcher*, Component*)));
+        connect(l, SIGNAL(finished(Launcher*, Component*, Case*)), this, SLOT(onLauncherFinished(Launcher*, Component*, Case*)));
         connect(l, SIGNAL(runningReservoirSimulator()), this, SLOT(incrementReservoirSimRuns()));
 
 
@@ -230,6 +246,7 @@ void Runner::initializeLaunchers()
 
     }
 }
+
 
 //-----------------------------------------------------------------------------------------------
 // Main control loop
@@ -646,8 +663,13 @@ void Runner::writeBestCaseToSummary(Case *c)
 //-----------------------------------------------------------------------------------------------
 // This function is called whenever a Launcher emits finished
 //-----------------------------------------------------------------------------------------------
-void Runner::onLauncherFinished(Launcher *l, Component *comp)
+void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_case)
 {
+    // this is connected to the GUI...
+    emit newCaseFinished(finished_case);
+
+    //update the last run launcher pointer
+    p_last_run_launcher = l;
 
     // printing debug info if enabled
     if(p_debug != 0) printDebug(l);
@@ -703,6 +725,17 @@ void Runner::onLauncherFinished(Launcher *l, Component *comp)
 
     }
 
+}
+
+//-----------------------------------------------------------------------------------------------
+// Transfers the current variable values and streams from launcher to runner
+//-----------------------------------------------------------------------------------------------
+void Runner::transferModelStateFromLauncher()
+{
+    if(p_last_run_launcher != 0)
+    {
+        *p_model = *p_last_run_launcher->model();
+    }
 }
 
 //-----------------------------------------------------------------------------------------------

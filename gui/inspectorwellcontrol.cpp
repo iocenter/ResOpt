@@ -1,15 +1,18 @@
-#include "inspectorvariable.h"
+#include "inspectorwellcontrol.h"
 
 #include <QtGui/QLineEdit>
 #include <QtGui/QLabel>
 #include <QtGui/QGridLayout>
+#include <QtGui/QComboBox>
 #include <QDoubleValidator>
+
+
 
 namespace ResOptGui
 {
 
 
-InspectorVariable::InspectorVariable(const QString &name, double value, double max, double min, QWidget *parent, bool header):
+InspectorWellControl::InspectorWellControl(double time, double value, double max, double min, WellControl::contol_type type, QWidget *parent, bool header):
     QWidget(parent)
 {
     QGridLayout *layout = new QGridLayout(this);
@@ -20,18 +23,22 @@ InspectorVariable::InspectorVariable(const QString &name, double value, double m
     // creating header if specified
     if(header)
     {
+        QLabel *time_header = new QLabel("time", this);
+        time_header->setMinimumWidth(80);
+        layout->addWidget(time_header, row, 0, Qt::AlignCenter);
         layout->addWidget(new QLabel("value", this), row, 1, Qt::AlignCenter);
         layout->addWidget(new QLabel("max", this), row, 2, Qt::AlignCenter);
         layout->addWidget(new QLabel("min", this), row, 3, Qt::AlignCenter);
+        layout->addWidget(new QLabel("type", this), row, 4, Qt::AlignCenter);
 
         row++;
     }
 
     // setting up the components
 
-    p_name = new QLabel(name, this);
-    p_name->setFixedWidth(150);
-    layout->addWidget(p_name, row, 0);
+    p_time = new QLabel(QString::number(time), this);
+    p_time->setMinimumWidth(80);
+    layout->addWidget(p_time, row, 0, Qt::AlignCenter);
 
     p_value = new QLineEdit(QString::number(value), this);
     p_value->setFixedWidth(100);
@@ -48,12 +55,24 @@ InspectorVariable::InspectorVariable(const QString &name, double value, double m
     p_min->setValidator(new QDoubleValidator(this));
     layout->addWidget(p_min, row, 3);
 
+    p_type = new QComboBox(this);
+    p_type->addItem("BHP", WellControl::BHP);
+    p_type->addItem("OIL", WellControl::QOIL);
+    p_type->addItem("GAS", WellControl::QGAS);
+    p_type->addItem("WAT", WellControl::QWAT);
+
+    p_type->setCurrentIndex(p_type->findData(type));
+
+
+    layout->addWidget(p_type, row, 4);
+
+
 }
 
 //-----------------------------------------------------------------------------------------------
 // Returns the current value
 //-----------------------------------------------------------------------------------------------
-double InspectorVariable::value()
+double InspectorWellControl::value()
 {
     return p_value->text().toDouble();
 }
@@ -61,7 +80,7 @@ double InspectorVariable::value()
 //-----------------------------------------------------------------------------------------------
 // Returns the current max
 //-----------------------------------------------------------------------------------------------
-double InspectorVariable::max()
+double InspectorWellControl::max()
 {
     return p_max->text().toDouble();
 }
@@ -69,9 +88,20 @@ double InspectorVariable::max()
 //-----------------------------------------------------------------------------------------------
 // Returns the current min
 //-----------------------------------------------------------------------------------------------
-double InspectorVariable::min()
+double InspectorWellControl::min()
 {
     return p_min->text().toDouble();
+}
+
+//-----------------------------------------------------------------------------------------------
+// Returns the current type
+//-----------------------------------------------------------------------------------------------
+WellControl::contol_type InspectorWellControl::type()
+{
+    if(p_type->itemData(p_type->currentIndex()) == WellControl::BHP) return WellControl::BHP;
+    else if(p_type->itemData(p_type->currentIndex()) == WellControl::QOIL) return WellControl::QOIL;
+    else if(p_type->itemData(p_type->currentIndex()) == WellControl::QWAT) return WellControl::QWAT;
+    else return WellControl::QGAS;
 }
 
 

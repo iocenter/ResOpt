@@ -2,6 +2,7 @@
 #define PLOT_H
 
 #include <QtGui/QWidget>
+#include <QVector>
 #include "qcustomplot.h"
 
 #include "case.h"
@@ -21,9 +22,12 @@ private:
     double m_min;
 
     QCustomPlot m_custom_plot;
+    QVector<Case*> m_cases;
+
 
 public:
     Plot(QWidget *parent = 0);
+    ~Plot();
 
 
 

@@ -1,4 +1,6 @@
 #include "modelitemprodwell.h"
+#include "inspectorprodwell.h"
+#include "modelscene.h"
 
 #include "productionwell.h"
 
@@ -16,5 +18,18 @@ ModelItemProdWell::ModelItemProdWell(ProductionWell *prod, const QString &file_n
     setToolTip("Production well: " + p_prod_well->name());
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Open the inspector window if item is double clicked
+//-----------------------------------------------------------------------------------------------
+void ModelItemProdWell::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    InspectorProdWell *inspector = new InspectorProdWell(p_prod_well);
+
+    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
+    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
+
+}
+
 
 } // namespace

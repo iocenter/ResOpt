@@ -20,6 +20,9 @@ class ModelItemProdWell : public ModelItem
 private:
     ProductionWell *p_prod_well;
 
+protected:
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
 public:
 
     ModelItemProdWell(ProductionWell *prod, const QString &file_name = ":new/images/prod_svg", QGraphicsItem *parent = 0);

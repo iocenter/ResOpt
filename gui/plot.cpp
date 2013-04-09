@@ -41,12 +41,22 @@ Plot::Plot(QWidget *parent) :
 
 }
 
+Plot::~Plot()
+{
+    for(int i = 0; i < m_cases.size(); ++i)
+    {
+        delete m_cases.at(i);
+    }
+    m_cases.resize(0);
+}
+
 //-----------------------------------------------------------------------------------------------
 // Adds data from the case to the plot
 //-----------------------------------------------------------------------------------------------
 void Plot::addCase(Case *c)
 {
-
+    // adding the case to the vector
+    m_cases.push_back(new Case(*c));
 
 
     m_custom_plot.graph(0)->addData(m_entries, c->objectiveValue());

@@ -41,6 +41,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     p_model_view = new QGraphicsView(p_model_scene);
     p_model_view->setMinimumSize(800, 600);
+
     layout->addWidget(p_model_view);
 
     QWidget *widget = new QWidget;

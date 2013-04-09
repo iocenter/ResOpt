@@ -99,7 +99,9 @@ SOURCES += main.cpp \
     gui/qcustomplot.cpp \
     gui/plotstreams.cpp \
     gui/inspectoroptimizer.cpp \
-    gui/inspectorprodwell.cpp
+    gui/inspectorprodwell.cpp \
+    gui/inspectorwellcontrol.cpp \
+    gui/inspectorconstraint.cpp
 
 HEADERS += \
     well.h \
@@ -175,7 +177,9 @@ HEADERS += \
     gui/qcustomplot.h \
     gui/plotstreams.h \
     gui/inspectoroptimizer.h \
-    gui/inspectorprodwell.h
+    gui/inspectorprodwell.h \
+    gui/inspectorwellcontrol.h \
+    gui/inspectorconstraint.h
 
 RESOURCES += \
     gui/images.qrc

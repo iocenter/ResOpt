@@ -95,6 +95,32 @@ void CoupledModel::initialize()
 
 
 //-----------------------------------------------------------------------------------------------
+// processes the model after the reservoir simulator is run
+//-----------------------------------------------------------------------------------------------
+void CoupledModel::process()
+{
+    // update the streams in the pipe network
+    updateStreams();
+
+
+    // calculating pressures in the Pipe network
+    calculatePipePressures();
+
+
+    // updating the constraints (this must be done after the pressure calc)
+    updateConstraints();
+
+    // updating the objective
+    updateObjectiveValue();
+
+
+    // updating the status of the model
+    setUpToDate(true);
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // updates the rates flowing through every element in the model
 //-----------------------------------------------------------------------------------------------
 void CoupledModel::updateStreams()

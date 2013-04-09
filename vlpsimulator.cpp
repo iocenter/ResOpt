@@ -195,12 +195,8 @@ bool VlpSimulator::generateInputFiles(Model *m)
 
     if(numberOfVlpTables() == 0)
     {
-        // checking if the folder exists
-        QDir dir(".");
 
-        if(!dir.exists(folder())) dir.mkdir(folder());
-
-
+        // reservoir input file name:
         QString file_name = folder() + "/" + m->reservoir()->file();
 
         if(!readInput(file_name)) ok = false;

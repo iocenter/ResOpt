@@ -40,6 +40,8 @@ bool NomadEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bo
 
 
 
+
+
     // extracting the constraint values
     // the constraints in NOMAD must be on the form: c <= 0
 

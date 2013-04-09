@@ -49,6 +49,7 @@ class ModelReader
 private:
 
     QFile m_driver_file;
+    QString m_path;
 
     QStringList processLine(const QString& line);
     bool isEmpty(const QStringList &list);
@@ -190,6 +191,8 @@ public:
      *
      */
     Model* readDriverFile(Runner *r);
+
+    const QString& driverFilePath() {return m_path;}
 
 
 };

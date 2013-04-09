@@ -103,7 +103,7 @@ Runner::~Runner()
 void Runner::initialize()
 {
     // checking if the output folder exists, creating if not.
-    QDir dir(".");
+    QDir dir(p_reader->driverFilePath());
     if(!dir.exists("output")) dir.mkdir("output");
 
 
@@ -136,7 +136,7 @@ void Runner::initialize()
     cout << "Initializing the reservoir simulator..." << endl;
     // initializing the reservoir simulator
     if(p_simulator == 0) p_simulator = new VlpSimulator();
-    p_simulator->setFolder("output");
+    p_simulator->setFolder(p_reader->driverFilePath() + "/output");
 
 
     cout << "Initializing the optimizer..." << endl;
@@ -189,15 +189,15 @@ void Runner::initializeLaunchers()
 
 
         // copying the reservoir description file to the results folder for this launcher
-        QString folder_str = "output/" + QString::number(i+1);
+        QString folder_str =  QString::number(i+1);
 
-        QString res_file_new = folder_str + "/" + p_model->reservoir()->file();
+        QString res_file_new = p_simulator->folder() + "/" + folder_str + "/" + p_model->reservoir()->file();
 
         // checking if the folder exists
-        QDir dir(".");
+        QDir dir(p_simulator->folder());
         if(!dir.exists(folder_str)) dir.mkdir(folder_str);          // creating the sub folder if it does not exist
         QFile::remove(res_file_new);                                // deleting old version if exists
-        QFile::copy(p_model->reservoir()->file(), res_file_new);    // copies the reservoir file to the sub folder
+        QFile::copy(p_model->driverPath() + "/" + p_model->reservoir()->file(), res_file_new);    // copies the reservoir file to the sub folder
 
 
         // creating a launcher
@@ -208,7 +208,7 @@ void Runner::initializeLaunchers()
 
         // setting up the reservoir simulator
         ReservoirSimulator *r = p_simulator->clone();
-        r->setFolder(folder_str);       // setting the folder for the simulator
+        r->setFolder(p_simulator->folder() + "/" + folder_str);       // setting the folder for the simulator
 
         l->setReservoirSimulator(r);    // assigning the simulator to the launcher
 

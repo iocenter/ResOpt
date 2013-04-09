@@ -200,23 +200,11 @@ void Launcher::evaluateEntireModel(Case *c)
         cout << "No need to run reservoir simulator, it is already up to date..." << endl;
     }
 
-    // update the streams in the pipe network
-    p_model->updateStreams();
+    // process the model
+    // this will update the streams in the pipe network,
+    // calculate pressures, update constraint values, and objective value
+    p_model->process();
 
-
-    // calculating pressures in the Pipe network
-    p_model->calculatePipePressures();
-
-
-    // updating the constraints (this must be done after the pressure calc)
-    p_model->updateConstraints();
-
-    // updating the objective
-    p_model->updateObjectiveValue();
-
-
-    // updating the status of the model
-    p_model->setUpToDate(true);
 
     // copying back the results to the case
     for(int i = 0; i < p_model->constraints().size(); ++i)

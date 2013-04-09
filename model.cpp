@@ -64,6 +64,9 @@ Model::Model(const Model &m)
     // setting the up to date status
     m_up_to_date = false;
 
+    // copying driver path
+    m_driver_path = m.m_driver_path;
+
     // copying the reservoir
     p_reservoir = new Reservoir(*m.reservoir());
 

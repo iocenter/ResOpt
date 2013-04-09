@@ -103,6 +103,8 @@ public:
     virtual Model* clone() const {return new DecoupledModel(*this);}
 
     virtual void initialize();
+    virtual void process();
+
     virtual void updateStreams();
     virtual bool updateConstraints();
 

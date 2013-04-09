@@ -103,6 +103,7 @@ void DecoupledModel::initialize()
 
 }
 
+
 //-----------------------------------------------------------------------------------------------
 // setting up the input rate variables and mbc
 //-----------------------------------------------------------------------------------------------
@@ -154,6 +155,33 @@ void DecoupledModel::initializeVarsAndCons()
         }
     }
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// processes the model after the reservoir simulator is run
+//-----------------------------------------------------------------------------------------------
+void DecoupledModel::process()
+{
+    // update the streams in the pipe network
+    updateStreams();
+
+
+    // calculating pressures in the Pipe network
+    calculatePipePressures();
+
+
+    // updating the constraints (this must be done after the pressure calc)
+    updateConstraints();
+
+    // updating the objective
+    updateObjectiveValue();
+
+
+    // updating the status of the model
+    setUpToDate(true);
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // updates the values of the constraints

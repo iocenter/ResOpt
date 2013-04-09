@@ -93,6 +93,8 @@ public:
     virtual Model* clone() const {return new CoupledModel(*this);}
 
     virtual void initialize();
+    virtual void process();
+
     virtual void updateStreams();
     virtual bool updateConstraints();
 

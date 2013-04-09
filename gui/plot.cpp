@@ -1,6 +1,7 @@
 #include "plot.h"
 
-#include <QHBoxLayout>
+#include <QtGui/QGridLayout>
+#include <QtGui/QPushButton>
 
 namespace ResOptGui
 {
@@ -8,22 +9,19 @@ namespace ResOptGui
 Plot::Plot(QWidget *parent) :
     QWidget(parent),
     m_custom_plot(this),
-    m_entries(1),
     m_max(10),
     m_min(0)
 {
-    QHBoxLayout *layout = new QHBoxLayout;
+    QGridLayout *layout = new QGridLayout;
 
     setLayout(layout);
 
-    layout->addWidget(&m_custom_plot);
+    // setting up the plot
+    layout->addWidget(&m_custom_plot, 0, 0, 1, 3);
 
     m_custom_plot.setTitle("Objective Value");
 
     m_custom_plot.addGraph();
-
-    //graph(0)->addData(0,1);
-    //graph(0)->addData(1,2);
 
     m_custom_plot.graph(0)->setLineStyle(QCPGraph::lsNone);
     m_custom_plot.graph(0)->setScatterStyle(QCP::ssDisc);
@@ -38,6 +36,13 @@ Plot::Plot(QWidget *parent) :
 
     m_custom_plot.setRangeDrag(Qt::Vertical);
     m_custom_plot.setRangeZoom(Qt::Vertical);
+
+    // setting up the clear button
+    p_btn_clear = new QPushButton("Clear Plot", this);
+    connect(p_btn_clear, SIGNAL(clicked()), this, SLOT(clearCases()));
+
+    layout->addWidget(p_btn_clear, 1, 1);
+
 
 }
 
@@ -59,10 +64,10 @@ void Plot::addCase(Case *c)
     m_cases.push_back(new Case(*c));
 
 
-    m_custom_plot.graph(0)->addData(m_entries, c->objectiveValue());
+    m_custom_plot.graph(0)->addData(m_cases.size(), c->objectiveValue());
 
     // x axis range
-    if(m_entries >= 5) m_custom_plot.xAxis->setRange(0, m_entries + 1);
+    if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(0, m_cases.size() + 1);
 
     // y axis range
     if(c->objectiveValue() < m_min) m_min = c->objectiveValue();
@@ -73,17 +78,38 @@ void Plot::addCase(Case *c)
     m_custom_plot.yAxis->setRange(m_min - padding, m_max + padding);
 
     // checking if the x-axis tick step must change
-    if(m_entries > 10)
+    if(m_cases.size() > 10)
     {
-        int tick = m_entries / 10;
+        int tick = m_cases.size() / 10;
         m_custom_plot.xAxis->setTickStep(tick);
     }
 
-    m_entries++;
 
     m_custom_plot.replot();
 
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Clears the cases from the plot
+//-----------------------------------------------------------------------------------------------
+void Plot::clearCases()
+{
+    for(int i = 0; i < m_custom_plot.graphCount(); ++i)
+    {
+        m_custom_plot.graph(i)->clearData();
+    }
+
+    for(int i = 0; i < m_cases.size(); ++i) delete m_cases.at(i);
+    m_cases.resize(0);
+
+    m_max = 10;
+    m_min = 0;
+
+    m_custom_plot.xAxis->setRange(0, 5);
+    m_custom_plot.yAxis->setRange(0, 5);
+
+    m_custom_plot.replot();
+}
 
 } // namespace

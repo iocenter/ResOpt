@@ -482,12 +482,6 @@ bool GprsSimulator::generateInputFiles(Model *m)
     bool ok = true;
 
 
-    // checking if the folder exists
-    QDir dir(".");
-
-    if(!dir.exists(folder())) dir.mkdir(folder());
-    //QDir::setCurrent(folder());
-
     // first generating the main input file (gprs.in)
     if(!generateMainInputFile(m)) ok = false;
 
@@ -513,8 +507,6 @@ bool GprsSimulator::launchSimulator()
 
     QString program = "gprs";
     QStringList args;
-    //args.push_back("-c 10");
-    //args.push_back("google.com");
 
     // setting up the process
     gprs.setProcessChannelMode(QProcess::MergedChannels);

@@ -24,6 +24,8 @@
 #include <iostream>
 #include <tr1/memory>
 #include <QThread>
+#include <QFileInfo>
+#include <QDir>
 
 #include "runner.h"
 #include "coupledmodel.h"
@@ -75,6 +77,11 @@ namespace ResOpt
 ModelReader::ModelReader(const QString &driver)
     : m_driver_file(driver)
 {
+    // setting the path of the driver file
+    QFileInfo info(m_driver_file);
+    m_path = info.absoluteDir().absolutePath();
+    cout << "path to driver file: " << m_path.toAscii().data() << endl;
+
     //checking if file opened ok...
 
     if(!m_driver_file.open(QIODevice::ReadOnly | QIODevice::Text))
@@ -210,6 +217,9 @@ Model* ModelReader::readDriverFile(Runner *r)
         exit(1);
     }
 
+
+    // setting the driver file path to the model
+    p_model->setDriverPath(m_path);
 
 
     return p_model;
@@ -1511,7 +1521,7 @@ Pipe* ModelReader::readPipe()
 
     // setting comon parameters
 
-    p->setFileName(l_file);
+    p->setFileName(m_path + "/" + l_file);
     p->setNumber(l_number);
 
 

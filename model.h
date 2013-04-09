@@ -21,6 +21,7 @@
 #ifndef MODEL_H
 #define MODEL_H
 
+#include <QString>
 #include <QVector>
 #include <tr1/memory>
 
@@ -63,6 +64,8 @@ private:
     QVector<UserConstraint*> m_user_constraints;
 
     bool m_up_to_date;      // true if the model has been evaluated
+
+    QString m_driver_path;
 
 
 
@@ -112,6 +115,14 @@ public:
     virtual ~Model();
 
     // virtual functions
+
+    /**
+     * @brief Calcuates the entire upstream part of the model
+     * @details This function updates the streams in the pipe network, calculates pressures,
+     *          updates constraint values and objective.
+     *
+     */
+    virtual void process() = 0;
 
 
     /**
@@ -298,6 +309,8 @@ public:
 
     void setUpToDate(bool b) {m_up_to_date = b;}
 
+    void setDriverPath(const QString &path) {m_driver_path = path;}
+
     // add functions
 
 
@@ -335,6 +348,8 @@ public:
 
 
     // get functions
+
+    const QString& driverPath() {return m_driver_path;}
 
     int numberOfMasterScheduleTimes() const {return m_master_schedule.size();}
     double masterScheduleTime(int i) const {return m_master_schedule.at(i);}

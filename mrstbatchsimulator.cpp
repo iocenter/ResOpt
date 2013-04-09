@@ -81,6 +81,8 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
         exit(1);
     }
+
+    /*
     if(m->masterSchedule().size() != 3)
     {
         cout << "### Error! ###" << endl;
@@ -89,6 +91,7 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
         exit(1);
     }
+    */
 
     // done checking, starting to generate the control file
 
@@ -188,12 +191,16 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
     }
     *out_ctrl << well_names.last() << "];\n\n";
 
-
-    *out_ctrl << "%write control file:" << "\n";
-    *out_ctrl << "fid = fopen('" <<  m->reservoir()->file().split(".").at(0) << "_CONTROLS.TXT', 'w');" << "\n";
-    *out_ctrl << "fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  [i1; p1; p2]);" << "\n";
-    *out_ctrl << "fclose(fid);" << "\n\n";
-    *out_ctrl << "runSim2;" << "\n";
+    *out_ctrl << "try" << "\n";
+    *out_ctrl << " %write control file:" << "\n";
+    *out_ctrl << " fid = fopen('" <<  m->reservoir()->file().split(".").at(0) << "_CONTROLS.TXT', 'w');" << "\n";
+    *out_ctrl << " fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  [i1; p1; p2]);" << "\n";
+    *out_ctrl << " fclose(fid);" << "\n\n";
+    *out_ctrl << " runSim2;" << "\n";
+    *out_ctrl << "catch err" << "\n";
+    *out_ctrl << " warning('something went wrong with MRST');" << "\n";
+    *out_ctrl << " exit(3)" << "\n";
+    *out_ctrl << "end" << "\n";
 
     // closing file
     ctrl_file.close();
@@ -303,7 +310,7 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
     *out_mrst << "    fid = fopen(cntrNm);\n";
     *out_mrst << "    u   = fscanf(fid, '%g');\n";
     *out_mrst << "    numWells      = numel(u)/numContrSteps;\n";
-    *out_mrst << "    vals     = mat2cell(u(:), numContrSteps*ones(numWells, 1), 1);\n";
+    *out_mrst << "    vals     = mat2cell(u(:), numWells*ones(numContrSteps, 1), 1);\n";
     *out_mrst << "    schedule = updateSchedule(schedule, vals);\n";
     *out_mrst << "    fclose(fid);\n";
     *out_mrst << "end\n\n";
@@ -583,9 +590,7 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
 
         // copying the originals
-        //QFile::copy("test2.m", folder() + "/test2.m");
-        //QFile::copy("runSim2.m", folder() + "/runSim2.m");
-        QFile::copy("initStateADI.m", folder() + "/initStateADI.m");
+        QFile::copy(m->driverPath() + "/initStateADI.m", folder() + "/initStateADI.m");
 
         // generating schedule and runsim2
         generateEclIncludeFile(m);
@@ -630,11 +635,9 @@ bool MrstBatchSimulator::launchSimulator()
     // setting up the process
     mrst.setProcessChannelMode(QProcess::MergedChannels);
 
+    cout << "launching mrst from: " << folder().toAscii().data() << endl;
     // setting the working directory
-    QDir dir(".");
-    QString dir_str = dir.absolutePath() + "/" + folder();
-
-    mrst.setWorkingDirectory(dir_str);
+    mrst.setWorkingDirectory(folder());
 
 
     // starting MRST

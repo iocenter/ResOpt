@@ -2,7 +2,7 @@
 /*
  * This file is part of the ResOpt project.
  *
- * Copyright (C) 2011-2012 Aleksander O. Juell <aleksander.juell@ntnu.no>
+ * Copyright (C) 2011-2013 Aleksander O. Juell <aleksander.juell@ntnu.no>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by

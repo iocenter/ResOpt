@@ -19,39 +19,57 @@
  */
 
 
-#ifndef MODELITEMSEPARATOR_H
-#define MODELITEMSEPARATOR_H
+#ifndef ADJOINT_H
+#define ADJOINT_H
 
-#include "modelitem.h"
 
 namespace ResOpt
 {
-class Separator;
-}
 
-using ResOpt::Separator;
+class Stream;
+class RealVariable;
+class Well;
 
-namespace ResOptGui
-{
-
-class ModelItemSeparator : public ModelItem
+class Adjoint
 {
 private:
-    Separator *p_separator;
+    double m_dp_dx;
+    double m_dqo_dx;
+    double m_dqg_dx;
+    double m_dqw_dx;
 
-protected:
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    Stream *p_stream;
+    Well *p_well;
 
 public:
+    Adjoint();
+    Adjoint(Well *w, Stream *s);
 
-    ModelItemSeparator(Separator *sep, const QString &file_name = ":new/images/sep_svg", QGraphicsItem *parent = 0);
+    // misc functions
+    bool perturbStream(double eps_x);
+
+    // set functions
+    void setDpDx(double d) {m_dp_dx = d;}
+    void setDqoDx(double d) {m_dqo_dx = d;}
+    void setDqgDx(double d) {m_dqg_dx = d;}
+    void setDqwDx(double d) {m_dqw_dx = d;}
+
+    void setStream(Stream *s) {p_stream = s;}
+    void setWell(Well *w) {p_well = w;}
 
 
-    Separator* separator() {return p_separator;}
+    // get functions
+    double dpDx() const {return m_dp_dx;}
+    double dqoDx() const {return m_dqo_dx;}
+    double dqgDx() const {return m_dqg_dx;}
+    double dqwDx() const {return m_dqw_dx;}
+
+    Stream* stream() {return p_stream;}
+    Well* well() {return p_well;}
 
 
 };
 
 } // namespace
 
-#endif // MODELITEMSEPARATOR_H
+#endif // ADJOINT_H

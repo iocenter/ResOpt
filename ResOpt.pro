@@ -101,7 +101,11 @@ SOURCES += main.cpp \
     gui/inspectoroptimizer.cpp \
     gui/inspectorprodwell.cpp \
     gui/inspectorwellcontrol.cpp \
-    gui/inspectorconstraint.cpp
+    gui/inspectorconstraint.cpp \
+    adjoint.cpp \
+    adjointscoupledmodel.cpp \
+    adjointcollection.cpp \
+    derivative.cpp
 
 HEADERS += \
     well.h \
@@ -179,7 +183,11 @@ HEADERS += \
     gui/inspectoroptimizer.h \
     gui/inspectorprodwell.h \
     gui/inspectorwellcontrol.h \
-    gui/inspectorconstraint.h
+    gui/inspectorconstraint.h \
+    adjoint.h \
+    adjointscoupledmodel.h \
+    adjointcollection.h \
+    derivative.h
 
 RESOURCES += \
     gui/images.qrc

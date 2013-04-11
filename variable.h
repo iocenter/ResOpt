@@ -41,6 +41,10 @@ private:
     Component *p_parent;    // pointer to the component (well, pipe) that owns this variable
     QString m_name;         // identifying name for the variable
 
+    int m_id;                           // unique id number for the variable
+    static int next_id;
+
+
 public:
     Variable(Component *parent);
 
@@ -60,6 +64,8 @@ public:
     const QString& name() const {return m_name;}
 
     Component* parent() {return p_parent;}
+
+    int id() {return m_id;}
 
 
 };

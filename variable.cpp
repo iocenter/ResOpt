@@ -22,12 +22,13 @@
 
 namespace ResOpt
 {
-
+int Variable::next_id = 0;
 
 Variable::Variable(Component *parent)
     : p_parent(parent),
       m_name("no_name")
 {
+    m_id = next_id++;
 }
 
 

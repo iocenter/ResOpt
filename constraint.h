@@ -42,6 +42,10 @@ private:
     double m_min; /**< TODO */
     QString m_name;
 
+    int m_id;                           // unique id number for the component
+    static int next_id;
+
+
 public:
 /**
  * @brief

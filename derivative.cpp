@@ -19,38 +19,34 @@
  */
 
 
-#include "modelitemprodwell.h"
-#include "inspectorprodwell.h"
-#include "modelscene.h"
+#include "derivative.h"
 
-#include "productionwell.h"
-
-namespace ResOptGui
+namespace ResOpt
 {
 
-ModelItemProdWell::ModelItemProdWell(ProductionWell *prod, const QString &file_name, QGraphicsItem *parent)
-    : ModelItem(file_name, parent),
-      p_prod_well(prod)
-
+Derivative::Derivative() :
+    m_constraint_id(-1)
 {
+}
 
-    setScale(0.8);
 
-    setToolTip("Production well: " + p_prod_well->name());
-
+Derivative::Derivative(int con_id) :
+    m_constraint_id(con_id)
+{
 }
 
 //-----------------------------------------------------------------------------------------------
-// Open the inspector window if item is double clicked
+// returns the value of the partial derivative for variable with id = var_id
 //-----------------------------------------------------------------------------------------------
-void ModelItemProdWell::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+double Derivative::value(int var_id)
 {
-    InspectorProdWell *inspector = new InspectorProdWell(p_prod_well);
+    for(int i = 0; i < m_partial_derivatives.size(); ++i)
+    {
+        if(m_partial_derivatives.at(i).first == var_id) return m_partial_derivatives.at(i).second;
+    }
 
-    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
-    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
+    return 0;
 
 }
-
 
 } // namespace

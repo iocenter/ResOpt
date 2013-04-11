@@ -24,6 +24,8 @@
 namespace ResOpt
 {
 
+int Constraint::next_id = 0;
+
 
 Constraint::Constraint()
     : m_value(0.0),
@@ -31,6 +33,7 @@ Constraint::Constraint()
       m_min(0.0),
       m_name("unknown")
 {
+    m_id = next_id++;
 }
 
 
@@ -40,6 +43,7 @@ Constraint::Constraint(double value, double max, double min)
       m_max(max),
       m_min(min)
 {
+    m_id = next_id++;
 }
 
 } // namespace ResOpt

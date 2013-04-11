@@ -18,46 +18,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
  */
 
+#include "adjointcollection.h"
 
-#ifndef PLOTSTREAMZ_H
-#define PLOTSTREAMZ_H
 
-#include <QtGui/QWidget>
-#include <QVector>
-
-#include "qcustomplot.h"
-
-#include "stream.h"
-
-using ResOpt::Stream;
-
-namespace ResOptGui
+namespace ResOpt
 {
 
-class PlotStreams : public QWidget
+
+AdjointCollection::AdjointCollection()
 {
-    Q_OBJECT
-
-private:
-
-
-    QCustomPlot m_custom_plot;
-
-    QVector<Stream*> m_streams;
-
-    void plotData();
-
-
-public:
-    PlotStreams(const QString &title, QVector<Stream*> streams, QWidget *parent = 0);
-
-
-
-public slots:
-
-};
-
+}
 
 } // namespace
-
-#endif // PLOTSTREAMZ_H

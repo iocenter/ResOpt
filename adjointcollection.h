@@ -19,45 +19,42 @@
  */
 
 
-#ifndef PLOTSTREAMZ_H
-#define PLOTSTREAMZ_H
+#ifndef ADJOINTCOLLECTION_H
+#define ADJOINTCOLLECTION_H
 
-#include <QtGui/QWidget>
 #include <QVector>
+#include <tr1/memory>
 
-#include "qcustomplot.h"
+using std::tr1::shared_ptr;
 
-#include "stream.h"
-
-using ResOpt::Stream;
-
-namespace ResOptGui
+namespace ResOpt
 {
 
-class PlotStreams : public QWidget
-{
-    Q_OBJECT
+class Adjoint;
+class RealVariable;
 
+class AdjointCollection
+{
 private:
-
-
-    QCustomPlot m_custom_plot;
-
-    QVector<Stream*> m_streams;
-
-    void plotData();
-
+    QVector<Adjoint*> m_adjoints;
+    shared_ptr<RealVariable> p_var;
 
 public:
-    PlotStreams(const QString &title, QVector<Stream*> streams, QWidget *parent = 0);
+    AdjointCollection();
 
+    // add functions
+    void addAdjoint(Adjoint *a) {m_adjoints.push_back(a);}
 
+    // set functions
+    void setVariable(shared_ptr<RealVariable> v) {p_var = v;}
 
-public slots:
-
+    // get functions
+    shared_ptr<RealVariable> variable() {return p_var;}
+    Adjoint* adjoint(int i) {return m_adjoints.at(i);}
+    int numberOfAdjoints() {return m_adjoints.size();}
 };
 
 
 } // namespace
 
-#endif // PLOTSTREAMZ_H
+#endif // ADJOINTCOLLECTION_H

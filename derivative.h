@@ -19,45 +19,46 @@
  */
 
 
-#ifndef PLOTSTREAMZ_H
-#define PLOTSTREAMZ_H
+#ifndef DERIVATIVE_H
+#define DERIVATIVE_H
 
-#include <QtGui/QWidget>
+#include <QPair>
 #include <QVector>
 
-#include "qcustomplot.h"
-
-#include "stream.h"
-
-using ResOpt::Stream;
-
-namespace ResOptGui
+namespace ResOpt
 {
 
-class PlotStreams : public QWidget
+class Derivative
 {
-    Q_OBJECT
-
 private:
-
-
-    QCustomPlot m_custom_plot;
-
-    QVector<Stream*> m_streams;
-
-    void plotData();
-
+    int m_constraint_id;
+    QVector<QPair<int, double> > m_partial_derivatives;
 
 public:
-    PlotStreams(const QString &title, QVector<Stream*> streams, QWidget *parent = 0);
+    Derivative();
+    Derivative(int con_id);
 
 
+    // add functions
+    void addPartial(int var_id, double value) {m_partial_derivatives.push_back(QPair<int, double>(var_id, value));}
 
-public slots:
+    // get functions
+    int constraintId() {return m_constraint_id;}
+    int numberOfPartials() {return m_partial_derivatives.size();}
+
+
+    /**
+     * @brief Retruns the value of the partial derivative for variable with id = var_id
+     *
+     * @param var_id
+     * @return double
+     */
+    double value(int var_id);
+
 
 };
 
 
 } // namespace
 
-#endif // PLOTSTREAMZ_H
+#endif // DERIVATIVE_H

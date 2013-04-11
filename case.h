@@ -28,6 +28,7 @@ namespace ResOpt
 {
 
 class Model;
+class Derivative;
 
 
 /**
@@ -49,10 +50,14 @@ private:
     QVector<double> m_constraint_values;
     double m_objective_value;
 
+    QVector<Derivative*> m_constraint_derivatives;
+    Derivative *p_objective_derivative;
+
 public:
     Case();
     Case(Model *m); // constructs a case based on the current variable values in the model
     Case(const Case &c, bool cpy_output = false);    // only copies obj and con if cpy_output = true
+    ~Case();
 
     // add functions
     void addRealVariableValue(double v) {m_real_var_values.push_back(v);}
@@ -60,9 +65,12 @@ public:
     void addIntegerVariableValue(int v) {m_integer_var_values.push_back(v);}
 
     void addConstraintValue(double v) {m_constraint_values.push_back(v);}
+    void addConstraintDerivative(Derivative *d) {m_constraint_derivatives.push_back(d);}
+
 
     // set functions
     void setObjectiveValue(double v) {m_objective_value = v;}
+    void setObjectiveDerivative(Derivative *d) {p_objective_derivative = d;}
 
     void setRealVariableValue(int i, double v) {m_real_var_values.replace(i,v);}
     void setBinaryVariableValue(int i, double v) {m_binary_var_values.replace(i,v);}
@@ -74,6 +82,7 @@ public:
     int numberOfIntegerVariables() const {return m_integer_var_values.size();}
 
     int numberOfConstraints() const {return m_constraint_values.size();}
+    int numberOfConstraintDerivatives() const {return m_constraint_derivatives.size();}
 
     double realVariableValue(int i) const {return m_real_var_values.at(i);}
     double binaryVariableValue(int i) const {return m_binary_var_values.at(i);}
@@ -81,6 +90,9 @@ public:
 
     double constraintValue(int i) const {return m_constraint_values.at(i);}
     double objectiveValue() const {return m_objective_value;}
+
+    Derivative* constraintDerivative(int i) {return m_constraint_derivatives.at(i);}
+    Derivative* objectiveDerivative() {return p_objective_derivative;}
 
 
 };

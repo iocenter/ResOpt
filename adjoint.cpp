@@ -19,38 +19,57 @@
  */
 
 
-#include "modelitemprodwell.h"
-#include "inspectorprodwell.h"
-#include "modelscene.h"
+#include "adjoint.h"
+#include "stream.h"
 
-#include "productionwell.h"
 
-namespace ResOptGui
+namespace ResOpt
 {
 
-ModelItemProdWell::ModelItemProdWell(ProductionWell *prod, const QString &file_name, QGraphicsItem *parent)
-    : ModelItem(file_name, parent),
-      p_prod_well(prod)
-
+Adjoint::Adjoint() :
+    m_dp_dx(0),
+    m_dqo_dx(0),
+    m_dqg_dx(0),
+    m_dqw_dx(0),
+    p_stream(0),
+    p_well(0)
 {
-
-    setScale(0.8);
-
-    setToolTip("Production well: " + p_prod_well->name());
-
 }
 
-//-----------------------------------------------------------------------------------------------
-// Open the inspector window if item is double clicked
-//-----------------------------------------------------------------------------------------------
-void ModelItemProdWell::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+Adjoint::Adjoint(Well *w, Stream *s) :
+    m_dp_dx(0),
+    m_dqo_dx(0),
+    m_dqg_dx(0),
+    m_dqw_dx(0),
+    p_stream(s),
+    p_well(w)
 {
-    InspectorProdWell *inspector = new InspectorProdWell(p_prod_well);
-
-    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
-    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
-
 }
+
+
+//-----------------------------------------------------------------------------------------------
+// perturbs the values in the stream, given change in x and d/dx
+//-----------------------------------------------------------------------------------------------
+bool Adjoint::perturbStream(double eps_x)
+{
+    if(p_stream != 0)
+    {
+        double q_o = p_stream->oilRate(true) + m_dqo_dx*eps_x;
+        double q_g = p_stream->gasRate(true) + m_dqg_dx*eps_x;
+        double q_w = p_stream->waterRate(true) + m_dqw_dx*eps_x;
+        double p = p_stream->pressure(true) + m_dp_dx*eps_x;
+
+        p_stream->setOilRate(q_o);
+        p_stream->setGasRate(q_g);
+        p_stream->setWaterRate(q_w);
+        p_stream->setPressure(p);
+
+        return true;
+    }
+
+    else return false;
+}
+
 
 
 } // namespace

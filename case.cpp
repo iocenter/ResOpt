@@ -24,17 +24,20 @@
 #include "realvariable.h"
 #include "binaryvariable.h"
 #include "intvariable.h"
+#include "derivative.h"
 
 namespace ResOpt
 {
 
 Case::Case()
-    : m_objective_value(0)
+    : m_objective_value(0),
+      p_objective_derivative(0)
 {
 }
 
 Case::Case(Model *m)
-    : m_objective_value(0)
+    : m_objective_value(0),
+      p_objective_derivative(0)
 {
     // adding real variables
     for(int i = 0; i < m->realVariables().size(); ++i)
@@ -87,10 +90,24 @@ Case::Case(const Case &c, bool cpy_output)
 
         m_objective_value = c.m_objective_value;
 
+        for(int i = 0; i < m_constraint_derivatives.size(); ++i)
+        {
+            m_constraint_derivatives.push_back(new Derivative(*c.m_constraint_derivatives.at(i)));
+        }
+
+        p_objective_derivative = new Derivative(*c.p_objective_derivative);
+
 
     }
 
 
+}
+
+Case::~Case()
+{
+    if(p_objective_derivative != 0) delete p_objective_derivative;
+
+    for(int i = 0; i < m_constraint_derivatives.size(); ++i) delete m_constraint_derivatives.at(i);
 }
 
 } // namespace ResOpt

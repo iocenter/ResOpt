@@ -40,6 +40,7 @@ Component::Component(const Component &c)
     m_id = c.m_id;
 
     // the streams
+    for(int i = 0; i < m_streams.size(); ++i) delete m_streams.at(i);
     m_streams.clear();
     m_streams.resize(c.m_streams.size());
 

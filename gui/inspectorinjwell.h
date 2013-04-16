@@ -19,10 +19,12 @@
  */
 
 
-#ifndef MODELITEMINJWELL_H
-#define MODELITEMINJWELL_H
+#ifndef INSPECTORINJWELL_H
+#define INSPECTORINJWELL_H
 
-#include "modelitem.h"
+#include <QWidget>
+#include <QPushButton>
+#include <QVector>
 
 namespace ResOpt
 {
@@ -31,30 +33,40 @@ class InjectionWell;
 
 using ResOpt::InjectionWell;
 
-
-
 namespace ResOptGui
 {
 
-class ModelItemInjWell : public ModelItem
-{
-private:
-    InjectionWell *p_inj_well;
+class InspectorVariable;
+class InspectorWellControl;
 
-protected:
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+class InspectorInjWell : public QWidget
+{
+    Q_OBJECT
+private:
+    InjectionWell *p_well;
+
+    QVector<InspectorWellControl*> m_controls;
+
+
+    QPushButton m_btn_close;
+    QPushButton m_btn_ok;
+    QPushButton m_btn_plot;
+
+    void construct();
 
 
 public:
+    explicit InspectorInjWell(InjectionWell *well, QWidget *parent = 0);
 
-    ModelItemInjWell(InjectionWell *inj, const QString &file_name = ":new/images/inj_svg", QGraphicsItem *parent = 0);
+signals:
+    void sendMsg(QString);
 
-
-    InjectionWell* injectionWell() {return p_inj_well;}
-
+public slots:
+    void saveAndClose();
+    void openPlot();
 
 };
 
 } // namespace
 
-#endif // MODELITEMINJWELL_H
+#endif // INSPECTORINJWELL_H

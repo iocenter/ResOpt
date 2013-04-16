@@ -859,7 +859,7 @@ Model& Model::operator =(const Model &rhs)
             for(int j = 0; j < well(i)->numberOfStreams(); ++j)
             {
                 *well(i)->stream(j) = *rhs.well(i)->stream(j);
-                well(i)->stream(j)->setPressure(rhs.well(i)->stream(j)->pressure(true));
+                //well(i)->stream(j)->setPressure(rhs.well(i)->stream(j)->pressure(true));
             }
 
         }
@@ -871,7 +871,7 @@ Model& Model::operator =(const Model &rhs)
             for(int j = 0; j < pipe(i)->numberOfStreams(); ++j)
             {
                 *pipe(i)->stream(j) = *rhs.pipe(i)->stream(j);
-                pipe(i)->stream(j)->setPressure(rhs.pipe(i)->stream(j)->pressure(true));
+                //pipe(i)->stream(j)->setPressure(rhs.pipe(i)->stream(j)->pressure(true));
             }
 
         }

@@ -49,6 +49,21 @@ Stream::Stream(double t, double qo, double qg, double qw, double p)
       m_input_units(Stream::FIELD)
 {}
 
+
+Stream::Stream(const Stream &s)
+{
+
+    m_time = s.m_time;
+    m_oil_rate = s.m_oil_rate;
+    m_water_rate = s.m_water_rate;
+    m_gas_rate = s.m_gas_rate;
+    m_pressure = s.m_pressure;
+    m_input_units = s.m_input_units;
+
+    if(m_input_units == FIELD) cout << "Field units" << endl;
+
+}
+
 //-----------------------------------------------------------------------------------------------
 // Sets the values of this stream to the average of the vector
 //-----------------------------------------------------------------------------------------------
@@ -203,10 +218,10 @@ Stream& Stream::operator =(const Stream &rhs)
     if(this != &rhs)
     {
         setTime(rhs.time());
-        setGasRate(rhs.gasRate(inputUnits()));
-        setOilRate(rhs.oilRate(inputUnits()));
-        setWaterRate(rhs.waterRate(inputUnits()));
-        setPressure(rhs.pressure(inputUnits()));
+        setGasRate(rhs.gasRate(true));
+        setOilRate(rhs.oilRate(true));
+        setWaterRate(rhs.waterRate(true));
+        setPressure(rhs.pressure(true));
         setInputUnits(rhs.inputUnits());
     }
 

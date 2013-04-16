@@ -714,7 +714,7 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         cout << "### File Error! ###" << endl;
-        cout << "Could not open MRST output file: " << folder().toAscii().data() <<  "/SIMPLE10x5x10_RES.TXT" << endl;
+        cout << "Could not open MRST output file: " << input.fileName().toAscii().data() << endl;
         exit(1);
     }
 
@@ -783,6 +783,21 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
 //-----------------------------------------------------------------------------------------------
 bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
 {
+
+    QString base_name = m->reservoir()->file().split(".").at(0);
+
+
+    // opening the input file
+    QFile input(folder() + "/" + base_name + "_GRAD.TXT");
+
+    // checking if file opened ok...
+    if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        cout << "### File Error! ###" << endl;
+        cout << "Could not open MRST adjoints file: " << input.fileName().toAscii().data() << endl;
+        exit(1);
+    }
+
 
     return true;
 }

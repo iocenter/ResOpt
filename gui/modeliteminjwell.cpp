@@ -20,8 +20,10 @@
 
 
 #include "modeliteminjwell.h"
+#include "modelscene.h"
 
 #include "injectionwell.h"
+#include "inspectorinjwell.h"
 
 
 namespace ResOptGui
@@ -38,5 +40,18 @@ ModelItemInjWell::ModelItemInjWell(InjectionWell *inj, const QString &file_name,
     setToolTip("Injection well: " + p_inj_well->name());
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Open the inspector window if item is double clicked
+//-----------------------------------------------------------------------------------------------
+void ModelItemInjWell::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    InspectorInjWell *inspector = new InspectorInjWell(p_inj_well);
+
+    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
+    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
+
+}
+
 
 } // namespace

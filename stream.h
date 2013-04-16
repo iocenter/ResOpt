@@ -39,10 +39,10 @@ public:
     enum units{METRIC, FIELD};
 
 private:
-    double m_time;             /**< TODO */
-    double m_oil_rate; /**< TODO */
-    double m_water_rate; /**< TODO */
-    double m_gas_rate; /**< TODO */
+    double m_time;
+    double m_oil_rate;
+    double m_water_rate;
+    double m_gas_rate;
     double m_pressure;
 
     units m_input_units;
@@ -54,6 +54,7 @@ public:
  */
     Stream();
     Stream(double t, double qo, double qg, double qw, double p);
+    Stream(const Stream &s);
 
     // misc functions
 

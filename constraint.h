@@ -107,6 +107,8 @@ public:
     double min() const {return m_min;}
 
     const QString& name() const {return m_name;}
+
+    const int id() const {return m_id;}
 };
 
 } // namespace ResOpt

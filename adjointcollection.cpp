@@ -19,6 +19,7 @@
  */
 
 #include "adjointcollection.h"
+#include "adjoint.h"
 
 
 namespace ResOpt
@@ -27,6 +28,21 @@ namespace ResOpt
 
 AdjointCollection::AdjointCollection()
 {
+}
+
+//-----------------------------------------------------------------------------------------------
+// perturbs the values in the streams, given change in x and d/dx
+//-----------------------------------------------------------------------------------------------
+bool AdjointCollection::perturbStreams(double eps_x)
+{
+
+    for(int i = 0; i < m_adjoints.size(); ++i)
+    {
+        // perturbing each adjoint stream, returning false if unsuccessfull.
+        if(!m_adjoints.at(i)->perturbStream(eps_x)) return false;
+    }
+
+    return true;
 }
 
 } // namespace

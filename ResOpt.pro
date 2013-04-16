@@ -105,7 +105,8 @@ SOURCES += main.cpp \
     adjoint.cpp \
     adjointscoupledmodel.cpp \
     adjointcollection.cpp \
-    derivative.cpp
+    derivative.cpp \
+    bonmininterfacegradients.cpp
 
 HEADERS += \
     well.h \
@@ -187,7 +188,8 @@ HEADERS += \
     adjoint.h \
     adjointscoupledmodel.h \
     adjointcollection.h \
-    derivative.h
+    derivative.h \
+    bonmininterfacegradients.h
 
 RESOURCES += \
     gui/images.qrc

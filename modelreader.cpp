@@ -30,6 +30,7 @@
 #include "runner.h"
 #include "coupledmodel.h"
 #include "decoupledmodel.h"
+#include "adjointscoupledmodel.h"
 #include "reservoir.h"
 #include "injectionwell.h"
 #include "productionwell.h"
@@ -127,13 +128,42 @@ Model* ModelReader::readDriverFile(Runner *r)
             p_model = new DecoupledModel();
             found_model_def = true;
         }
+        else if(list.at(0).startsWith("ADJOINTS_COUPLED"))
+        {
+            cout << "Generating a COUPLED model with ADJOINTS..." << endl;
+            AdjointsCoupledModel *am = new AdjointsCoupledModel();
+
+            // setting the adjoint level
+            bool ok_adjoints = true;
+            int adjoints_level = list.at(1).toInt(&ok_adjoints);
+            if(ok_adjoints && adjoints_level >= 1 && adjoints_level <= 3)
+            {
+                cout << "setting the adjoints level to " << adjoints_level << endl;
+                am->setAdjointLevel(adjoints_level);
+            }
+            else
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "ADJOINTS level not input correctly..." << endl
+                     << "The adjoints level should be either 1, 2, or 3" << endl
+                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+
+                exit(1);
+
+            }
+
+
+            p_model = am;
+
+            found_model_def = true;
+        }
         else
         {
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The first keyword must specify the model type..." << endl
-                     << "Possible types: COUPLED, DECOUPLED" << endl
+                     << "Possible types: COUPLED, DECOUPLED, ADJOINTS_COUPLED" << endl
                      << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
 
                 exit(1);
@@ -2283,6 +2313,8 @@ void ModelReader::readOptimizer(Runner *r)
 {
     cout << "Reading optimizer definition..." << endl;
     Optimizer *o = 0;
+
+
 
     QStringList list;
 

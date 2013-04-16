@@ -29,6 +29,7 @@
 
 
 #include "model.h"
+#include "adjointscoupledmodel.h"
 #include "reservoir.h"
 #include "well.h"
 #include "injectionwell.h"
@@ -657,7 +658,7 @@ bool MrstBatchSimulator::launchSimulator()
 
 
 
-    cout <<  QString(mrst.readAll()).toAscii().data() << endl;
+    //cout <<  QString(mrst.readAll()).toAscii().data() << endl;
 
 
 
@@ -676,6 +677,28 @@ bool MrstBatchSimulator::launchSimulator()
 //-----------------------------------------------------------------------------------------------
 bool MrstBatchSimulator::readOutput(Model *m)
 {
+    bool ok = true;
+    // reading rates and pressures
+    if(!readStandardOutput(m)) ok = false;
+
+    // reading adjoints if needed
+    AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(m);
+    if(am != 0)
+    {
+        if(!readAdjoints(am)) ok = false;
+    }
+
+    return ok;
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// read standard output file
+//-----------------------------------------------------------------------------------------------
+bool MrstBatchSimulator::readStandardOutput(Model *m)
+{
+
     bool ok = true;
 
 
@@ -752,8 +775,17 @@ bool MrstBatchSimulator::readOutput(Model *m)
 
 
     return ok;
+
 }
 
+//-----------------------------------------------------------------------------------------------
+// read adjoint output file
+//-----------------------------------------------------------------------------------------------
+bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
+{
+
+    return true;
+}
 
 
 

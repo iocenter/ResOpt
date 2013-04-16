@@ -57,6 +57,8 @@ public:
      */
     virtual bool isVariable() = 0;
 
+
+
     // set functions
     void setName(const QString &n) {m_name = n;}
 

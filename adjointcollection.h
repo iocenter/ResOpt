@@ -42,6 +42,10 @@ private:
 public:
     AdjointCollection();
 
+    // misc functions
+    bool perturbStreams(double eps_x);
+
+
     // add functions
     void addAdjoint(Adjoint *a) {m_adjoints.push_back(a);}
 

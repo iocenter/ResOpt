@@ -216,7 +216,10 @@ int main(int argc, char *argv[])
 
         MainWindow *p_mw = new MainWindow();
 
+
         p_mw->show();
+
+
 
         // to launch in console mode with default driver file name
         /*

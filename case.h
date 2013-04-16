@@ -55,7 +55,7 @@ private:
 
 public:
     Case();
-    Case(Model *m); // constructs a case based on the current variable values in the model
+    Case(Model *m, bool cpy_output = false); // constructs a case based on the current variable values in the model
     Case(const Case &c, bool cpy_output = false);    // only copies obj and con if cpy_output = true
     ~Case();
 
@@ -93,6 +93,9 @@ public:
 
     Derivative* constraintDerivative(int i) {return m_constraint_derivatives.at(i);}
     Derivative* objectiveDerivative() {return p_objective_derivative;}
+
+    // overloaded operators
+    Case& operator=(const Case &rhs);
 
 
 };

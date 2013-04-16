@@ -58,8 +58,7 @@ class BonminInterface;
 class BonminOptimizer : public Optimizer
 {
 private:
-
-    SmartPtr<BonminInterface> p_tminlp;
+ //   SmartPtr<BonminInterface> p_tminlp;
     BonminSetup m_bonmin;
 
 

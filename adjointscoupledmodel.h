@@ -32,6 +32,7 @@ namespace ResOpt
 class AdjointCollection;
 class Adjoint;
 class Stream;
+class Case;
 
 class AdjointsCoupledModel : public CoupledModel
 {
@@ -42,11 +43,19 @@ private:
     // 2 = one well every timestep
     // 3 = every well every timestep
     int m_adjoint_level;
+    int m_perturbation;
+    Case *p_results;
 
     QVector<AdjointCollection*> m_adjoint_collections;
 
+
+    Case* processPerturbation(shared_ptr<RealVariable> v);
+    Case* processBaseCase();
+
+
 public:
     AdjointsCoupledModel();
+    ~AdjointsCoupledModel();
 
     // virtual functions
     virtual void initialize();
@@ -75,9 +84,13 @@ public:
 
     // set functions
     void setAdjointLevel(int i) {m_adjoint_level = i;}
+    void setPerturbationSize(double eps) {m_perturbation = eps;}
 
     // get functions
     int adjointLevel() {return m_adjoint_level;}
+    double perturbationSize() {return m_perturbation;}
+    Case* results() {return p_results;}
+
 
 
 

@@ -129,7 +129,6 @@ void CoupledModel::updateStreams()
 
     // first need to empty all the streams in all pipes
     for(int i = 0; i < numberOfPipes(); ++i) pipe(i)->emptyStreams();
-    cout << "done emptying streams.." << endl;
 
     // starting with the production wells, feeding the rates to the connected pipes
     for(int i = 0; i < numberOfWells(); ++i)
@@ -159,7 +158,7 @@ void CoupledModel::updateStreams()
         } // production well
     } // well
 
-    cout << "done with updateStreams()..." << endl;
+
 }
 
 //-----------------------------------------------------------------------------------------------

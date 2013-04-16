@@ -53,7 +53,8 @@ public:
      * @param var_id
      * @return double
      */
-    double value(int var_id);
+    double valueById(int var_id);
+    double value(int i) {return m_partial_derivatives.at(i).second;}
 
 
 };

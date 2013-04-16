@@ -24,6 +24,7 @@
 #include <QVector>
 
 #include "model.h"
+#include "adjointscoupledmodel.h"
 #include "reservoirsimulator.h"
 #include "case.h"
 #include "realvariable.h"
@@ -205,14 +206,24 @@ void Launcher::evaluateEntireModel(Case *c)
     // calculate pressures, update constraint values, and objective value
     p_model->process();
 
+    // checking if this is an adjoints model
+    AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(p_model);
 
-    // copying back the results to the case
-    for(int i = 0; i < p_model->constraints().size(); ++i)
+    if(am != 0)
     {
-        c->addConstraintValue(p_model->constraints().at(i)->value());
+        *c = *am->results();
     }
+    else
+    {
 
-    c->setObjectiveValue(p_model->objective()->value());
+        // copying back the results to the case
+        for(int i = 0; i < p_model->constraints().size(); ++i)
+        {
+            c->addConstraintValue(p_model->constraints().at(i)->value());
+        }
+
+        c->setObjectiveValue(p_model->objective()->value());
+    }
 
 
 

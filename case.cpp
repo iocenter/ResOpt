@@ -24,7 +24,14 @@
 #include "realvariable.h"
 #include "binaryvariable.h"
 #include "intvariable.h"
+#include "constraint.h"
+#include "objective.h"
 #include "derivative.h"
+
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 namespace ResOpt
 {
@@ -35,7 +42,7 @@ Case::Case()
 {
 }
 
-Case::Case(Model *m)
+Case::Case(Model *m, bool cpy_output)
     : m_objective_value(0),
       p_objective_derivative(0)
 {
@@ -57,12 +64,25 @@ Case::Case(Model *m)
         addIntegerVariableValue(m->integerVariables().at(i)->value());
     }
 
+    if(cpy_output)
+    {
+        // adding constraint values
+        for(int i = 0; i < m->constraints().size(); ++i)
+        {
+            addConstraintValue(m->constraints().at(i)->value());
+        }
+
+        // adding objective value
+        setObjectiveValue(m->objective()->value());
+    }
+
 
 
 }
 
 Case::Case(const Case &c, bool cpy_output)
-    : m_objective_value(0)
+    : m_objective_value(0),
+      p_objective_derivative(0)
 {
     for(int i = 0; i < c.numberOfRealVariables(); ++i)
     {
@@ -90,12 +110,12 @@ Case::Case(const Case &c, bool cpy_output)
 
         m_objective_value = c.m_objective_value;
 
-        for(int i = 0; i < m_constraint_derivatives.size(); ++i)
+        for(int i = 0; i < c.m_constraint_derivatives.size(); ++i)
         {
             m_constraint_derivatives.push_back(new Derivative(*c.m_constraint_derivatives.at(i)));
         }
 
-        p_objective_derivative = new Derivative(*c.p_objective_derivative);
+        if(c.p_objective_derivative != 0) p_objective_derivative = new Derivative(*c.p_objective_derivative);
 
 
     }
@@ -105,9 +125,49 @@ Case::Case(const Case &c, bool cpy_output)
 
 Case::~Case()
 {
+
     if(p_objective_derivative != 0) delete p_objective_derivative;
 
     for(int i = 0; i < m_constraint_derivatives.size(); ++i) delete m_constraint_derivatives.at(i);
+
+
 }
+
+//-----------------------------------------------------------------------------------------------
+// Assignment operator
+//-----------------------------------------------------------------------------------------------
+Case& Case::operator =(const Case &rhs)
+{
+    if(this != &rhs)
+    {
+        m_real_var_values = rhs.m_real_var_values;
+        m_binary_var_values = rhs.m_binary_var_values;
+        m_integer_var_values = rhs.m_integer_var_values;
+
+        m_constraint_values = rhs.m_constraint_values;
+        m_objective_value = rhs.m_objective_value;
+
+        for(int i = 0; i < m_constraint_derivatives.size(); ++i) delete m_constraint_derivatives.at(i);
+        m_constraint_derivatives.resize(0);
+
+
+        for(int i = 0; i < rhs.m_constraint_derivatives.size(); ++i)
+        {
+            m_constraint_derivatives.push_back(new Derivative(*rhs.m_constraint_derivatives.at(i)));
+        }
+
+        if(p_objective_derivative != 0)
+        {
+            delete p_objective_derivative;
+            p_objective_derivative = 0;
+        }
+
+        if(rhs.p_objective_derivative != 0) p_objective_derivative =  new Derivative(*rhs.p_objective_derivative);
+
+    }
+
+    return *this;
+}
+
 
 } // namespace ResOpt

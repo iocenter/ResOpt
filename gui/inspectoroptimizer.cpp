@@ -26,11 +26,13 @@
 #include "nomadoptimizer.h"
 #include "bonminoptimizer.h"
 #include "runonceoptimizer.h"
+#include "ipoptoptimizer.h"
 
 using ResOpt::Optimizer;
 using ResOpt::BonminOptimizer;
 using ResOpt::NomadOptimizer;
 using ResOpt::RunonceOptimizer;
+using ResOpt::IpoptOptimizer;
 
 #include "QtGui/QGridLayout"
 #include "QtGui/QLabel"
@@ -67,12 +69,14 @@ void InspectorOptimizer::construct()
     p_algorithm->addItem("Bonmin");
     p_algorithm->addItem("NOMAD");
     p_algorithm->addItem("Run Once");
+    p_algorithm->addItem("IPOPT");
 
     // finding out what type of optimizer is currently used
 
     BonminOptimizer *l_bonmin = dynamic_cast<BonminOptimizer*>(p_runner->optimizer());
     NomadOptimizer *l_nomad = dynamic_cast<NomadOptimizer*>(p_runner->optimizer());
     RunonceOptimizer *l_runonce = dynamic_cast<RunonceOptimizer*>(p_runner->optimizer());
+    IpoptOptimizer *l_ipopt = dynamic_cast<IpoptOptimizer*>(p_runner->optimizer());
 
     if(l_bonmin != 0)
     {
@@ -88,6 +92,11 @@ void InspectorOptimizer::construct()
     {
         p_algorithm->setCurrentIndex(2);
         m_alg_in_runner = 2;
+    }
+    else if(l_ipopt != 0)
+    {
+        p_algorithm->setCurrentIndex(3);
+        m_alg_in_runner = 3;
     }
 
 
@@ -129,6 +138,7 @@ void InspectorOptimizer::saveAndClose()
         if(p_algorithm->currentIndex() == 0) o = new BonminOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 1) o = new NomadOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 2) o = new RunonceOptimizer(p_runner);
+        else if(p_algorithm->currentIndex() == 3) o = new IpoptOptimizer(p_runner);
 
         // setting values to the new optimizer
         o->setMaxIterations(p_runner->optimizer()->maxIterations());

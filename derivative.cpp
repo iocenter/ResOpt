@@ -38,7 +38,7 @@ Derivative::Derivative(int con_id) :
 //-----------------------------------------------------------------------------------------------
 // returns the value of the partial derivative for variable with id = var_id
 //-----------------------------------------------------------------------------------------------
-double Derivative::value(int var_id)
+double Derivative::valueById(int var_id)
 {
     for(int i = 0; i < m_partial_derivatives.size(); ++i)
     {

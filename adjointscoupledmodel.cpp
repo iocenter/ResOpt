@@ -23,13 +23,23 @@
 #include "adjointcollection.h"
 #include "adjoint.h"
 #include "well.h"
+#include "case.h"
+#include "derivative.h"
+#include "constraint.h"
 
 namespace ResOpt
 {
 
 AdjointsCoupledModel::AdjointsCoupledModel() :
-    m_adjoint_level(1)
+    m_adjoint_level(1),
+    m_perturbation(0.01),
+    p_results(0)
 {
+}
+
+AdjointsCoupledModel::~AdjointsCoupledModel()
+{
+    if(p_results != 0) delete p_results;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -112,20 +122,53 @@ void AdjointsCoupledModel::initialize()
 //-----------------------------------------------------------------------------------------------
 void AdjointsCoupledModel::process()
 {
-    // update the streams in the pipe network
-    updateStreams();
+    // running perturbations
+    QVector<Case*> cases;
+    for(int i = 0; i < realVariables().size(); ++i)
+    {
+        Case *c = processPerturbation(realVariables().at(i));
+        cases.push_back(c);
+    }
+
+    // running base case
+    Case *base_case = processBaseCase();
 
 
-    // calculating pressures in the Pipe network
-    calculatePipePressures();
+
+    // setting up empty derivatives in the case
+    base_case->setObjectiveDerivative(new Derivative());
+    for(int i = 0; i < constraints().size(); ++i)
+    {
+        base_case->addConstraintDerivative(new Derivative(constraints().at(i)->id()));
+    }
+
+    // calculating derivatives from perturbed cases
+    for(int i = 0; i < numberOfRealVariables(); ++i)
+    {
+        Case *case_perturb = cases.at(i);
+        int var_id = realVariables().at(i)->id();
+
+        // calculating partial derivatives for constraints
+        for(int j = 0; j < numberOfConstraints(); ++j)
+        {
+            // dC_j / dx_i
+            double dcdx = (case_perturb->constraintValue(j) - base_case->constraintValue(j)) / (case_perturb->realVariableValue(i) - base_case->realVariableValue(i));
+
+            // adding to base case
+            base_case->constraintDerivative(j)->addPartial(var_id, dcdx);
+        }
+
+        // calculating partial derivative for objective
+        double dfdx = (case_perturb->objectiveValue() - base_case->objectiveValue()) / (case_perturb->realVariableValue(i) - base_case->realVariableValue(i));
+        base_case->objectiveDerivative()->addPartial(var_id, dfdx);
+    }
 
 
-    // updating the constraints (this must be done after the pressure calc)
-    updateConstraints();
+    // setting the results
+    p_results = base_case;
 
-    // updating the objective
-    updateObjectiveValue();
-
+    // deleting perturbation cases
+    for(int i = 0; i < cases.size(); ++i) delete cases.at(i);
 
     // updating the status of the model
     setUpToDate(true);
@@ -164,6 +207,84 @@ Adjoint* AdjointsCoupledModel::adjoint(shared_ptr<RealVariable> v, Stream *s)
     }
 
     return 0;
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// processes the model with a perturbation of v, returns a case with constraint and obj values
+//-----------------------------------------------------------------------------------------------
+Case* AdjointsCoupledModel::processPerturbation(shared_ptr<RealVariable> v)
+{
+    // calculating the perturbation size of the variable
+    double eps_x = (v->max() -v->min()) * m_perturbation;
+
+    // checking if there is an adjoints collection for the variable
+    AdjointCollection *ac = adjointCollection(v);
+
+    if(ac != 0)
+    {
+        // setting the pertrubed values for all streams that have adjoints wrt. the variable
+        ac->perturbStreams(eps_x);
+    }
+
+    if(v != 0)
+    {
+        // changing the value of the variable to the pertrubed value
+        // could be variable connected to separator or booster...
+        v->setValue(v->value() + eps_x);
+    }
+
+    // ------- processing the model with the perturbed values ----------
+
+    // update the streams in the pipe network
+    updateStreams();
+
+    // calculating pressures in the Pipe network
+    calculatePipePressures();
+
+    // updating the constraints (this must be done after the pressure calc)
+    updateConstraints();
+
+    // updating the objective
+    updateObjectiveValue();
+
+    // ----- generating case based on current model state -------
+
+    Case *c = new Case(this, true);
+
+
+    // resetting the variable value if changed
+    if(v != 0) v->setValue(v->value() - eps_x);
+
+    // resetting streams if changed
+    if(ac != 0) ac->perturbStreams(-eps_x);
+
+
+
+    return c;
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// processes the model with base case values
+//-----------------------------------------------------------------------------------------------
+Case* AdjointsCoupledModel::processBaseCase()
+{
+    // update the streams in the pipe network
+    updateStreams();
+
+    // calculating pressures in the Pipe network
+    calculatePipePressures();
+
+    // updating the constraints (this must be done after the pressure calc)
+    updateConstraints();
+
+    // updating the objective
+    updateObjectiveValue();
+
+
+    return new Case(this, true);
+
 }
 
 

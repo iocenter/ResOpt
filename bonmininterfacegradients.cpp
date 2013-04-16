@@ -19,7 +19,7 @@
  */
 
 
-#include "bonmininterface.h"
+#include "bonmininterfacegradients.h"
 
 #include <iostream>
 #include <QVector>
@@ -34,6 +34,7 @@
 #include "objective.h"
 #include "case.h"
 #include "casequeue.h"
+#include "derivative.h"
 
 
 
@@ -44,10 +45,9 @@ using std::endl;
 namespace ResOpt
 {
 
-BonminInterface::BonminInterface(BonminOptimizer *o)
+BonminInterfaceGradients::BonminInterfaceGradients(BonminOptimizer *o)
     : p_optimizer(o),
-      p_case_last(0),
-      p_case_gradients(0)
+      p_case_last(0)
 
 {
     m_vars_binary = p_optimizer->runner()->model()->binaryVariables();
@@ -56,17 +56,17 @@ BonminInterface::BonminInterface(BonminOptimizer *o)
     m_cons = p_optimizer->runner()->model()->constraints();
 }
 
-BonminInterface::~BonminInterface()
+BonminInterfaceGradients::~BonminInterfaceGradients()
 {
     if(p_case_last != 0) delete p_case_last;
-    if(p_case_gradients != 0) delete p_case_gradients;
+
 
 }
 
 //-----------------------------------------------------------------------------------------------
 // Returns the variable types to Bonmin
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
+bool BonminInterfaceGradients::get_variables_types(Index n, VariableType* var_types)
 {
     assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
 
@@ -101,7 +101,7 @@ bool BonminInterface::get_variables_types(Index n, VariableType* var_types)
 //-----------------------------------------------------------------------------------------------
 // Returns the variable liniarity
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_types)
+bool BonminInterfaceGradients::get_variables_linearity(Index n, Ipopt::TNLP::LinearityType* var_types)
 {
     assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
 
@@ -138,11 +138,11 @@ bool BonminInterface::get_variables_linearity(Index n, Ipopt::TNLP::LinearityTyp
 //-----------------------------------------------------------------------------------------------
 // Retruns the constraint liniarity
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types)
+bool BonminInterfaceGradients::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityType* const_types)
 {
     assert(m_cons.size() == m);
 
-    for(int i = 0; i < m_cons.size(); i++)
+    for(int i = 0; i < m_cons.size(); ++i)
     {
         const_types[i] = Ipopt::TNLP::NON_LINEAR;
     }
@@ -154,7 +154,7 @@ bool BonminInterface::get_constraints_linearity(Index m, Ipopt::TNLP::LinearityT
 //-----------------------------------------------------------------------------------------------
 // Passes the dimensions of the problem to Bonmin
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
+bool BonminInterfaceGradients::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
                           Index& nnz_h_lag, TNLP::IndexStyleEnum& index_style)
 {
     cout << "Giving bonmin the dimensions of the problem..." << endl;
@@ -178,13 +178,13 @@ bool BonminInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
 //-----------------------------------------------------------------------------------------------
 // Passes variable and constraint bounds
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
+bool BonminInterfaceGradients::get_bounds_info(Index n, Number* x_l, Number* x_u,
                              Index m, Number* g_l, Number* g_u)
 {
     assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));
     assert(m == m_cons.size());
 
-    int n_var = 0;  // variable index used by the optimizer (first real, then int)
+    int n_var = 0;  // variable index used by the optimizer (first real, then binary, then int)
 
     // setting the real variable bounds
     for(int i = 0; i < m_vars_real.size(); ++i)
@@ -227,7 +227,7 @@ bool BonminInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
 //-----------------------------------------------------------------------------------------------
 // Passes the starting points
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
+bool BonminInterfaceGradients::get_starting_point(Index n, bool init_x, Number* x,
                                 bool init_z, Number* z_L, Number* z_U,
                                 Index m, bool init_lambda,
                                 Number* lambda)
@@ -242,7 +242,7 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
 
     cout << "Giving bonmin the starting point..." << endl;
 
-    int n_var = 0;  // variable index used by the optimizer (first real, then binary)
+    int n_var = 0;  // variable index used by the optimizer (first real, then binary, then int)
 
     // setting the real variable starting points
     for(int i = 0; i < m_vars_real.size(); ++i)
@@ -278,38 +278,15 @@ bool BonminInterface::get_starting_point(Index n, bool init_x, Number* x,
 //-----------------------------------------------------------------------------------------------
 // Calculates the objective
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
+bool BonminInterfaceGradients::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
 {
 
-   // cout << "Evaluating the function for bonmin..." << endl;
+    // running model if needed
+    update(n, x);
 
-    // checking if this is a new set of variable values
-    if(newVariableValues(n, x))
-    {
-        // deleting the old case
-        if(p_case_last != 0) delete p_case_last;
-        p_case_last = 0;
-
-        // creating a new case
-        Case *case_new = generateCase(n, x);
-
-        // adding the case to a queue
-        CaseQueue *case_queue = new CaseQueue();
-        case_queue->push_back(case_new);
-
-        // sending the new case to the runner
-        p_optimizer->runCases(case_queue);
-
-        // setting the case as the last case
-        p_case_last = case_new;
-
-
-    }
 
     // getting the value of the objective (negative since bonmin is doing minimization)
     obj_value = -p_case_last->objectiveValue();
-
-   // cout << "f = " << obj_value << endl;
 
 
     return true;
@@ -318,25 +295,32 @@ bool BonminInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_v
 //-----------------------------------------------------------------------------------------------
 // Calculates the derivatives of the objective
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
+bool BonminInterfaceGradients::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
-   // cout << "Evaluating the gradient for bonmin..." << endl;
+    // running model if needed
+    update(n, x);
 
-    // first checking if gradients are allready calculated
-    if(!gradientsAreUpdated(n,x))
+
+    // ---- copying the gradients from the case to grad_f ----
+    // checking that gradients for all variables are available
+    Derivative *df = p_case_last->objectiveDerivative();
+
+    if(df->numberOfPartials() == n)
     {
-        cout << "need to calculate new gradients..." << endl;
-        calculateGradients(n,x);
-        cout << "done calculating new gradients..." << endl;
+        for(int i = 0; i < n; ++i)
+        {
+            grad_f[i] = df->value(i);
+        }
+
+    }
+    else
+    {
+        cout << endl << "### BONMIN Error! ###" << endl
+             << "Number of df/dx in case does not match problem size..." << endl;
+
+        exit(1);
     }
 
-    // copying the calculated gradients to BonMin
-    for(int i = 0; i < n; i++)
-    {
-        grad_f[i] = m_grad_f.at(i);
-
-       // cout << "grad_f[" << i << "] = " << grad_f[i] << endl;
-    }
 
     return true;
 }
@@ -345,31 +329,10 @@ bool BonminInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* 
 //-----------------------------------------------------------------------------------------------
 // Passes the constraint values to Bonmin
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
+bool BonminInterfaceGradients::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
 {
-    //cout << "Evaluating the constraints for bonmin..." << endl;
-
-    // checking if this is a new set of variable values
-    if(newVariableValues(n, x))
-    {
-        // deleting the old case
-        if(p_case_last != 0) delete p_case_last;
-        p_case_last = 0;
-
-        // creating a new case
-        Case *case_new = generateCase(n, x);
-
-        // adding the case to a queue
-        CaseQueue *case_queue = new CaseQueue();
-        case_queue->push_back(case_new);
-
-        // sending the new case to the runner
-        p_optimizer->runCases(case_queue);
-
-        // setting the case as the last case
-        p_case_last = case_new;
-
-    }
+    // running model if needed
+    update(n, x);
 
     // checking that the number of constraints in the cas corresponds to m
     assert(m == p_case_last->numberOfConstraints());
@@ -379,7 +342,6 @@ bool BonminInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Numb
     {
         g[i] = p_case_last->constraintValue(i);
 
-        //cout << "g[" << i << "] = " << g[i] << endl;
     }
 
     return true;
@@ -389,7 +351,7 @@ bool BonminInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Numb
 //-----------------------------------------------------------------------------------------------
 // Passes the Jacobian to Bonmin
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::eval_jac_g(Index n, const Number* x, bool new_x,
+bool BonminInterfaceGradients::eval_jac_g(Index n, const Number* x, bool new_x,
                         Index m, Index nele_jac, Index* iRow, Index *jCol,
                         Number* values)
 {
@@ -399,31 +361,37 @@ bool BonminInterface::eval_jac_g(Index n, const Number* x, bool new_x,
         cout << "Giving bonmin the structure of the jacobian..." << endl;
 
         int entry = 0;
-        for ( int col = 0; col < n; col++ )
+
+        for(int row = 0; row < m; ++row)
         {
-            for ( int row = 0; row < m; row++)
+            for(int col = 0; col < n; ++col)
             {
                 iRow[entry] = row;
                 jCol[entry] = col;
 
-                entry++;
+                ++entry;
             }
         }
     }
     else    // the structure is already set, getting the values
     {
-        //cout << "Evaluating the jacobian for bonmin..." << endl;
 
-        // checking if gradients are calculated
-        if(!gradientsAreUpdated(n,x))
-        {
-            calculateGradients(n,x);
-        }
+        // running model if needed
+        update(n, x);
 
-        // copying gradients to BonMin
-        for(int i = 0; i < nele_jac; i++)
+
+        // copying gradients to Bonmin
+
+        int entry = 0;
+        for(int i = 0; i < p_case_last->numberOfConstraintDerivatives(); ++i)
         {
-            values[i] = m_jac_g.at(i);
+            Derivative *dc = p_case_last->constraintDerivative(i);
+            for(int j = 0; j < dc->numberOfPartials(); ++j)
+            {
+                values[entry] = dc->value(j);
+
+                ++entry;
+            }
         }
 
 
@@ -437,7 +405,7 @@ bool BonminInterface::eval_jac_g(Index n, const Number* x, bool new_x,
 //-----------------------------------------------------------------------------------------------
 // Passes the Hessian to Bonmin
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::eval_h(Index n, const Number* x, bool new_x,
+bool BonminInterfaceGradients::eval_h(Index n, const Number* x, bool new_x,
                     Number obj_factor, Index m, const Number* lambda,
                     bool new_lambda, Index nele_hess, Index* iRow,
                     Index* jCol, Number* values)
@@ -450,7 +418,7 @@ bool BonminInterface::eval_h(Index n, const Number* x, bool new_x,
 //-----------------------------------------------------------------------------------------------
 // Called by Ipopt when finished
 //-----------------------------------------------------------------------------------------------
-void BonminInterface::finalize_solution(TMINLP::SolverReturn status,
+void BonminInterfaceGradients::finalize_solution(TMINLP::SolverReturn status,
                                Index n, const Number* x, Number obj_value)
 {
 
@@ -481,11 +449,7 @@ void BonminInterface::finalize_solution(TMINLP::SolverReturn status,
     Case *c = generateCase(n,x);
     c->setObjectiveValue(-obj_value);
 
-
-
     p_optimizer->sendBestCaseToRunner(c);
-
-
 
 }
 
@@ -493,7 +457,7 @@ void BonminInterface::finalize_solution(TMINLP::SolverReturn status,
 //-----------------------------------------------------------------------------------------------
 // Checks if the x values are the same as the current model values for the variables
 //-----------------------------------------------------------------------------------------------
-bool BonminInterface::newVariableValues(Index n, const Number *x)
+bool BonminInterfaceGradients::newVariableValues(Index n, const Number *x)
 {
     bool x_new = false;
 
@@ -553,312 +517,41 @@ bool BonminInterface::newVariableValues(Index n, const Number *x)
     return x_new;
 }
 
+
+
+
+
+
 //-----------------------------------------------------------------------------------------------
-// Calculates the perturbated value  a variable
+// Runs new case with the variable values if needed
 //-----------------------------------------------------------------------------------------------
-double BonminInterface::perturbedVariableValue(double value, double max, double min)
+void BonminInterfaceGradients::update(Index n, const Number *x)
 {
-    double x_perturbed;
-
-    double span = max - min;
-    double l_slack = value - min;
-    double u_slack = max - value;
-
-    if(u_slack >= l_slack)
-    {
-        x_perturbed = value + p_optimizer->pertrurbationSize() * span;
-        if(x_perturbed > max) x_perturbed = max;
-    }
-    else
-    {
-        x_perturbed = value - p_optimizer->pertrurbationSize() * span;
-        if(x_perturbed < min) x_perturbed = min;
-    }
-
-    return x_perturbed;
-
-}
-
-
-//-----------------------------------------------------------------------------------------------
-// Calculates the gradients
-//-----------------------------------------------------------------------------------------------
-void BonminInterface::calculateGradients(Index n, const Number *x)
-{
-    cout << "CalculateGradients() start" << endl;
-
-    // checking if the gradient vectors have the correct size
-    int n_grad = m_vars_binary.size() + m_vars_real.size() + m_vars_integer.size();
-    if(m_grad_f.size() != n_grad) m_grad_f = QVector<double>(n_grad);
-
-    int n_jac = (m_vars_binary.size() + m_vars_real.size() + m_vars_integer.size())*m_cons.size();
-    if(m_jac_g.size() != n_jac) m_jac_g = QVector<double>(n_jac);
-
-
-    // checking if these are new variable values
+    // checking if this is a new set of variable values
     if(newVariableValues(n, x))
     {
         // deleting the old case
         if(p_case_last != 0) delete p_case_last;
         p_case_last = 0;
 
-        Case *case_new = generateCase(n,x);
+        // creating a new case
+        Case *case_new = generateCase(n, x);
 
-
-        // adding the case to a queue
-        CaseQueue *case_queue = new CaseQueue();
-        case_queue->push_back(case_new);
-
-        // sending the new case to the runner
-        p_optimizer->runCases(case_queue);
+        // sending the case to the runner
+        p_optimizer->runCase(case_new);
 
         // setting the case as the last case
-        p_case_last  = case_new;
-
-        // deleting the case queue
-        delete case_queue;
+        p_case_last = case_new;
 
     }
 
-    cout << "CalculateGradients() done running base case" << endl;
 
-
-    // deleting the old gradients case, copying the last case
-    if(p_case_gradients != 0) delete p_case_gradients;
-    p_case_gradients = new Case(*p_case_last, true);
-
-    cout << "CalculateGradients() starting setting up perturbations" << endl;
-
-    // setting up the case queue with all the perturbations
-    CaseQueue *case_queue = new CaseQueue();
-
-    // adding the real variable perturbations
-    for(int i = 0; i < m_vars_real.size(); ++i)
-    {
-        // calculating the perturbed value of the variable
-        double x_perturbed = perturbedVariableValue(p_case_gradients->realVariableValue(i), m_vars_real.at(i)->max(), m_vars_real.at(i)->min());
-
-        // setting up a new case
-        Case *case_perturbed = new Case(*p_case_gradients);
-
-        // changing the value of the variable to the perturbe value
-        case_perturbed->setRealVariableValue(i, x_perturbed);
-
-        // adding the case to the queue
-        case_queue->push_back(case_perturbed);
-    }
-
-    // adding the binary variable perturbations
-    for(int i = 0; i < m_vars_binary.size(); ++i)
-    {
-        // calculating the perturbed value of the variable
-        double x_perturbed = perturbedVariableValue(p_case_gradients->binaryVariableValue(i), m_vars_binary.at(i)->max(), m_vars_binary.at(i)->min());
-
-        // setting up a new case
-        Case *case_perturbed = new Case(*p_case_gradients);
-
-        // changing the value of the variable to the perturbe value
-        case_perturbed->setBinaryVariableValue(i, x_perturbed);
-
-        // adding the case to the queue
-        case_queue->push_back(case_perturbed);
-    }
-
-    // adding the integer variable perturbations
-    for(int i = 0; i < m_vars_integer.size(); ++i)
-    {
-        // calculating the perturbed value of the variable
-        int u_slack = m_vars_integer.at(i)->max() - m_vars_integer.at(i)->value();
-        int l_slack = m_vars_integer.at(i)->value() - m_vars_integer.at(i)->min();
-
-        int x_perturbed = (u_slack > l_slack) ? m_vars_integer.at(i)->value() + 1 : m_vars_integer.at(i)->value() -1;
-
-
-        // setting up a new case
-        Case *case_perturbed = new Case(*p_case_gradients);
-
-        // changing the value of the variable to the perturbe value
-        case_perturbed->setIntegerVariableValue(i, x_perturbed);
-
-        // adding the case to the queue
-        case_queue->push_back(case_perturbed);
-    }
-
-
-
-    // sending the cases to the runner for evaluation
-    p_optimizer->runCases(case_queue);
-
-
-
-    int n_var = 0;
-
-    // calculating the gradients of the real variables
-    for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
-    {
-        // calculating the perturbation size of the variable
-        double dx = p_case_gradients->realVariableValue(i) - case_queue->at(n_var)->realVariableValue(i);
-
-        // calculating the gradient of the objective
-        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
-
-        // setting the value to the objective gradient vector
-        m_grad_f.replace(n_var, dfdx);
-
-
-        // calculating the gradients of the constraints
-        int entry = n_var*p_case_gradients->numberOfConstraints();
-        for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
-        {
-            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
-            m_jac_g.replace(entry, dcdx);
-            ++entry;
-
-
-        }
-
-
-        ++n_var;
-    }
-
-    // calculating the gradients of the binary variables
-    for(int i = 0; i < p_case_gradients->numberOfBinaryVariables(); ++i)
-    {
-        // calculating the perturbation size of the variable
-        double dx = p_case_gradients->binaryVariableValue(i) - case_queue->at(n_var)->binaryVariableValue(i);
-
-        // calculating the gradient of the objective
-        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
-
-        // setting the value to the objective gradient vector
-        m_grad_f.replace(n_var, dfdx);
-
-
-        // calculating the gradients of the constraints
-        int entry = n_var*p_case_gradients->numberOfConstraints();
-        for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
-        {
-            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
-            m_jac_g.replace(entry, dcdx);
-            ++entry;
-
-
-        }
-
-
-        ++n_var;
-    }
-
-    // calculating the gradients of the integer variables
-    for(int i = 0; i < p_case_gradients->numberOfIntegerVariables(); ++i)
-    {
-        // calculating the perturbation size of the variable
-        double dx = p_case_gradients->integerVariableValue(i) - case_queue->at(n_var)->integerVariableValue(i);
-
-        // calculating the gradient of the objective
-        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
-
-        // setting the value to the objective gradient vector
-        m_grad_f.replace(n_var, dfdx);
-
-
-        // calculating the gradients of the constraints
-        int entry = n_var*p_case_gradients->numberOfConstraints();
-        for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
-        {
-            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
-            m_jac_g.replace(entry, dcdx);
-            ++entry;
-
-
-        }
-
-
-        ++n_var;
-    }
-
-    cout << "CalculateGradients() cleanup" << endl;
-
-    // deleting the perturbed cases
-    for(int i = 0; i < case_queue->size(); ++i) delete case_queue->at(i);
-    delete case_queue;
-
-    cout << "CalculateGradients() end" << endl;
-
-
-
-}
-
-//-----------------------------------------------------------------------------------------------
-// Checks if the gradients are up to date
-//-----------------------------------------------------------------------------------------------
-bool BonminInterface::gradientsAreUpdated(Index n, const Number *x)
-{
-
-    // fist checking if the gradients case has been initialized
-    if(p_case_gradients == 0) return false;
-
-    if(p_case_gradients->numberOfRealVariables() == m_vars_real.size()
-            && p_case_gradients->numberOfBinaryVariables() == m_vars_binary.size()
-            && p_case_gradients->numberOfIntegerVariables() == m_vars_integer.size()) //checking if the gradient case is initialized
-    {
-        // checking if the variable values are the same as the gradients case
-        int n_var = 0;
-        bool new_x = false;
-
-        // real variables
-        for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
-        {
-            if(x[n_var] != p_case_gradients->realVariableValue(i))
-            {
-                new_x = true;
-                break;
-            }
-            ++n_var;
-        }
-
-        if(new_x) return new_x;
-
-        // binary variables
-        for(int i = 0; i < p_case_gradients->numberOfBinaryVariables(); ++i)
-        {
-            if(x[n_var] != p_case_gradients->binaryVariableValue(i))
-            {
-                new_x = true;
-                break;
-            }
-
-
-            ++n_var;
-        }
-
-        if(new_x) return new_x;
-
-        // integer variables
-        for(int i = 0; i < p_case_gradients->numberOfIntegerVariables(); ++i)
-        {
-            if(x[n_var] != p_case_gradients->integerVariableValue(i))
-            {
-                new_x = true;
-                break;
-            }
-
-
-            ++n_var;
-        }
-
-
-        return new_x;
-
-    }
-
-    else return false;
 }
 
 //-----------------------------------------------------------------------------------------------
 // Generates a Case based on the values in x
 //-----------------------------------------------------------------------------------------------
-Case* BonminInterface::generateCase(Index n, const Number *x)
+Case* BonminInterfaceGradients::generateCase(Index n, const Number *x)
 {
     // checking that the problem has the right dimensions
     assert(n == (m_vars_real.size() + m_vars_binary.size() + m_vars_integer.size()));

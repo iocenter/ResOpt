@@ -1,6 +1,9 @@
 #include "bonminoptimizer.h"
 
 #include "bonmininterface.h"
+#include "bonmininterfacegradients.h"
+#include "adjointscoupledmodel.h"
+#include "runner.h"
 
 #include <iostream>
 
@@ -32,8 +35,12 @@ void BonminOptimizer::initialize()
 
 
     // setting up the TMINLP
-    p_tminlp = new BonminInterface(this);
+    SmartPtr<TMINLP> tminlp;
 
+    // if the model supports adjoints, BonminInterfaceGradients is used
+    AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(runner()->model());
+    if(am != 0) tminlp = new BonminInterfaceGradients(this);
+    else tminlp = new BonminInterface(this);
 
 
 
@@ -64,7 +71,7 @@ void BonminOptimizer::initialize()
     m_bonmin.readOptionsString("hessian_approximation limited-memory\n");
 
     // initializing the TMINLP
-    m_bonmin.initialize(GetRawPtr(p_tminlp));
+    m_bonmin.initialize(GetRawPtr(tminlp));
 
     // changing the status to initialized
     setInitialized(true);

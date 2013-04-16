@@ -33,6 +33,7 @@ namespace ResOpt
 
 class Well;
 class WellControl;
+class AdjointsCoupledModel;
 
 
 /**
@@ -49,6 +50,8 @@ private:
     bool generateControlInputFile(Model *m);
     bool generateEclIncludeFile(Model *m);
     bool generateMRSTScript(Model *m);
+    bool readAdjoints(AdjointsCoupledModel *m);
+    bool readStandardOutput(Model *m);
 
 
     QStringList processLine(const QString &line);

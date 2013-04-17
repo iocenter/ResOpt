@@ -107,7 +107,10 @@ SOURCES += main.cpp \
     adjointcollection.cpp \
     derivative.cpp \
     bonmininterfacegradients.cpp \
-    gui/inspectorinjwell.cpp
+    gui/inspectorinjwell.cpp \
+    gui/inspectorpressurebooster.cpp \
+    gui/inspectorcapacity.cpp \
+    gui/inspectorendpipe.cpp
 
 HEADERS += \
     well.h \
@@ -191,7 +194,10 @@ HEADERS += \
     adjointcollection.h \
     derivative.h \
     bonmininterfacegradients.h \
-    gui/inspectorinjwell.h
+    gui/inspectorinjwell.h \
+    gui/inspectorpressurebooster.h \
+    gui/inspectorcapacity.h \
+    gui/inspectorendpipe.h
 
 RESOURCES += \
     gui/images.qrc

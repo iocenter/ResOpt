@@ -19,42 +19,56 @@
  */
 
 
-#ifndef MODELITEMCAPACITY_H
-#define MODELITEMCAPACITY_H
+#ifndef INSPECTORENDPIPE_H
+#define INSPECTORENDPIPE_H
 
-#include "modelitem.h"
+#include <QtGui/QWidget>
+#include <QtGui/QPushButton>
+#include <QtGui/QLineEdit>
+#include <QtGui/QComboBox>
+#include <QtGui/QLabel>
+#include <QVector>
 
 namespace ResOpt
 {
-class Capacity;
+class EndPipe;
 }
 
-using ResOpt::Capacity;
-
-
+using ResOpt::EndPipe;
 
 namespace ResOptGui
 {
 
-class ModelItemCapacity : public ModelItem
+class InspectorEndPipe : public QWidget
 {
+    Q_OBJECT
 private:
-    Capacity *p_capacity;
+    EndPipe *p_pipe;
 
-protected:
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+    QLabel m_lbl_pout;
+    QLineEdit m_led_pout;
+    QComboBox m_cbx_pout;
+
+
+    QPushButton m_btn_close;
+    QPushButton m_btn_ok;
+    QPushButton m_btn_plot;
+
+    void construct();
 
 
 public:
+    explicit InspectorEndPipe(EndPipe *pipe, QWidget *parent = 0);
 
-    ModelItemCapacity(Capacity *cap, const QString &file_name = ":new/images/cap_svg", QGraphicsItem *parent = 0);
+signals:
+    void sendMsg(QString);
 
-
-    Capacity* capacity() {return p_capacity;}
-
+public slots:
+    void saveAndClose();
+    void openPlot();
 
 };
 
 } // namespace
 
-#endif // MODELITEMCAPACITY_H
+#endif // INSPECTORENDPIPE_H

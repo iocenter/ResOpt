@@ -19,10 +19,15 @@
  */
 
 
-#ifndef MODELITEMCAPACITY_H
-#define MODELITEMCAPACITY_H
+#ifndef INSPECTORCAPACITY_H
+#define INSPECTORCAPACITY_H
 
-#include "modelitem.h"
+#include <QtGui/QWidget>
+#include <QtGui/QPushButton>
+#include <QtGui/QCheckBox>
+#include <QtGui/QLabel>
+#include <QtGui/QLineEdit>
+#include <QVector>
 
 namespace ResOpt
 {
@@ -31,30 +36,57 @@ class Capacity;
 
 using ResOpt::Capacity;
 
-
-
 namespace ResOptGui
 {
 
-class ModelItemCapacity : public ModelItem
+
+class InspectorConstraint;
+
+class InspectorCapacity : public QWidget
 {
+    Q_OBJECT
 private:
     Capacity *p_capacity;
 
-protected:
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+   // QVector<InspectorConstraint*> m_constraints;
+
+    QLabel m_lbl_oil;
+    QCheckBox m_chk_oil;
+    QLineEdit m_led_oil;
+
+    QLabel m_lbl_gas;
+    QCheckBox m_chk_gas;
+    QLineEdit m_led_gas;
+
+    QLabel m_lbl_water;
+    QCheckBox m_chk_water;
+    QLineEdit m_led_water;
+
+    QLabel m_lbl_liquid;
+    QCheckBox m_chk_liquid;
+    QLineEdit m_led_liquid;
+
+    QPushButton m_btn_close;
+    QPushButton m_btn_ok;
+
+    bool m_changed;
+
+    void construct();
 
 
 public:
+    explicit InspectorCapacity(Capacity *cap, QWidget *parent = 0);
 
-    ModelItemCapacity(Capacity *cap, const QString &file_name = ":new/images/cap_svg", QGraphicsItem *parent = 0);
+signals:
+    void sendMsg(QString);
 
-
-    Capacity* capacity() {return p_capacity;}
+public slots:
+    void saveAndClose();
+    void setChanged();
 
 
 };
 
 } // namespace
 
-#endif // MODELITEMCAPACITY_H
+#endif // INSPECTORCAPACITY_H

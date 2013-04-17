@@ -148,6 +148,12 @@ public:
 
     // get functions
 
+    double maxOil() const {return m_max_oil;}
+    double maxGas() const {return m_max_gas;}
+    double maxWater() const {return m_max_water;}
+    double maxLiquid() const {return m_max_liquid;}
+
+    const QVector<double>& schedule() const {return m_schedule;}
 
     /**
      * @brief Returns the separator name

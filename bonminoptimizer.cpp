@@ -4,6 +4,7 @@
 #include "bonmininterfacegradients.h"
 #include "adjointscoupledmodel.h"
 #include "runner.h"
+#include "reservoirsimulator.h"
 
 #include <iostream>
 
@@ -60,7 +61,7 @@ void BonminOptimizer::initialize()
     m_bonmin.readOptionsString("constr_viol_tol 0.1\n");
     QString s_max_iter = "max_iter " + QString::number(maxIterations()) + "\n";
     m_bonmin.readOptionsString(s_max_iter.toStdString());
-    m_bonmin.readOptionsString("output_file output/ipopt.out\n");
+    m_bonmin.readOptionsString("output_file " + runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out\n");
     m_bonmin.readOptionsString("bonmin.file_solution yes\n");
 
     //Here we read several option files

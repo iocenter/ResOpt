@@ -20,6 +20,7 @@
 
 
 #include "modelitemmidpipe.h"
+#include "plotstreams.h"
 
 #include "midpipe.h"
 
@@ -37,5 +38,14 @@ ModelItemMidPipe::ModelItemMidPipe(MidPipe *pipe, const QString &file_name, QGra
     setToolTip("Pipe: " + QString::number(p_midpipe->number()));
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Open the inspector window if item is double clicked
+//-----------------------------------------------------------------------------------------------
+void ModelItemMidPipe::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    PlotStreams *plt = new PlotStreams("Plots for Pipe #" + QString::number(p_midpipe->number()), p_midpipe->streams());
+}
+
 
 } // namespace

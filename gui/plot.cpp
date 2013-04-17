@@ -20,6 +20,7 @@
 
 
 #include "plot.h"
+#include "mainwindow.h"
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QPushButton>
@@ -27,8 +28,9 @@
 namespace ResOptGui
 {
 
-Plot::Plot(QWidget *parent) :
+Plot::Plot(MainWindow *mw, QWidget *parent) :
     QWidget(parent),
+    p_mainwindow(mw),
     m_custom_plot(this),
     m_max(10),
     m_min(0)
@@ -42,10 +44,14 @@ Plot::Plot(QWidget *parent) :
 
     m_custom_plot.setTitle("Objective Value");
 
+    m_custom_plot.setInteraction(QCustomPlot::iSelectItems);
+    m_custom_plot.setSelectionTolerance(10);
+
     m_custom_plot.addGraph();
 
     m_custom_plot.graph(0)->setLineStyle(QCPGraph::lsNone);
     m_custom_plot.graph(0)->setScatterStyle(QCP::ssDisc);
+
 
     m_custom_plot.xAxis->setLabel("Model Evaluation #");
     m_custom_plot.xAxis->setRange(0, 5);
@@ -62,7 +68,18 @@ Plot::Plot(QWidget *parent) :
     p_btn_clear = new QPushButton("Clear Plot", this);
     connect(p_btn_clear, SIGNAL(clicked()), this, SLOT(clearCases()));
 
-    layout->addWidget(p_btn_clear, 1, 1);
+    layout->addWidget(p_btn_clear, 1, 0);
+
+    // setting up the rerun button
+    p_btn_rerun = new QPushButton("Run Selected", this);
+    p_btn_rerun->setDisabled(true);
+
+    layout->addWidget(p_btn_rerun, 1, 1);
+
+    connect(p_mainwindow, SIGNAL(runFinished()), this, SLOT(onSelectionChanged()));
+    connect(&m_custom_plot, SIGNAL(selectionChangedByUser()), this, SLOT(onSelectionChanged()));
+    connect(p_btn_rerun, SIGNAL(clicked()), this, SLOT(rerunSelectedCase()));
+
 
 
 }
@@ -106,6 +123,23 @@ void Plot::addCase(Case *c)
     }
 
 
+    // adding tracer
+    QCPItemTracer *tracer = new QCPItemTracer(&m_custom_plot);
+    tracer->setGraph(m_custom_plot.graph(0));
+    tracer->setGraphKey(m_cases.size());
+    tracer->setStyle(QCPItemTracer::tsCircle);
+    QPen pen(Qt::blue);
+    pen.setWidth(0);
+    tracer->setPen(pen);
+
+    QPen pen_sel(Qt::red);
+    pen_sel.setWidth(2);
+    tracer->setSelectedPen(pen_sel);
+    tracer->setSelectable(true);
+
+    m_custom_plot.addItem(tracer);
+
+
     m_custom_plot.replot();
 
 }
@@ -116,10 +150,14 @@ void Plot::addCase(Case *c)
 //-----------------------------------------------------------------------------------------------
 void Plot::clearCases()
 {
+    m_custom_plot.clearItems();
+
     for(int i = 0; i < m_custom_plot.graphCount(); ++i)
     {
         m_custom_plot.graph(i)->clearData();
     }
+
+
 
     for(int i = 0; i < m_cases.size(); ++i) delete m_cases.at(i);
     m_cases.resize(0);
@@ -131,6 +169,40 @@ void Plot::clearCases()
     m_custom_plot.yAxis->setRange(0, 5);
 
     m_custom_plot.replot();
+}
+
+//-----------------------------------------------------------------------------------------------
+// called when the selection on the plot has changed
+//-----------------------------------------------------------------------------------------------
+void Plot::onSelectionChanged()
+{
+    if(m_custom_plot.selectedItems().size() == 1 && !p_mainwindow->isRunning()) p_btn_rerun->setEnabled(true);
+    else p_btn_rerun->setEnabled(false);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// reruns the selected case
+//-----------------------------------------------------------------------------------------------
+void Plot::rerunSelectedCase()
+{
+    if(!p_mainwindow->isRunning() && m_custom_plot.selectedItems().size() == 1)
+    {
+        // finding the case corresponding to the selected tracer
+        QCPItemTracer *tracer = dynamic_cast<QCPItemTracer*>(m_custom_plot.selectedItems().at(0));
+
+        if(tracer != 0)
+        {
+            int case_no = tracer->graphKey() - 1;
+
+            // checknig that the case_no is within vector bounds
+            if(case_no < m_cases.size() && case_no >= 0)
+            {
+                p_mainwindow->runCase(m_cases.at(case_no));
+            }
+
+        }
+    }
 }
 
 } // namespace

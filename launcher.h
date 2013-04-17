@@ -69,10 +69,12 @@ private:
 public:
     explicit Launcher(QObject *parent = 0);
 
+    ~Launcher();
+
     bool initialize();
 
     // set functions
-    void setModel(Model *m) {p_model = m;}
+    void setModel(Model *m) {if(p_model != 0) delete p_model; p_model = m;}
 
     void setReservoirSimulator(ReservoirSimulator *s) {p_simulator = s;}
 

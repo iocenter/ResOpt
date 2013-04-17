@@ -148,7 +148,7 @@ void Runner::initialize()
 
     // setting up the summary file
     setSummaryFile("run_summary.out");
-    writeProblemDefToSummary();
+
 
 
     // setting up the launchers
@@ -253,6 +253,8 @@ void Runner::initializeLaunchers()
 //-----------------------------------------------------------------------------------------------
 void Runner::run()
 {
+    writeProblemDefToSummary();
+
     m_start_time = time(NULL);     // storing the start time of the run
 
     // checking if the model has been initialized
@@ -330,12 +332,7 @@ void Runner::setSummaryFile(const QString &f)
 //-----------------------------------------------------------------------------------------------
 void Runner::setDebugFile(const QString &f)
 {
-    // checking if the output folder exists, creating if not.
-    QDir dir(".");
-    if(!dir.exists("output")) dir.mkdir("output");
-
-
-    p_debug = new QFile( "output/" + f);
+    p_debug = new QFile(p_simulator->folder() + "/" + f);
 
     if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
     {

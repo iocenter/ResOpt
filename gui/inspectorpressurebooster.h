@@ -19,42 +19,52 @@
  */
 
 
-#ifndef MODELITEMCAPACITY_H
-#define MODELITEMCAPACITY_H
+#ifndef INSPECTORPRESSUREBOOSTER_H
+#define INSPECTORPRESSUREBOOSTER_H
 
-#include "modelitem.h"
+#include <QWidget>
+#include <QPushButton>
 
 namespace ResOpt
 {
-class Capacity;
+class PressureBooster;
 }
 
-using ResOpt::Capacity;
-
-
+using ResOpt::PressureBooster;
 
 namespace ResOptGui
 {
 
-class ModelItemCapacity : public ModelItem
-{
-private:
-    Capacity *p_capacity;
+class InspectorVariable;
 
-protected:
-    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+class InspectorPressureBooster : public QWidget
+{
+    Q_OBJECT
+private:
+    PressureBooster *p_booster;
+
+    InspectorVariable *p_var_install;
+    InspectorVariable *p_var_capacity;
+    InspectorVariable *p_var_boostpressure;
+
+    QPushButton m_btn_close;
+    QPushButton m_btn_ok;
+    QPushButton m_btn_plot;
+
+    void construct();
 
 
 public:
+    explicit InspectorPressureBooster(PressureBooster *boost, QWidget *parent = 0);
 
-    ModelItemCapacity(Capacity *cap, const QString &file_name = ":new/images/cap_svg", QGraphicsItem *parent = 0);
+signals:
+    void sendMsg(QString);
 
-
-    Capacity* capacity() {return p_capacity;}
-
+public slots:
+    void saveAndClose();
+    void openPlot();
 
 };
 
 } // namespace
-
-#endif // MODELITEMCAPACITY_H
+#endif // INSPECTORPRESSUREBOOSTER_H

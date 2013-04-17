@@ -60,7 +60,6 @@ Stream::Stream(const Stream &s)
     m_pressure = s.m_pressure;
     m_input_units = s.m_input_units;
 
-    if(m_input_units == FIELD) cout << "Field units" << endl;
 
 }
 

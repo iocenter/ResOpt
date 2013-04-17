@@ -20,6 +20,8 @@
 
 
 #include "modelitemcapacity.h"
+#include "inspectorcapacity.h"
+#include "modelscene.h"
 
 #include "capacity.h"
 
@@ -37,5 +39,18 @@ ModelItemCapacity::ModelItemCapacity(Capacity *cap, const QString &file_name, QG
     setToolTip("Capacity: " + p_capacity->name());
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Open the inspector window if item is double clicked
+//-----------------------------------------------------------------------------------------------
+void ModelItemCapacity::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    InspectorCapacity *inspector = new InspectorCapacity(p_capacity);
+
+    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
+    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
+
+}
+
 
 } // namespace

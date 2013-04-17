@@ -53,6 +53,7 @@ Pipe::Pipe(const Pipe &p)
 
     // the calculator
     if(p.p_calculator != 0) p_calculator = p.p_calculator->clone();
+    else p_calculator = 0;
 
 
 }

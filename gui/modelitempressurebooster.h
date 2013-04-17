@@ -41,6 +41,10 @@ class ModelItemPressureBooster : public ModelItem
 private:
     PressureBooster *p_booster;
 
+protected:
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+
 public:
 
     ModelItemPressureBooster(PressureBooster *booster, const QString &file_name = ":new/images/booster_svg", QGraphicsItem *parent = 0);

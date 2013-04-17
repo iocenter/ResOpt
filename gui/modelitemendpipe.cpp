@@ -20,6 +20,8 @@
 
 
 #include "modelitemendpipe.h"
+#include "inspectorendpipe.h"
+#include "modelscene.h"
 
 #include "endpipe.h"
 
@@ -37,5 +39,18 @@ ModelItemEndPipe::ModelItemEndPipe(EndPipe *pipe, const QString &file_name, QGra
     setToolTip("Pipe: " + QString::number(p_endpipe->number()));
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Open the inspector window if item is double clicked
+//-----------------------------------------------------------------------------------------------
+void ModelItemEndPipe::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    InspectorEndPipe *inspector = new InspectorEndPipe(p_endpipe);
+
+    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
+    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
+
+}
+
 
 } // namespace

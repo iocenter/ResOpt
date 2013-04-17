@@ -20,6 +20,8 @@
 
 
 #include "modelitempressurebooster.h"
+#include "inspectorpressurebooster.h"
+#include "modelscene.h"
 
 #include "pressurebooster.h"
 
@@ -37,5 +39,18 @@ ModelItemPressureBooster::ModelItemPressureBooster(PressureBooster *booster, con
     setToolTip("Booster: " + QString::number(p_booster->number()));
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Open the inspector window if item is double clicked
+//-----------------------------------------------------------------------------------------------
+void ModelItemPressureBooster::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
+{
+    InspectorPressureBooster *inspector = new InspectorPressureBooster(p_booster);
+
+    ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
+    connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));
+
+}
+
 
 } // namespace

@@ -30,7 +30,13 @@
 class QGraphicsView;
 class QTabWidget;
 
+namespace ResOpt
+{
+class Case;
+}
+
 using ResOpt::Runner;
+using ResOpt::Case;
 
 namespace ResOptGui
 {
@@ -56,6 +62,8 @@ private:
 
     Runner *p_runner;
 
+    bool m_running;
+
 
     void createMenus();
 
@@ -63,14 +71,19 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
     ~MainWindow();
+
+    bool isRunning() {return m_running;}
     
 signals:
     void sendMsg(QString);
+    void runFinished();
     
 public slots:
     void loadModel();
     void runModel();
+    void runCase(Case *c);
     void onOptimizationFinished();
+    void onCaseFinished();
     void openOptimizerInspector();
     
 };

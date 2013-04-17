@@ -41,6 +41,10 @@ class ModelItemMidPipe : public ModelItem
 private:
     MidPipe *p_midpipe;
 
+protected:
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
+
 public:
 
     ModelItemMidPipe(MidPipe *pipe, const QString &file_name = ":new/images/midpipe_svg", QGraphicsItem *parent = 0);

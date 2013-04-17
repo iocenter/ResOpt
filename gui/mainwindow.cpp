@@ -27,6 +27,8 @@
 
 #include "optimizer.h"
 #include "model.h"
+#include "case.h"
+#include "casequeue.h"
 
 #include <QtGui/QAction>
 #include <QtGui/QKeySequence>
@@ -41,6 +43,7 @@
 
 
 using ResOpt::Case;
+using ResOpt::CaseQueue;
 using ResOpt::Optimizer;
 using ResOpt::Model;
 
@@ -50,7 +53,8 @@ namespace ResOptGui
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     p_runner(0),
-    p_obj_inpector(0)
+    p_obj_inpector(0),
+    m_running(false)
 {
 
     // setting up the model scene
@@ -71,7 +75,7 @@ MainWindow::MainWindow(QWidget *parent) :
     //setCentralWidget(widget);
 
     // setting up the plot
-    p_plot = new Plot();
+    p_plot = new Plot(this);
 
 
     // setting up the tab widget
@@ -175,6 +179,8 @@ void MainWindow::runModel()
     if(p_runner == 0) emit sendMsg("No model is loaded, unable to run!");
     else
     {
+        m_running = true;
+
         emit sendMsg("Updating launchers with current model...");
         p_runner->initializeLaunchers();
 
@@ -194,6 +200,30 @@ void MainWindow::runModel()
 }
 
 //-----------------------------------------------------------------------------------------------
+// Runs a single case
+//-----------------------------------------------------------------------------------------------
+void MainWindow::runCase(Case *c)
+{
+
+    if(!m_running)
+    {
+        emit sendMsg("Re-running case...");
+        connect(p_runner, SIGNAL(casesFinished()), this, SLOT(onCaseFinished()));
+
+        CaseQueue *cq = new CaseQueue();
+
+        cq->push_back(c);
+
+        p_runner->evaluate(cq, 0);
+
+        //delete cq;
+        //cq = 0;
+    }
+    else emit sendMsg("Could not evaluate case, model is running!");
+
+}
+
+//-----------------------------------------------------------------------------------------------
 // Things to do after the runner has finished the optimization
 //-----------------------------------------------------------------------------------------------
 void MainWindow::onOptimizationFinished()
@@ -201,6 +231,28 @@ void MainWindow::onOptimizationFinished()
     emit sendMsg("Optimization finished!");
 
     p_runner->transferModelStateFromLauncher();
+
+    m_running = false;
+
+    emit runFinished();
+}
+
+//-----------------------------------------------------------------------------------------------
+// Things to do after a single case has finished running
+//-----------------------------------------------------------------------------------------------
+void MainWindow::onCaseFinished()
+{
+    disconnect(p_runner, SIGNAL(casesFinished()), this, SLOT(onCaseFinished()));
+
+    emit sendMsg("Case finished!");
+
+    p_runner->transferModelStateFromLauncher();
+
+    m_running = false;
+
+    emit runFinished();
+
+
 }
 
 

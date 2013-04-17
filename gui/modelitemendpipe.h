@@ -41,6 +41,9 @@ class ModelItemEndPipe : public ModelItem
 private:
     EndPipe *p_endpipe;
 
+protected:
+    virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
+
 public:
 
     ModelItemEndPipe(EndPipe *pipe, const QString &file_name = ":new/images/endpipe_svg", QGraphicsItem *parent = 0);

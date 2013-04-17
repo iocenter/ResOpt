@@ -139,6 +139,7 @@ public:
     // get functions
     Model* model() {return p_model;}
     Optimizer* optimizer() {return p_optimizer;}
+    ReservoirSimulator* reservoirSimulator() {return p_simulator;}
 
 
 

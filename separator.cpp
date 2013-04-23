@@ -122,6 +122,12 @@ void Separator::calculateInletPressure()
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString Separator::description() const
+{}
+
 
 
 

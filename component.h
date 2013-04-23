@@ -51,6 +51,8 @@ public:
 
     // virtual functions
 
+    virtual QString description() const = 0;
+
     // misc functions
     void clearStreams() {m_streams.clear();}
 

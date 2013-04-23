@@ -49,6 +49,8 @@ public:
 
     virtual void calculateInletPressure();
 
+    virtual QString description() const;
+
     // misc functions
 
     void setupCapacityConstraints(const QVector<double> &master_schedule);

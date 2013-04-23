@@ -164,6 +164,11 @@ void PressureBooster::calculateInletPressure()
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString PressureBooster::description() const
+{}
 
 
 } // namespace ResOpt

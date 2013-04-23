@@ -83,16 +83,6 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
         exit(1);
     }
 
-    /*
-    if(m->masterSchedule().size() != 3)
-    {
-        cout << "### Error! ###" << endl;
-        cout << "The number of control times is not equal to 3..." << endl;
-        cout << "NUMBER OF CONTROLS = " << m->masterSchedule().size() << endl;
-
-        exit(1);
-    }
-    */
 
     // done checking, starting to generate the control file
 
@@ -111,6 +101,7 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
     // starting to generate the file
 
     *out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2012b';" << "\n";
+
     //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2012b';" << "\n";
     *out_ctrl << "run(fullfile(mrstPath,'startup.m'))" << "\n\n";
 
@@ -658,7 +649,7 @@ bool MrstBatchSimulator::launchSimulator()
 
 
 
-    //cout <<  QString(mrst.readAll()).toAscii().data() << endl;
+    cout <<  QString(mrst.readAll()).toAscii().data() << endl;
 
 
 

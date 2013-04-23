@@ -25,6 +25,7 @@
 #include <QTextStream>
 #include <QThread>
 #include <QDir>
+#include <QEventLoop>
 
 #include "launcher.h"
 #include "modelreader.h"
@@ -77,7 +78,8 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       m_number_of_runs(1),
       m_number_of_res_sim_runs(0),
       p_cases(0),
-      p_last_run_launcher(0)
+      p_last_run_launcher(0),
+      m_paused(false)
 {
     p_reader = new ModelReader(driver_file);
 }
@@ -664,6 +666,8 @@ void Runner::writeBestCaseToSummary(Case *c)
 //-----------------------------------------------------------------------------------------------
 void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_case)
 {
+
+
     // this is connected to the GUI...
     emit newCaseFinished(finished_case);
 
@@ -672,6 +676,21 @@ void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_cas
 
     // printing debug info if enabled
     if(p_debug != 0) printDebug(l);
+
+    // check if the optimization should be paused
+    if(m_paused)
+    {
+        cout << "pausing optimization..." << endl;
+
+        QEventLoop pause_loop;
+
+        connect(this, SIGNAL(resumePaused()), &pause_loop, SLOT(quit()));
+
+        pause_loop.exec();
+
+        cout << "pause ended...." << endl;
+
+    }
 
     // check if there are more cases to run
     Case *c = p_cases->next();
@@ -948,6 +967,19 @@ void Runner::printDebug(Launcher *l)
 
 
 
+}
+
+//-----------------------------------------------------------------------------------------------
+// pauses / restarts the optimization
+//-----------------------------------------------------------------------------------------------
+void Runner::setPaused(bool paused)
+{
+    if(paused) cout << "runner: starting pause" << endl;
+    else cout << "runner: ending pause" << endl;
+
+    m_paused = paused;
+
+    if(!paused) emit resumePaused();
 }
 
 } // namespace ResOpt

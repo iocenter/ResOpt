@@ -38,6 +38,7 @@
 #include <QtGui/QGraphicsView>
 #include <QtGui/QFileDialog>
 #include <QtGui/QTabWidget>
+#include <QtGui/QToolBar>
 
 #include <QDir>
 
@@ -54,7 +55,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
     p_runner(0),
     p_obj_inpector(0),
-    m_running(false)
+    m_running(false),
+    m_paused(false)
 {
 
     // setting up the model scene
@@ -124,6 +126,10 @@ void MainWindow::createMenus()
     QAction *p_act_load =  p_file_menu->addAction("Load Project");
     connect(p_act_load, SIGNAL(triggered()), this, SLOT(loadModel()));
 
+    // save plot
+    QAction *p_act_saveplot = p_file_menu->addAction("Save Plot");
+    connect(p_act_saveplot, SIGNAL(triggered()), this, SLOT(savePlot()));
+
 
     // ---------- create optimization menu -------------------
     QMenu *p_opt_menu = menuBar()->addMenu("Optimization");
@@ -138,6 +144,15 @@ void MainWindow::createMenus()
     connect(p_act_opt_prop, SIGNAL(triggered()), this, SLOT(openOptimizerInspector()));
 
 
+
+    // ---------- creating toolbar -------------------
+
+    setIconSize(QSize(40, 40));
+
+    QToolBar *toolbar = addToolBar("Tools");
+    p_act_startbutton = toolbar->addAction(QIcon(":new/images/play"), "Start Optimization");
+
+    connect(p_act_startbutton, SIGNAL(triggered()), this, SLOT(onStartButtonTriggered()));
 
 }
 
@@ -179,7 +194,7 @@ void MainWindow::runModel()
     if(p_runner == 0) emit sendMsg("No model is loaded, unable to run!");
     else
     {
-        m_running = true;
+        setRunningState();
 
         emit sendMsg("Updating launchers with current model...");
         p_runner->initializeLaunchers();
@@ -207,6 +222,8 @@ void MainWindow::runCase(Case *c)
 
     if(!m_running)
     {
+        setRunningState();
+
         emit sendMsg("Re-running case...");
         connect(p_runner, SIGNAL(casesFinished()), this, SLOT(onCaseFinished()));
 
@@ -232,8 +249,7 @@ void MainWindow::onOptimizationFinished()
 
     p_runner->transferModelStateFromLauncher();
 
-    m_running = false;
-
+    setFinishedState();
     emit runFinished();
 }
 
@@ -248,7 +264,7 @@ void MainWindow::onCaseFinished()
 
     p_runner->transferModelStateFromLauncher();
 
-    m_running = false;
+    setFinishedState();
 
     emit runFinished();
 
@@ -268,6 +284,95 @@ void MainWindow::openOptimizerInspector()
 
     }
     else emit sendMsg("A project must be loaded before the optimizer properties can be opened!");
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Saves the plot to a pdf file
+//-----------------------------------------------------------------------------------------------
+void MainWindow::savePlot()
+{
+    // getting the file name
+    QString fileName = QFileDialog::getSaveFileName(this, "Save Plot to PDF", QDir::currentPath(), "Pdf file (*.pdf)");
+
+    emit sendMsg("Saving the plot to file...");
+    p_plot->savePlot(fileName);
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// called when the start/pause button is triggered
+//-----------------------------------------------------------------------------------------------
+void MainWindow::onStartButtonTriggered()
+{
+    if(m_running)
+    {
+        if(m_paused)
+        {
+            emit sendMsg("Resuming optimization...");
+            p_runner->setPaused(false);
+            p_act_startbutton->setIcon(QIcon(":new/images/pause"));
+            m_paused = false;
+
+
+        }
+        else
+        {
+            emit sendMsg("Pausing optimization...");
+            p_runner->setPaused(true);
+            p_act_startbutton->setIcon(QIcon(":new/images/play"));
+            m_paused = true;
+            p_act_startbutton->setDisabled(true);
+
+            connect(p_runner, SIGNAL(newCaseFinished(Case*)), this, SLOT(onLastCaseBeforePause(Case*)));
+
+
+
+        }
+    }
+
+    else
+    {
+        runModel();
+    }
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// sets all gui changes when model run starts
+//-----------------------------------------------------------------------------------------------
+void MainWindow::setRunningState()
+{
+    m_running = true;
+    p_act_startbutton->setIcon(QIcon(":new/images/pause"));
+    p_act_startbutton->setText("Pause Optimization");
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// sets all gui changes when model run finishes
+//-----------------------------------------------------------------------------------------------
+void MainWindow::setFinishedState()
+{
+    m_running = false;
+    p_act_startbutton->setIcon(QIcon(":new/images/play"));
+    p_act_startbutton->setText("Start Optimization");
+}
+
+//-----------------------------------------------------------------------------------------------
+// transfers the model state before pause
+//-----------------------------------------------------------------------------------------------
+void MainWindow::onLastCaseBeforePause(Case *c)
+{
+    emit sendMsg("Transfering last case before pause...");
+    p_runner->transferModelStateFromLauncher();
+
+    disconnect(p_runner, SIGNAL(newCaseFinished(Case*)), this, SLOT(onLastCaseBeforePause(Case*)));
+
+    p_act_startbutton->setDisabled(false);
+    p_act_startbutton->setText("Resume Optimization");
+
 }
 
 } // namespace

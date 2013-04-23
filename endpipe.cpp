@@ -74,4 +74,11 @@ void EndPipe::calculateInletPressure()
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString EndPipe::description() const
+{}
+
+
 } // namespace ResOpt

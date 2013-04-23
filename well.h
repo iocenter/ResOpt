@@ -94,6 +94,7 @@ public:
 
     virtual Well* clone() const = 0;
     virtual void setAutomaticType() = 0;
+    virtual QString description() const = 0;
 
 
 

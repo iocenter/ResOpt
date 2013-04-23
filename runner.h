@@ -80,6 +80,7 @@ private:
 
     CaseQueue *p_cases;
     Launcher *p_last_run_launcher;
+    bool m_paused;
 
 
 
@@ -98,13 +99,6 @@ private:
     void writeCasesToSummary();
 
 
-    /**
-     * @brief Checks if any of the constraints are broken. Returns true if the solution is feasible.
-     *
-     * @param c
-     * @return bool
-     */
-    bool isFeasible(Case *c);
 
 
 
@@ -127,6 +121,15 @@ public:
     void printDebug(Launcher *l);
 
     void transferModelStateFromLauncher();
+
+    /**
+     * @brief Checks if any of the constraints are broken. Returns true if the solution is feasible.
+     *
+     * @param c
+     * @return bool
+     */
+    bool isFeasible(Case *c);
+
 
     // set functions
 
@@ -188,6 +191,8 @@ public slots:
      */
     void incrementReservoirSimRuns() {++m_number_of_res_sim_runs;}
 
+    void setPaused(bool paused);
+
 
 
 
@@ -196,6 +201,7 @@ signals:
     void casesFinished();
     void sendCase(Case *c, Component *comp);
     void newCaseFinished(Case *c);
+    void resumePaused();
 
 };
 

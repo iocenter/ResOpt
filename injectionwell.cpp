@@ -39,4 +39,14 @@ InjectionWell::~InjectionWell()
 {
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString InjectionWell::description() const
+{
+
+}
+
+
 } // namespace ResOpt

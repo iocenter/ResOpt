@@ -59,7 +59,7 @@ public:
     Plot(MainWindow *mw, QWidget *parent = 0);
     ~Plot();
 
-
+    void savePlot(const QString &fileName);
 
 public slots:
 

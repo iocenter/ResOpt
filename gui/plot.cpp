@@ -45,12 +45,20 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
     m_custom_plot.setTitle("Objective Value");
 
     m_custom_plot.setInteraction(QCustomPlot::iSelectItems);
-    m_custom_plot.setSelectionTolerance(10);
+   // m_custom_plot.setSelectionTolerance(10);
+
 
     m_custom_plot.addGraph();
 
     m_custom_plot.graph(0)->setLineStyle(QCPGraph::lsNone);
     m_custom_plot.graph(0)->setScatterStyle(QCP::ssDisc);
+
+    // graph for feasibility
+    m_custom_plot.addGraph();
+    m_custom_plot.graph(1)->setLineStyle(QCPGraph::lsNone);
+    m_custom_plot.graph(1)->setScatterStyle(QCP::ssDisc);
+    m_custom_plot.graph(1)->setPen(QPen(Qt::red));
+    //m_custom_plot.graph(1)->setScatterSize(10);
 
 
     m_custom_plot.xAxis->setLabel("Model Evaluation #");
@@ -104,6 +112,9 @@ void Plot::addCase(Case *c)
 
     m_custom_plot.graph(0)->addData(m_cases.size(), c->objectiveValue());
 
+    // adding point to graph 1 if infeasible
+    if(!p_mainwindow->runner()->isFeasible(c)) m_custom_plot.graph(1)->addData(m_cases.size(), c->objectiveValue());
+
     // x axis range
     if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(0, m_cases.size() + 1);
 
@@ -114,6 +125,8 @@ void Plot::addCase(Case *c)
     double padding = (m_max - m_min)*0.1;
 
     m_custom_plot.yAxis->setRange(m_min - padding, m_max + padding);
+
+
 
     // checking if the x-axis tick step must change
     if(m_cases.size() > 10)
@@ -127,13 +140,15 @@ void Plot::addCase(Case *c)
     QCPItemTracer *tracer = new QCPItemTracer(&m_custom_plot);
     tracer->setGraph(m_custom_plot.graph(0));
     tracer->setGraphKey(m_cases.size());
-    tracer->setStyle(QCPItemTracer::tsCircle);
+    tracer->setStyle(QCPItemTracer::tsPlus);
+    tracer->setSize(20);
     QPen pen(Qt::blue);
     pen.setWidth(0);
+    pen.setStyle(Qt::NoPen);
     tracer->setPen(pen);
 
-    QPen pen_sel(Qt::red);
-    pen_sel.setWidth(2);
+    QPen pen_sel(Qt::green);
+    pen_sel.setWidth(1);
     tracer->setSelectedPen(pen_sel);
     tracer->setSelectable(true);
 
@@ -169,6 +184,8 @@ void Plot::clearCases()
     m_custom_plot.yAxis->setRange(0, 5);
 
     m_custom_plot.replot();
+
+    p_btn_rerun->setDisabled(true);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -199,10 +216,20 @@ void Plot::rerunSelectedCase()
             if(case_no < m_cases.size() && case_no >= 0)
             {
                 p_mainwindow->runCase(m_cases.at(case_no));
+                p_btn_rerun->setDisabled(true);
+
             }
 
         }
     }
+}
+
+//-----------------------------------------------------------------------------------------------
+// Saves the plot to PDF
+//-----------------------------------------------------------------------------------------------
+void Plot::savePlot(const QString &fileName)
+{
+    m_custom_plot.savePdf(fileName);
 }
 
 } // namespace

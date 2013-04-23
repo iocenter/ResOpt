@@ -59,6 +59,8 @@ public:
 
     virtual void emptyStreams();
 
+    virtual QString description() const;
+
     // set functions
 
     void setType(TYPE t) {m_type = t;}

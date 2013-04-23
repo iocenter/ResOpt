@@ -191,4 +191,26 @@ void MidPipe::updateOutletConnectionConstraint()
     p_connection_constraint->setValue(c);
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString MidPipe::description() const
+{
+    QString str("START PIPE\n");
+    str.append(" NUMBER " + QString::number(number()) + "\n");
+    str.append(" FILE " + fileName() + "\n\n");
+    str.append(" START OUTLETPIPES\n");
+
+    foreach(PipeConnection *pc, m_outlet_connections)
+    {
+        str.append("  " + QString::number(pc->pipeNumber()) + "   " + QString::number(pc->variable()->value()) + "  ");
+        if(pc->variable()->isVariable()) str.append("BIN\n");
+        else str.append("\n");
+    }
+
+    str.append(" END OUTLETPIPES\n");
+    str.append("END PIPE\n\n");
+    return str;
+}
+
 } // namespace ResOpt

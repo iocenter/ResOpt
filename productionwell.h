@@ -93,6 +93,8 @@ public:
 
     virtual void setAutomaticType() {setType(Well::PROD);}
 
+    virtual QString description() const;
+
     // add functions
 
     void addPipeConnection(PipeConnection *c) {m_pipe_connections.push_back(c);}

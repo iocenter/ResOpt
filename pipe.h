@@ -103,6 +103,8 @@ public:
 
     virtual void initialize(const QVector<double> &schedule);
 
+    virtual QString description() const = 0;
+
 
     // misc functions
 
@@ -194,6 +196,8 @@ public:
      * @return int
      */
     int number() const {return m_number;}
+
+    const QString& fileName() const {return m_file_name;}
 
 
 

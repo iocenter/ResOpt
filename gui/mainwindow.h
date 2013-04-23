@@ -29,6 +29,7 @@
 
 class QGraphicsView;
 class QTabWidget;
+class QAction;
 
 namespace ResOpt
 {
@@ -59,13 +60,21 @@ private:
     Plot *p_plot;
     InspectorOptimizer *p_obj_inpector;
 
+    QAction *p_act_startbutton;
+
+
+
 
     Runner *p_runner;
 
     bool m_running;
+    bool m_paused;
 
 
     void createMenus();
+
+    void setRunningState();
+    void setFinishedState();
 
 public:
     explicit MainWindow(QWidget *parent = 0);
@@ -73,6 +82,8 @@ public:
     ~MainWindow();
 
     bool isRunning() {return m_running;}
+
+    Runner* runner() {return p_runner;}
     
 signals:
     void sendMsg(QString);
@@ -81,10 +92,13 @@ signals:
 public slots:
     void loadModel();
     void runModel();
-    void runCase(Case *c);
     void onOptimizationFinished();
+    void runCase(Case *c);
     void onCaseFinished();
     void openOptimizerInspector();
+    void onStartButtonTriggered();
+    void savePlot();
+    void onLastCaseBeforePause(Case *c);
     
 };
 

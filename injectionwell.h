@@ -44,6 +44,7 @@ public:
     virtual Well* clone() const {return new InjectionWell(*this);}
 
     virtual void setAutomaticType() {setType(Well::INJ);}
+    virtual QString description() const;
 };
 
 } // namespace ResOpt

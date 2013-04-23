@@ -284,5 +284,11 @@ double ProductionWell::flowFraction(Pipe *p, bool *ok)
     return frac;
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString ProductionWell::description() const
+{}
+
 
 } // namespace ResOpt

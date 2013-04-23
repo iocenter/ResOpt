@@ -56,6 +56,8 @@ public:
 
     virtual void calculateInletPressure();
 
+    virtual QString description() const;
+
 
     // set functions
 

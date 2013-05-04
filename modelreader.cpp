@@ -197,7 +197,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("CONSTRAINTS")) readUserDefinedConstraints(p_model);                  // user defined constraints
 
         }
-        else if(list.at(0).startsWith("DEBUG")) r->setDebugFile(list.at(1));                                    // setting the debug file
+        else if(list.at(0).startsWith("DEBUG")) r->setDebugFileName(list.at(1));                                    // setting the debug file
         else if(list.at(0).startsWith("SIMULATOR"))     // reading the type of reservoir simulator to use
         {
             if(list.at(1).startsWith("GPRS")) r->setReservoirSimulator(new GprsSimulator());

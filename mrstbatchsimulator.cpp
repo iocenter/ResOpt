@@ -616,7 +616,7 @@ bool MrstBatchSimulator::launchSimulator()
     cout << "Launching MRST in batch mode..." << endl;
 
 
-    QString program = "/usr/local/MATLAB/R2012b/bin/glnxa64/MATLAB";
+    QString program = "/usr/local/MATLAB/R2013a/bin/matlab";
     //QString program = "matlab";
     QStringList args;
     args.push_back("-nosplash");
@@ -735,8 +735,9 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
             double pres = list.at(2).toDouble();
 
             // converting the rates and pressures to the correct units
-            q_wat = qAbs(86400 * q_wat);
-            q_oil = qAbs(86400 * q_oil);
+            // production rates are negative, injection positive
+            q_wat = -86400 * q_wat;
+            q_oil = -86400 * q_oil;
             pres = 1e-5 * pres;
 
 

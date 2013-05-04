@@ -79,7 +79,8 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       m_number_of_res_sim_runs(0),
       p_cases(0),
       p_last_run_launcher(0),
-      m_paused(false)
+      m_paused(false),
+      m_debug(false)
 {
     p_reader = new ModelReader(driver_file);
 }
@@ -139,6 +140,28 @@ void Runner::initialize()
     // initializing the reservoir simulator
     if(p_simulator == 0) p_simulator = new VlpSimulator();
     p_simulator->setFolder(p_reader->driverFilePath() + "/output");
+
+
+    // setting the debug file
+
+    if(m_debug)
+    {
+        p_debug = new QFile(p_simulator->folder() + "/" + m_debug_filename);
+
+        if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            qWarning("Could not connect to debug file: %s", p_debug->fileName().toAscii().data());
+
+            delete p_debug;
+            p_debug = 0;
+        }
+        else
+        {
+            // deleting content from previous launches
+            p_debug->resize(0);
+        }
+
+    }
 
 
     cout << "Initializing the optimizer..." << endl;
@@ -332,8 +355,14 @@ void Runner::setSummaryFile(const QString &f)
 //-----------------------------------------------------------------------------------------------
 // Initializes the debug file
 //-----------------------------------------------------------------------------------------------
-void Runner::setDebugFile(const QString &f)
+void Runner::setDebugFileName(const QString &f)
 {
+
+    m_debug = true;
+
+    m_debug_filename = f;
+
+    /*
     p_debug = new QFile(p_simulator->folder() + "/" + f);
 
     if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
@@ -349,6 +378,7 @@ void Runner::setDebugFile(const QString &f)
         p_debug->resize(0);
     }
 
+    */
 
 
 }

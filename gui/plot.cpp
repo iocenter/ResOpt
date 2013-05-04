@@ -24,6 +24,7 @@
 
 #include <QtGui/QGridLayout>
 #include <QtGui/QPushButton>
+#include <QtGui/QSlider>
 
 namespace ResOptGui
 {
@@ -71,18 +72,31 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
 
     m_custom_plot.setRangeDrag(Qt::Vertical);
     m_custom_plot.setRangeZoom(Qt::Vertical);
+    m_custom_plot.setRangeDrag(Qt::Horizontal);
+
+    // setting up the x-axis slider
+    p_sld_xaxis = new QSlider(Qt::Horizontal, this);
+    p_sld_xaxis->setMaximum(5);
+    p_sld_xaxis->setMinimum(1);
+    p_sld_xaxis->setValue(5);
+
+    layout->addWidget(p_sld_xaxis, 1, 0, 1, 3);
+
+    connect(p_sld_xaxis, SIGNAL(valueChanged(int)), this, SLOT(onXAxisSliderChanged()));
 
     // setting up the clear button
     p_btn_clear = new QPushButton("Clear Plot", this);
     connect(p_btn_clear, SIGNAL(clicked()), this, SLOT(clearCases()));
 
-    layout->addWidget(p_btn_clear, 1, 0);
+    layout->addWidget(p_btn_clear, 2, 0);
 
     // setting up the rerun button
     p_btn_rerun = new QPushButton("Run Selected", this);
     p_btn_rerun->setDisabled(true);
 
-    layout->addWidget(p_btn_rerun, 1, 1);
+    layout->addWidget(p_btn_rerun, 2, 1);
+
+
 
     connect(p_mainwindow, SIGNAL(runFinished()), this, SLOT(onSelectionChanged()));
     connect(&m_custom_plot, SIGNAL(selectionChangedByUser()), this, SLOT(onSelectionChanged()));
@@ -116,7 +130,7 @@ void Plot::addCase(Case *c)
     if(!p_mainwindow->runner()->isFeasible(c)) m_custom_plot.graph(1)->addData(m_cases.size(), c->objectiveValue());
 
     // x axis range
-    if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(0, m_cases.size() + 1);
+    if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
 
     // y axis range
     if(c->objectiveValue() < m_min) m_min = c->objectiveValue();
@@ -154,8 +168,13 @@ void Plot::addCase(Case *c)
 
     m_custom_plot.addItem(tracer);
 
+    // updating the slider max
+    p_sld_xaxis->setMaximum(m_cases.size());
+    p_sld_xaxis->setValue(m_cases.size());
 
-    m_custom_plot.replot();
+
+
+   // m_custom_plot.replot();
 
 }
 
@@ -183,7 +202,9 @@ void Plot::clearCases()
     m_custom_plot.xAxis->setRange(0, 5);
     m_custom_plot.yAxis->setRange(0, 5);
 
-    m_custom_plot.replot();
+    p_sld_xaxis->setMaximum(5);
+    p_sld_xaxis->setValue(5);
+    //m_custom_plot.replot();
 
     p_btn_rerun->setDisabled(true);
 }
@@ -230,6 +251,18 @@ void Plot::rerunSelectedCase()
 void Plot::savePlot(const QString &fileName)
 {
     m_custom_plot.savePdf(fileName);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Changed the x axis of the plot when slider changes
+//-----------------------------------------------------------------------------------------------
+void Plot::onXAxisSliderChanged()
+{
+
+    if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
+
+    m_custom_plot.replot();
 }
 
 } // namespace

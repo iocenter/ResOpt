@@ -32,6 +32,7 @@
 using ResOpt::Case;
 
 class QPushButton;
+class QSlider;
 
 namespace ResOptGui
 {
@@ -50,6 +51,7 @@ private:
 
     QPushButton *p_btn_clear;
     QPushButton *p_btn_rerun;
+    QSlider *p_sld_xaxis;
 
     QCustomPlot m_custom_plot;
     QVector<Case*> m_cases;
@@ -67,6 +69,7 @@ public slots:
     void clearCases();
     void onSelectionChanged();
     void rerunSelectedCase();
+    void onXAxisSliderChanged();
 };
 
 

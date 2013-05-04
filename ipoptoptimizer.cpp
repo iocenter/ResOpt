@@ -2,6 +2,7 @@
 #include "ipoptinterface.h"
 #include "runner.h"
 #include "model.h"
+#include "reservoirsimulator.h"
 
 #include <iostream>
 #include <QString>
@@ -52,7 +53,7 @@ void IpoptOptimizer::initialize()
     //       suitable for your optimization problem.
     // app->Options()->SetNumericValue("tol", 1e-7);
     //app->Options()->SetStringValue("mu_strategy", "adaptive");
-    app->Options()->SetStringValue("output_file", "output/ipopt.out");
+    app->Options()->SetStringValue("output_file", runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
 
     // Solver options
     app->Options()->SetIntegerValue("max_iter", maxIterations());

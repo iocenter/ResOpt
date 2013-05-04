@@ -214,10 +214,21 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     double total_rate = s->gasRate(Stream::FIELD) + s->oilRate(Stream::FIELD) + s->waterRate(Stream::FIELD);
     if(total_rate <= 0) return 0.0;
 
+    /*
+    cout << "qg = " << s->gasRate(Stream::FIELD) << endl;
+    cout << "qo = " << s->oilRate(Stream::FIELD) << endl;
+    cout << "qw = " << s->waterRate(Stream::FIELD) << endl;
+
+    cout << "qg_metric = " << s->gasRate(Stream::METRIC) << endl;
+    cout << "qo_metric = " << s->oilRate(Stream::METRIC) << endl;
+    cout << "qw_metric = " << s->waterRate(Stream::METRIC) << endl;
+*/
     // else getting on with the calculations
 
     double p_psi = p;
     if(unit == Stream::METRIC) p_psi = p * 14.5037738;  // pressure in psi
+
+   // cout << "p = " << p_psi << endl;
 
 
     double d_in = diameter() * 39.3700787;              // pipe diameter in inches
@@ -229,6 +240,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     double vm = vsl + vsg;                              // superficial two phase velocity
 
 
+//    cout << "vm = " << vm << endl;
 
 
     double froude_no = pow(vm, 2) / d_in / g;  // froude number
@@ -336,6 +348,7 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     double holdup = payne_cor * hz_holdup*phi;      // liquid holdup corrected for inclination
 
 
+
     // if transition regime, the liquid holdup is a mix of segregated and intermittent
     if(regime == TRANSITION)
     {
@@ -371,6 +384,9 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
 
     // done calculating the holdup
 
+    if(holdup > 1.0) holdup = 1.0;
+
+  //  cout << "holdup = " << holdup << endl;
 
     // calculating pressure drop due to elevation change
 
@@ -433,6 +449,8 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
 
     // total pressure drop in psi
     double dp_psi_tot = dp_tot * length_ft;
+
+   // cout << "dp_psi_tot = " << dp_psi_tot << endl;
 
     if(unit == Stream::FIELD) return dp_psi_tot;
     else return dp_psi_tot / 14.5037738;

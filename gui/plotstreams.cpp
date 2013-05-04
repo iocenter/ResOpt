@@ -90,7 +90,8 @@ void PlotStreams::plotData()
 
 
 
-    int max, min = 0;
+    int max = 0;
+    int min = 0;
 
     double t_previous = 0;
 
@@ -101,18 +102,21 @@ void PlotStreams::plotData()
         m_custom_plot.graph(0)->addData(m_streams.at(i)->time(), m_streams.at(i)->oilRate(true));
 
         if(max < m_streams.at(i)->oilRate(true)) max = m_streams.at(i)->oilRate(true);
+        if(min > m_streams.at(i)->oilRate(true)) min = m_streams.at(i)->oilRate(true);
 
         // gas
         m_custom_plot.graph(1)->addData(t_previous, m_streams.at(i)->gasRate(true));
         m_custom_plot.graph(1)->addData(m_streams.at(i)->time(), m_streams.at(i)->gasRate(true));
 
         if(max < m_streams.at(i)->gasRate(true)) max = m_streams.at(i)->gasRate(true);
+        if(min > m_streams.at(i)->gasRate(true)) min = m_streams.at(i)->gasRate(true);
 
         // water
         m_custom_plot.graph(2)->addData(t_previous, m_streams.at(i)->waterRate(true));
         m_custom_plot.graph(2)->addData(m_streams.at(i)->time(), m_streams.at(i)->waterRate(true));
 
         if(max < m_streams.at(i)->waterRate(true)) max = m_streams.at(i)->waterRate(true);
+        if(min > m_streams.at(i)->waterRate(true)) min = m_streams.at(i)->waterRate(true);
 
         // pressure
         m_custom_plot.graph(3)->addData(t_previous, m_streams.at(i)->pressure(true));

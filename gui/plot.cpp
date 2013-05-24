@@ -34,7 +34,8 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
     p_mainwindow(mw),
     m_custom_plot(this),
     m_max(10),
-    m_min(0)
+    m_min(0),
+    m_user_changed_slider(false)
 {
     QGridLayout *layout = new QGridLayout;
 
@@ -70,9 +71,9 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
     m_custom_plot.yAxis->setLabel("Objective Value");
     m_custom_plot.yAxis->setNumberFormat("gbc");
 
-    m_custom_plot.setRangeDrag(Qt::Vertical);
+    m_custom_plot.setRangeDrag(Qt::Vertical | Qt::Horizontal);
     m_custom_plot.setRangeZoom(Qt::Vertical);
-    m_custom_plot.setRangeDrag(Qt::Horizontal);
+
 
     // setting up the x-axis slider
     p_sld_xaxis = new QSlider(Qt::Horizontal, this);
@@ -82,7 +83,9 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
 
     layout->addWidget(p_sld_xaxis, 1, 0, 1, 3);
 
+    connect(p_sld_xaxis, SIGNAL(sliderPressed()), this, SLOT(onXAxisSliderPressed()));
     connect(p_sld_xaxis, SIGNAL(valueChanged(int)), this, SLOT(onXAxisSliderChanged()));
+
 
     // setting up the clear button
     p_btn_clear = new QPushButton("Clear Plot", this);
@@ -141,15 +144,6 @@ void Plot::addCase(Case *c)
     m_custom_plot.yAxis->setRange(m_min - padding, m_max + padding);
 
 
-
-    // checking if the x-axis tick step must change
-    if(m_cases.size() > 10)
-    {
-        int tick = m_cases.size() / 10;
-        m_custom_plot.xAxis->setTickStep(tick);
-    }
-
-
     // adding tracer
     QCPItemTracer *tracer = new QCPItemTracer(&m_custom_plot);
     tracer->setGraph(m_custom_plot.graph(0));
@@ -170,7 +164,21 @@ void Plot::addCase(Case *c)
 
     // updating the slider max
     p_sld_xaxis->setMaximum(m_cases.size());
-    p_sld_xaxis->setValue(m_cases.size());
+    if(!m_user_changed_slider) p_sld_xaxis->setValue(m_cases.size());
+    else
+    {
+        if(m_cases.size() > 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
+
+        // checking if the x-axis tick step must change
+        if(p_sld_xaxis->value() > 10)
+        {
+            int tick = p_sld_xaxis->value() / 10;
+            m_custom_plot.xAxis->setTickStep(tick);
+        }
+
+
+        m_custom_plot.replot();
+    }
 
 
 
@@ -262,7 +270,26 @@ void Plot::onXAxisSliderChanged()
 
     if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
 
+    if(p_sld_xaxis->value() == m_cases.size()) m_user_changed_slider = false;
+
+    // checking if the x-axis tick step must change
+    if(p_sld_xaxis->value() > 10)
+    {
+        int tick = p_sld_xaxis->value() / 10;
+        m_custom_plot.xAxis->setTickStep(tick);
+    }
+
     m_custom_plot.replot();
+}
+
+//-----------------------------------------------------------------------------------------------
+// Called when the user presses the slider
+//-----------------------------------------------------------------------------------------------
+void Plot::onXAxisSliderPressed()
+{
+    m_user_changed_slider = true;
+
+
 }
 
 } // namespace

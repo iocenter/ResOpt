@@ -13,6 +13,7 @@
 #include "intvariable.h"
 #include "constraint.h"
 #include "objective.h"
+#include "reservoirsimulator.h"
 #include "case.h"
 
 using namespace std;
@@ -219,12 +220,12 @@ void NomadOptimizer::generateParameters()
 
 
     // checking if the parameters file exits
-    QDir dir;
+    QDir dir(runner()->reservoirSimulator()->folder());
 
     if(dir.exists("nomad_param.dat"))
     {
         cout << "### Found a NOMAD parameters file... ###" << endl;
-        p_param->read("nomad_param.dat");
+        p_param->read(dir.absoluteFilePath("nomad_param.dat").toStdString());
 
     }
 

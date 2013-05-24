@@ -263,7 +263,7 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
     *out_mrst << "% -------------------------------------------------------------------------\n\n";
 
     *out_mrst << "% Enable this to get convergence reports when solving schedules\n";
-    *out_mrst << "mrstVerbose true\n\n";
+    *out_mrst << "mrstVerbose false\n\n";
 
     *out_mrst << "% check if initialized model already exists\n";
     *out_mrst << "[pth, nm, ext] = fileparts(caseNm);\n";
@@ -649,7 +649,7 @@ bool MrstBatchSimulator::launchSimulator()
 
 
 
-    cout <<  QString(mrst.readAll()).toAscii().data() << endl;
+    //cout <<  QString(mrst.readAll()).toAscii().data() << endl;
 
 
 

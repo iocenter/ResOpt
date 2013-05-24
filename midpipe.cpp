@@ -215,4 +215,12 @@ QString MidPipe::description() const
     return str;
 }
 
+//-----------------------------------------------------------------------------------------------
+// sets so that the pipe must be routed to one outlet connection
+//-----------------------------------------------------------------------------------------------
+void MidPipe::setMustRoute()
+{
+    p_connection_constraint->setMin(1.0);
+}
+
 } // namespace ResOpt

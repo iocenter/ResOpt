@@ -24,6 +24,7 @@
 
 #include <QWidget>
 #include <QPushButton>
+#include <QtGui/QComboBox>
 
 namespace ResOpt
 {
@@ -36,6 +37,7 @@ namespace ResOptGui
 {
 
 class InspectorVariable;
+class InspectorVariableInstall;
 
 class InspectorPressureBooster : public QWidget
 {
@@ -43,7 +45,7 @@ class InspectorPressureBooster : public QWidget
 private:
     PressureBooster *p_booster;
 
-    InspectorVariable *p_var_install;
+    InspectorVariableInstall *p_var_install;
     InspectorVariable *p_var_capacity;
     InspectorVariable *p_var_boostpressure;
 

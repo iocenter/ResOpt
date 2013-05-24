@@ -19,63 +19,44 @@
  */
 
 
-#ifndef PLOT_H
-#define PLOT_H
+#ifndef INSPECTORVARIABLEINSTALL_H
+#define INSPECTORVARIABLEINSTALL_H
 
-#include <QtGui/QWidget>
+#include <QWidget>
 #include <QVector>
-#include "qcustomplot.h"
 
-
-#include "case.h"
-
-using ResOpt::Case;
-
-class QPushButton;
-class QSlider;
+class QComboBox;
+class QLabel;
 
 namespace ResOptGui
 {
 
-class MainWindow;
-
-class Plot : public QWidget
+class InspectorVariableInstall : public QWidget
 {
     Q_OBJECT
-
-private:
-    MainWindow *p_mainwindow;
-
-    double m_max;
-    double m_min;
-
-    QPushButton *p_btn_clear;
-    QPushButton *p_btn_rerun;
-    QSlider *p_sld_xaxis;
-
-    QCustomPlot m_custom_plot;
-    QVector<Case*> m_cases;
-
-    bool m_user_changed_slider;
-
-
 public:
-    Plot(MainWindow *mw, QWidget *parent = 0);
-    ~Plot();
+    explicit InspectorVariableInstall(int value, int max, int min, QVector<double> schedule, QWidget *parent = 0, bool header = false);
 
-    void savePlot(const QString &fileName);
+    int value();
+    int max();
+    int min();
+
+signals:
 
 public slots:
 
-    void addCase(Case *c);
-    void clearCases();
-    void onSelectionChanged();
-    void rerunSelectedCase();
-    void onXAxisSliderChanged();
-    void onXAxisSliderPressed();
-};
+private:
 
+    QComboBox *p_max;
+    QComboBox *p_min;
+    QComboBox *p_value;
+
+    QLabel *p_name;
+
+
+
+};
 
 } // namespace
 
-#endif // PLOT_H
+#endif // INSPECTORVARIABLEINSTALL_H

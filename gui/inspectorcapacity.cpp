@@ -21,11 +21,21 @@
 
 #include "inspectorcapacity.h"
 #include "plotstreams.h"
+#include "inspectorconstraint.h"
 
 #include "capacity.h"
+#include "constraint.h"
+
+using ResOpt::Constraint;
 
 #include <QtGui/QGridLayout>
 #include <QDoubleValidator>
+#include <QtGui/QGroupBox>
+#include <tr1/memory>
+
+using std::tr1::shared_ptr;
+
+
 
 namespace ResOptGui
 {
@@ -120,12 +130,40 @@ void InspectorCapacity::construct()
     m_chk_liquid.setChecked(p_capacity->maxLiquid() >= 0);
     m_led_liquid.setValidator(new QDoubleValidator(this));
 
+
+    int current_row = 4;
+
+    // water constraint values
+    if(p_capacity->waterConstraints().size() != 0)
+    {
+
+        QGroupBox *box_wat_con = new QGroupBox("Water Constraints", this);
+        box_wat_con->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+
+        QVBoxLayout *layout_wat_con = new QVBoxLayout(box_wat_con);
+        box_wat_con->setLayout(layout_wat_con);
+
+        int i = 0;
+        foreach (shared_ptr<Constraint> c, p_capacity->waterConstraints())
+        {
+
+          InspectorConstraint *ic = new InspectorConstraint(p_capacity->schedule().at(i), c->value(), c->max(), c->min(), this, i == 0);
+          ++i;
+          layout_wat_con->addWidget(ic);
+        }
+
+
+        layout->addWidget(box_wat_con, current_row++, 0, 1, 3);
+
+
+    }
+
     // setting up the buttons
-    layout->addWidget(&m_btn_ok, 4, 0);
+    layout->addWidget(&m_btn_ok, current_row, 0);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
 
 
-    layout->addWidget(&m_btn_close, 4, 2);
+    layout->addWidget(&m_btn_close, current_row, 2);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
 
 

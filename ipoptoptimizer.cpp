@@ -51,7 +51,10 @@ void IpoptOptimizer::initialize()
     // Change some options
     // Note: The following choices are only examples, they might not be
     //       suitable for your optimization problem.
-    // app->Options()->SetNumericValue("tol", 1e-7);
+    app->Options()->SetNumericValue("tol", 2);
+    app->Options()->SetNumericValue("dual_inf_tol", 3e9);
+    app->Options()->SetNumericValue("compl_inf_tol", 10);
+
     //app->Options()->SetStringValue("mu_strategy", "adaptive");
     app->Options()->SetStringValue("output_file", runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
 
@@ -59,8 +62,8 @@ void IpoptOptimizer::initialize()
     app->Options()->SetIntegerValue("max_iter", maxIterations());
 
     // Derivative checks
-    app->Options()->SetStringValue("check_derivatives_for_naninf", "yes"); // no (default) or yes (may produce a lot of output)
-    app->Options()->SetStringValue("derivative_test", "first-order"); // none (default)
+    //app->Options()->SetStringValue("check_derivatives_for_naninf", "yes"); // no (default) or yes (may produce a lot of output)
+    //app->Options()->SetStringValue("derivative_test", "first-order"); // none (default)
 
     // Quasi-Newton approximation of Hessian of Lagrangian
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
@@ -99,6 +102,8 @@ void IpoptOptimizer::start()
     if (status == Solve_Succeeded)
     {
         std::cout << std::endl << std::endl << "*** The problem solved!" << std::endl;
+
+
     }
     else
     {

@@ -59,6 +59,9 @@ public:
     Case(const Case &c, bool cpy_output = false);    // only copies obj and con if cpy_output = true
     ~Case();
 
+
+    void printToCout();
+
     // add functions
     void addRealVariableValue(double v) {m_real_var_values.push_back(v);}
     void addBinaryVariableValue(double v) {m_binary_var_values.push_back(v);}

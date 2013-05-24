@@ -27,15 +27,18 @@
 #include "bonminoptimizer.h"
 #include "runonceoptimizer.h"
 #include "ipoptoptimizer.h"
+#include "lshoptimizer.h"
 
 using ResOpt::Optimizer;
 using ResOpt::BonminOptimizer;
 using ResOpt::NomadOptimizer;
 using ResOpt::RunonceOptimizer;
 using ResOpt::IpoptOptimizer;
+using ResOpt::LshOptimizer;
 
-#include "QtGui/QGridLayout"
-#include "QtGui/QLabel"
+#include <QtGui/QGridLayout>
+#include <QtGui/QLabel>
+#include <QIntValidator>
 
 namespace ResOptGui
 {
@@ -70,6 +73,7 @@ void InspectorOptimizer::construct()
     p_algorithm->addItem("NOMAD");
     p_algorithm->addItem("Run Once");
     p_algorithm->addItem("IPOPT");
+    p_algorithm->addItem("LSH");
 
     // finding out what type of optimizer is currently used
 
@@ -77,6 +81,7 @@ void InspectorOptimizer::construct()
     NomadOptimizer *l_nomad = dynamic_cast<NomadOptimizer*>(p_runner->optimizer());
     RunonceOptimizer *l_runonce = dynamic_cast<RunonceOptimizer*>(p_runner->optimizer());
     IpoptOptimizer *l_ipopt = dynamic_cast<IpoptOptimizer*>(p_runner->optimizer());
+    LshOptimizer *l_lsh = dynamic_cast<LshOptimizer*>(p_runner->optimizer());
 
     if(l_bonmin != 0)
     {
@@ -98,6 +103,11 @@ void InspectorOptimizer::construct()
         p_algorithm->setCurrentIndex(3);
         m_alg_in_runner = 3;
     }
+    else if(l_lsh != 0)
+    {
+        p_algorithm->setCurrentIndex(4);
+        m_alg_in_runner = 4;
+    }
 
 
     layout->addWidget(p_algorithm, 0, 2);
@@ -107,6 +117,7 @@ void InspectorOptimizer::construct()
 
     p_max_iter = new QLineEdit(this);
     p_max_iter->setText(QString::number(p_runner->optimizer()->maxIterations()));
+    p_max_iter->setValidator(new QIntValidator(this));
     layout->addWidget(p_max_iter, 1, 2);
 
 
@@ -128,7 +139,8 @@ void InspectorOptimizer::construct()
 void InspectorOptimizer::saveAndClose()
 {
     // setting the max iterations
-    p_runner->optimizer()->setMaxIterations(p_max_iter->text().toInt());
+    int max_iter = p_max_iter->text().toInt();
+    p_runner->optimizer()->setMaxIterations(max_iter);
 
     // seeing if the optimizer type has changed
     if(m_alg_in_runner != p_algorithm->currentIndex())
@@ -139,9 +151,10 @@ void InspectorOptimizer::saveAndClose()
         else if(p_algorithm->currentIndex() == 1) o = new NomadOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 2) o = new RunonceOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 3) o = new IpoptOptimizer(p_runner);
+        else if(p_algorithm->currentIndex() == 4) o = new LshOptimizer(p_runner);
 
         // setting values to the new optimizer
-        o->setMaxIterations(p_runner->optimizer()->maxIterations());
+        o->setMaxIterations(max_iter);
         o->setParallelRuns(p_runner->optimizer()->parallelRuns());
         o->setPerturbationSize(p_runner->optimizer()->pertrurbationSize());
 

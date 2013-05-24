@@ -19,63 +19,31 @@
  */
 
 
-#ifndef PLOT_H
-#define PLOT_H
+#ifndef LSHNOMADEVALUATOR_H
+#define LSHNOMADEVALUATOR_H
 
-#include <QtGui/QWidget>
-#include <QVector>
-#include "qcustomplot.h"
+#include "nomad.hpp"
 
-
-#include "case.h"
-
-using ResOpt::Case;
-
-class QPushButton;
-class QSlider;
-
-namespace ResOptGui
+namespace ResOpt
 {
+class LshOptimizer;
+class Case;
 
-class MainWindow;
-
-class Plot : public QWidget
+class LshNomadEvaluator : public NOMAD::Evaluator
 {
-    Q_OBJECT
-
 private:
-    MainWindow *p_mainwindow;
+    LshOptimizer *p_optimizer;
 
-    double m_max;
-    double m_min;
-
-    QPushButton *p_btn_clear;
-    QPushButton *p_btn_rerun;
-    QSlider *p_sld_xaxis;
-
-    QCustomPlot m_custom_plot;
-    QVector<Case*> m_cases;
-
-    bool m_user_changed_slider;
 
 
 public:
-    Plot(MainWindow *mw, QWidget *parent = 0);
-    ~Plot();
+    LshNomadEvaluator(const NOMAD::Parameters &p, LshOptimizer *o);
 
-    void savePlot(const QString &fileName);
+    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval) const;
 
-public slots:
-
-    void addCase(Case *c);
-    void clearCases();
-    void onSelectionChanged();
-    void rerunSelectedCase();
-    void onXAxisSliderChanged();
-    void onXAxisSliderPressed();
+    Case* generateCase(const NOMAD::Eval_Point &x) const;
 };
 
+} // namespace ResOpt
 
-} // namespace
-
-#endif // PLOT_H
+#endif // LSHNOMADEVALUATOR_H

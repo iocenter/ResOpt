@@ -72,6 +72,8 @@ public:
 
     void updateOutletConnectionConstraint();
 
+    void setMustRoute();
+
 
     /**
      * @brief Checks if any of the outlet connections are MidPipe.

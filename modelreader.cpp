@@ -61,6 +61,7 @@
 #include "bonminoptimizer.h"
 #include "nomadoptimizer.h"
 #include "ipoptoptimizer.h"
+#include "lshoptimizer.h"
 
 #include "gprssimulator.h"
 #include "vlpsimulator.h"
@@ -1422,6 +1423,8 @@ Pipe* ModelReader::readPipe()
     int l_number = -1;
     QString l_file = "";
 
+    bool l_mustroute = false;
+
     bool ok = true;
 
     QStringList list;
@@ -1436,6 +1439,7 @@ Pipe* ModelReader::readPipe()
 
         if(list.at(0).startsWith("NUMBER")) l_number = list.at(1).toInt(&ok);        // getting the id number of the pipe
         else if(list.at(0).startsWith("FILE")) l_file = list.at(1);                  // getting the file name
+        else if(list.at(0).startsWith("MUSTROUTE")) l_mustroute = true;              // setting that the pipe must be routed upstream
         else if(list.at(0).startsWith("OUTLETPRESSURE"))                             // getting the outlet pressure, this is an end pipe
         {
             if(p != 0)  // outlet pipes have allready been defined
@@ -1553,6 +1557,28 @@ Pipe* ModelReader::readPipe()
 
     p->setFileName(m_path + "/" + l_file);
     p->setNumber(l_number);
+
+    if(l_mustroute)
+    {
+        MidPipe *mp = dynamic_cast<MidPipe*>(p);
+
+        if(mp != 0)
+        {
+            mp->setMustRoute();
+
+            cout << "setting that the pipe must be routed to an upstream element..." << endl;
+        }
+        else
+        {
+            cout << endl << "### Error detected in input file! ###" << endl
+            << "PIPE definition is incorrect..." << endl
+            << "MUSTROUTE keyword can only be used for pipes that are not top nodes!" << endl;
+
+            exit(1);
+
+
+        }
+    }
 
 
 
@@ -2337,6 +2363,7 @@ void ModelReader::readOptimizer(Runner *r)
             else if(list.at(1).startsWith("RUNONCE")) o = new RunonceOptimizer(r);
             else if(list.at(1).startsWith("NOMAD")) o = new NomadOptimizer(r);
             else if(list.at(1).startsWith("IPOPT")) o = new IpoptOptimizer(r);
+            else if(list.at(1).startsWith("LSH")) o = new LshOptimizer(r);
 
         }
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations

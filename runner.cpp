@@ -957,9 +957,12 @@ void Runner::printDebug(Launcher *l)
             out << "BOOSTER: " << p->number() << "\n";
             out << "------------------------------\n\n";
 
+            int inst_time = boost->installTime()->value();
+            if(inst_time < 0) inst_time = 0;
+            if(inst_time >= model()->masterSchedule().size()) inst_time = model()->masterSchedule().size() -1;
 
             out << "Downstream pipe   = " << boost->outletConnection()->pipeNumber() << "\n";
-            out << "Installation time = " << model()->masterSchedule().at(boost->installTime()->value()) << "\n";
+            out << "Installation time = " << model()->masterSchedule().at(inst_time) << "\n";
             out << "Boost Pressure    = " << boost->pressureVariable()->value() << "\n";
             out << "Max capacity      = " << boost->capacityVariable()->value() << "\n";
             out << "Current cost      = " << boost->cost()->value() << "\n\n";

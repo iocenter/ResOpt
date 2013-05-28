@@ -22,7 +22,7 @@
 #ifndef CONNECTOR_H
 #define CONNECTOR_H
 
-#include <QtGui/QGraphicsLineItem>
+#include <QtWidgets/QGraphicsLineItem>
 
 namespace ResOptGui
 {
@@ -35,7 +35,7 @@ class Connector : public QGraphicsLineItem
 public:
     enum ConnectionFace{SideConnection, TopConnection};
 
-    Connector(ModelItem *startItem, ModelItem *endItem, bool active = true, ConnectionFace con_face = SideConnection, QGraphicsItem *parent = 0, QGraphicsScene *scene = 0);
+    Connector(ModelItem *startItem, ModelItem *endItem, bool active = true, ConnectionFace con_face = SideConnection, QGraphicsItem *parent = 0);
 
 
     void updatePosition();

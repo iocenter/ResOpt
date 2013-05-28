@@ -51,13 +51,15 @@ using std::cout;
 using std::endl;
 
 MrstBatchSimulator::MrstBatchSimulator() :
-    m_first_launch(true)
+    m_first_launch(true),
+    run_number(1)
 {
 }
 
 MrstBatchSimulator::MrstBatchSimulator(const MrstBatchSimulator &m)
     : ReservoirSimulator(m),
-      m_first_launch(true)
+      m_first_launch(true),
+      run_number(1)
 {
 }
 
@@ -91,7 +93,7 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
     if(!ctrl_file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qWarning("Could not connect to control file: %s", ctrl_file.fileName().toAscii().data());
+        qWarning("Could not connect to control file: %s", ctrl_file.fileName().toLatin1().constData());
         exit(1);
     }
 
@@ -100,9 +102,11 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
     // starting to generate the file
 
-    *out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2012b';" << "\n";
+    //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2012b';" << "\n"; // beehive
+    //*out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2012b';" << "\n"; // linux virtual
+    //*out_ctrl << "mrstPath = '/Users/aleksaju/Skole/Postdoc/MRST/versions/2012b';" << "\n"; // mac
+    *out_ctrl << "mrstPath = '/Volumes/Macintosh HD/MATS/Dropbox/Skole/_Masteroppgave/Matlab/mrst-2012b';" << "\n"; // mats mac
 
-    //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2012b';" << "\n";
     *out_ctrl << "run(fullfile(mrstPath,'startup.m'))" << "\n\n";
 
     *out_ctrl << "% change controls" << "\n";
@@ -126,7 +130,7 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
         {
             well_names.push_back(inj->name());
 
-            *out_ctrl << inj->name().toAscii().data() << " = [";
+            *out_ctrl << inj->name().toLatin1().constData() << " = [";
             for(int j = 0; j < inj->numberOfControls(); ++j)
             {
                 *out_ctrl << inj->control(j)->controlVar()->value();
@@ -156,7 +160,7 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
         {
             well_names.push_back(prod->name());
 
-            *out_ctrl << prod->name().toAscii().data() << " = [";
+            *out_ctrl << prod->name().toLatin1().constData() << " = [";
             for(int j = 0; j < prod->numberOfControls(); ++j)
             {
                 *out_ctrl << prod->control(j)->controlVar()->value();
@@ -215,7 +219,7 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
 
     if(!mrst_file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qWarning("Could not connect to MRST script file: %s", mrst_file.fileName().toAscii().data());
+        qWarning("Could not connect to MRST script file: %s", mrst_file.fileName().toLatin1().constData());
         exit(1);
     }
 
@@ -263,7 +267,7 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
     *out_mrst << "% -------------------------------------------------------------------------\n\n";
 
     *out_mrst << "% Enable this to get convergence reports when solving schedules\n";
-    *out_mrst << "mrstVerbose true\n\n";
+    *out_mrst << "mrstVerbose false\n\n";
 
     *out_mrst << "% check if initialized model already exists\n";
     *out_mrst << "[pth, nm, ext] = fileparts(caseNm);\n";
@@ -336,18 +340,18 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
 
 
     *out_mrst << "% Create objective functions and compute gradient\n";
-    *out_mrst << "objective = @(tstep)NPVOW(G, wellSols, schedule, 'ComputePartials', true, ...\n";
-    *out_mrst << "'tStep', tstep, ...\n";
-    *out_mrst << "'OilPrice',             " << price_oil << " , ...\n";
-    *out_mrst << "'WaterProductionCost',  " << price_wat_prod << " , ...\n";
-    *out_mrst << "'WaterInjectionCost',   " << price_wat_inj << " , ...\n";
-    *out_mrst << "'DiscountFactor',       " << dcf << " );\n\n";
+    //*out_mrst << "objective = @(tstep)NPVOW(G, wellSols, schedule, 'ComputePartials', true, ...\n";
+    //*out_mrst << "'tStep', tstep, ...\n";
+    //*out_mrst << "'OilPrice',             " << price_oil << " , ...\n";
+    //*out_mrst << "'WaterProductionCost',  " << price_wat_prod << " , ...\n";
+    //*out_mrst << "'WaterInjectionCost',   " << price_wat_inj << " , ...\n";
+    //*out_mrst << "'DiscountFactor',       " << dcf << " );\n\n";
 
-    *out_mrst << "gradient = runAdjointADI(G, rock, fluid, schedule, objective, system, 'ForwardStates', states);\n";
-    *out_mrst << "gradient = full(cell2mat(gradient));\n";
-    *out_mrst << "fid = fopen(gradNm, 'w');\n";
-    *out_mrst << "fprintf(fid, '%+12.6e\\n', gradient);\n";
-    *out_mrst << "fclose(fid);\n\n";
+    //*out_mrst << "gradient = runAdjointADI(G, rock, fluid, schedule, objective, system, 'ForwardStates', states);\n";
+    //*out_mrst << "gradient = full(cell2mat(gradient));\n";
+    //*out_mrst << "fid = fopen(gradNm, 'w');\n";
+    //*out_mrst << "fprintf(fid, '%+12.6e\\n', gradient);\n";
+    //*out_mrst << "fclose(fid);\n\n";
     *out_mrst << "end\n";
 
 
@@ -366,7 +370,7 @@ bool MrstBatchSimulator::generateEclIncludeFile(Model *m)
 
     if(!ecl_file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qWarning("Could not connect to control file: %s", ecl_file.fileName().toAscii().data());
+        qWarning("Could not connect to control file: %s", ecl_file.fileName().toLatin1().constData());
         exit(1);
     }
 
@@ -570,15 +574,17 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
     // copying the matlab scripts if this is the first time the model is launched.
 
+    QString base_name = m->reservoir()->file().split(".").at(0);
+
     if(m_first_launch)
     {
-        QString base_name = m->reservoir()->file().split(".").at(0);
+
 
         // removing old versions of the files
         QFile::remove(folder() + "/test2.m");
         QFile::remove(folder() + "/runSim2.m");
         QFile::remove(folder() + "/initStateADI.m");
-        QFile::remove(folder() + "/" + base_name + ".mat");
+
 
 
         // copying the originals
@@ -592,6 +598,9 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
         m_first_launch = false;
 
     }
+
+    // removing the .mat file
+    QFile::remove(folder() + "/" + base_name + ".mat");
 
 
     // generating the control input file
@@ -616,8 +625,11 @@ bool MrstBatchSimulator::launchSimulator()
     cout << "Launching MRST in batch mode..." << endl;
 
 
-    QString program = "/usr/local/MATLAB/R2012b/bin/glnxa64/MATLAB";
-    //QString program = "matlab";
+    //QString program = "/usr/local/MATLAB/R2012b/bin/glnxa64/MATLAB";  // linux virtual
+    //QString program = "matlab";   // beehive
+    //QString program = "/Applications/MATLAB_R2011b.app/bin/matlab";     // mac
+    QString program = "/Volumes/SSD\ BOOT/Applications/MATLAB_R2012B.APP/bin/matlab";     // mats mac
+
     QStringList args;
     args.push_back("-nosplash");
     args.push_back("-nodesktop");
@@ -627,7 +639,7 @@ bool MrstBatchSimulator::launchSimulator()
     // setting up the process
     mrst.setProcessChannelMode(QProcess::MergedChannels);
 
-    cout << "launching mrst from: " << folder().toAscii().data() << endl;
+    cout << "launching mrst from: " << folder().toLatin1().constData() << endl;
     // setting the working directory
     mrst.setWorkingDirectory(folder());
 
@@ -649,7 +661,7 @@ bool MrstBatchSimulator::launchSimulator()
 
 
 
-    cout <<  QString(mrst.readAll()).toAscii().data() << endl;
+    //cout <<  QString(mrst.readAll()).toLatin1().constData() << endl;
 
 
 
@@ -693,9 +705,11 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
     bool ok = true;
 
 
+
     //-------------------------------------------------
 
     QString base_name = m->reservoir()->file().split(".").at(0);
+
 
 
     // opening the input file
@@ -705,9 +719,13 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         cout << "### File Error! ###" << endl;
-        cout << "Could not open MRST output file: " << input.fileName().toAscii().data() << endl;
+        cout << "Could not open MRST output file: " << input.fileName().toLatin1().constData() << endl;
         exit(1);
     }
+
+
+
+
 
 
     // starting to read the file
@@ -735,8 +753,8 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
             double pres = list.at(2).toDouble();
 
             // converting the rates and pressures to the correct units
-            q_wat = qAbs(86400 * q_wat);
-            q_oil = qAbs(86400 * q_oil);
+            q_wat = -86400 * q_wat;
+            q_oil = -86400 * q_oil;
             pres = 1e-5 * pres;
 
 
@@ -748,7 +766,7 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
             if(!w->setStream(i, s))
             {
                 cout << endl << "###  Runtime Error  ###" << endl
-                     << "Well: " << w->name().toAscii().data() << endl
+                     << "Well: " << w->name().toLatin1().constData() << endl
                      << "Did not accept a stream generated by MRST..." << endl
                      << "Time = " << w->control(i)->endTime() << endl << endl;
                 exit(1);
@@ -764,6 +782,7 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
 
 
 
+    ++run_number;
 
     return ok;
 
@@ -785,7 +804,7 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
         cout << "### File Error! ###" << endl;
-        cout << "Could not open MRST adjoints file: " << input.fileName().toAscii().data() << endl;
+        cout << "Could not open MRST adjoints file: " << input.fileName().toLatin1().constData() << endl;
         exit(1);
     }
 

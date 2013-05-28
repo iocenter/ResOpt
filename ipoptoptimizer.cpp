@@ -2,6 +2,7 @@
 #include "ipoptinterface.h"
 #include "runner.h"
 #include "model.h"
+#include "reservoirsimulator.h"
 
 #include <iostream>
 #include <QString>
@@ -50,24 +51,32 @@ void IpoptOptimizer::initialize()
     // Change some options
     // Note: The following choices are only examples, they might not be
     //       suitable for your optimization problem.
-    // app->Options()->SetNumericValue("tol", 1e-7);
+    //app->Options()->SetNumericValue("tol", 1e-5);
     //app->Options()->SetStringValue("mu_strategy", "adaptive");
-    app->Options()->SetStringValue("output_file", "output/ipopt.out");
+    //m_bonmin.readOptionsString("output_file " + runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out\n");
+    app->Options()->SetStringValue("output_file", runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
 
     // Solver options
     app->Options()->SetIntegerValue("max_iter", maxIterations());
 
     // Derivative checks
-    app->Options()->SetStringValue("check_derivatives_for_naninf", "yes"); // no (default) or yes (may produce a lot of output)
-    app->Options()->SetStringValue("derivative_test", "first-order"); // none (default)
+    //app->Options()->SetStringValue("check_derivatives_for_naninf", "yes"); // no (default) or yes (may produce a lot of output)
+    //app->Options()->SetStringValue("derivative_test", "first-order"); // none (default)
 
+    // reading options file
+    //runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.opt"
     // Quasi-Newton approximation of Hessian of Lagrangian
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
+    //app->Options()->SetStringValue("jac_c_constant", "no");
+    //app->Options()->SetStringValue("jac_d_constant", "no");
+
     //app->Options()->SetStringValue("limited_memory_update_type", "bfgs"); // BFGS (default) or SR1 (not working well)
 
     // Initialize the IpoptApplication and process the options
     ApplicationReturnStatus status;
-    status = app->Initialize();
+    app->Initialize();
+
+
     if (status != Solve_Succeeded)
     {
         std::cout << std::endl << std::endl << "*** Error during initialization!" << std::endl;

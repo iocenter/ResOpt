@@ -24,7 +24,7 @@
 
 #include "capacity.h"
 
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QGridLayout>
 #include <QDoubleValidator>
 
 namespace ResOptGui

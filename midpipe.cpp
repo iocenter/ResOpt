@@ -138,6 +138,8 @@ void MidPipe::calculateInletPressure()
 
         double dp = calculator()->pressureDrop(stream(i), p_out, stream(i)->inputUnits());    // the pressure drop in the pipe
 
+        //cout << "midpipe dp = " << dp << " for i = " << i << endl;
+
         stream(i)->setPressure(dp + p_out);      // setting the inlet pressure for the time step
     }
 

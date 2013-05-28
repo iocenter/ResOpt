@@ -22,11 +22,11 @@
 #ifndef INSPECTORCAPACITY_H
 #define INSPECTORCAPACITY_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QCheckBox>
-#include <QtGui/QLabel>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
 #include <QVector>
 
 namespace ResOpt

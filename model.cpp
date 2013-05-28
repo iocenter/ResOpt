@@ -162,7 +162,7 @@ bool Model::validate()
         if(well(i)->numberOfControls() != numberOfMasterScheduleTimes())
         {
             cout << endl << "###  Model Validation Error  ###" << endl
-                 << "Well: " << well(i)->name().toAscii().data() << endl
+                 << "Well: " << well(i)->name().toLatin1().constData() << endl
                  << "Does not have the same number of SHEDULE entries as the MASTERSCHEDULE..." << endl << endl;
             ok = false;
             break;
@@ -176,7 +176,7 @@ bool Model::validate()
                 {
 
                     cout << endl << "###  Model Validation Error  ###" << endl
-                         << "Well: " << well(i)->name().toAscii().data() << endl
+                         << "Well: " << well(i)->name().toLatin1().constData() << endl
                          << "SHEDULE entry: " << well(i)->control(j)->endTime() << endl
                          << "Is not found in the MASTERSCHEDULE..." << endl << endl;
                     ok = false;
@@ -204,7 +204,7 @@ bool Model::validate()
                 if(prod_well->numberOfGasLiftControls() != numberOfMasterScheduleTimes())
                 {
                     cout << endl << "###  Model Validation Error  ###" << endl
-                         << "Well: " << prod_well->name().toAscii().data() << endl
+                         << "Well: " << prod_well->name().toLatin1().constData() << endl
                          << "Does not have the same number of GASLIFT entries as the MASTERSCHEDULE..." << endl << endl;
                     ok = false;
                     break;
@@ -218,7 +218,7 @@ bool Model::validate()
                         {
 
                             cout << endl << "###  Model Validation Error  ###" << endl
-                                 << "Well: " << prod_well->name().toAscii().data() << endl
+                                 << "Well: " << prod_well->name().toLatin1().constData() << endl
                                  << "GASLIFT entry: " << prod_well->gasLiftControl(j)->endTime() << endl
                                  << "Is not found in the MASTERSCHEDULE..." << endl << endl;
                             ok = false;
@@ -289,7 +289,7 @@ bool Model::resolvePipeRouting()
                     cout << endl << "###  Runtime Error  ###" << endl
                         << "Well to Pipe connection could not be established..." << endl
                         << "PIPE: " << pipe_num << endl
-                        << "WELL: " << prod_well->name().toAscii().data() << endl;
+                        << "WELL: " << prod_well->name().toLatin1().constData() << endl;
 
                     exit(1);
 
@@ -302,7 +302,7 @@ bool Model::resolvePipeRouting()
             if(prod_well->numberOfPipeConnections() == 0)
             {
                 cout << endl << "###  Runtime Error  ###" << endl
-                     << "Well " << prod_well->name().toAscii().data() << endl
+                     << "Well " << prod_well->name().toLatin1().constData() << endl
                      << "Is not connected to any pipe..." << endl << endl;
                 exit(1);
 
@@ -550,7 +550,7 @@ bool Model::resolveCapacityConnections()
                 cout << endl << "###  Runtime Error  ###" << endl
                      << "Capacity to Pipe connection could not be established..." << endl
                      << "PIPE:     " << pipe_num << endl
-                     << "CAPACITY: " << s->name().toAscii().data() << endl;
+                     << "CAPACITY: " << s->name().toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -733,6 +733,9 @@ void Model::updateObjectiveValue()
         for(int j = 0; j < p_end_pipes.size(); ++j)
         {
             *s += *p_end_pipes.at(j)->stream(i);
+
+            cout << "Rates used for objective value:" <<endl;
+            s->printToCout();
         }
 
         field_rates.push_back(s);
@@ -762,18 +765,23 @@ void Model::updateObjectiveValue()
 
             // adding the cost to the vector
             costs.push_back(p_sep->cost());
+
+            //cout << "Cost for separator #" << p_sep->number() << " = " << p_sep->cost()->value() << endl;
+            //cout << "Install time   = " << p_sep->cost()->time() << endl << endl;
         }
     }
 
-    // collecting the cost of the separators:
+    // collecting the cost of the boosters:
     for(int i = 0; i < numberOfPipes(); ++i)
     {
         PressureBooster *p_boost = dynamic_cast<PressureBooster*>(pipe(i));
         if(p_boost != 0)
         {
             // updating the pressure and capacity in the cost according to the variable values in the booster
-            p_boost->cost()->setFraction(p_boost->pressureVariable()->value());
-            p_boost->cost()->setCapacity(p_boost->capacityVariable()->value());
+            //p_boost->cost()->setFraction(p_boost->pressureVariable()->value());
+            //p_boost->cost()->setCapacity(p_boost->capacityVariable()->value());
+            p_boost->cost()->setFraction(p_boost->pressureVariable()->value() * p_boost->capacityVariable()->value());
+            p_boost->cost()->setCapacity(0.0);
 
             // updating the time of the cost according to the variable
             int time_cost = p_boost->installTime()->value();
@@ -785,6 +793,9 @@ void Model::updateObjectiveValue()
 
             // adding the cost to the vector
             costs.push_back(p_boost->cost());
+
+            //cout << "Cost for booster #" << p_boost->number() << " = " << p_boost->cost()->value() << endl;
+            //cout << "Install time   = " << p_boost->cost()->time() << endl << endl;
         }
     }
 
@@ -822,14 +833,15 @@ void Model::updateObjectiveValue()
     }
 
 
+    QVector<Cost*> costs_sorted = sortCosts(costs);
 
 
-    qSort(costs.begin(), costs.end());  // sorting the costs wrt. time
+    //qSort(costs.begin(), costs.end());  // sorting the costs wrt. time
 
 
 
     // calculating the new objective value
-    objective()->calculateValue(field_rates, costs);
+    objective()->calculateValue(field_rates, costs_sorted);
 
     cout << "Objective value = " << objective()->value() << endl;
 
@@ -837,6 +849,40 @@ void Model::updateObjectiveValue()
     for(int i = 0; i < field_rates.size(); i++) delete field_rates.at(i);
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// Sorts the costs wrt. time
+//-----------------------------------------------------------------------------------------------
+QVector<Cost*> Model::sortCosts(QVector<Cost *> c)
+{
+    QVector<Cost*> result;
+
+    // adding the first element to the results
+    if(c.size() > 0) result.push_back(c.at(0));
+
+    // looping through the unsorted costs
+    for(int i = 1; i < c.size(); ++i)
+    {
+        Cost *current_unsorted = c.at(i);
+
+        // finding the correct place in the results:
+        bool inserted = false;
+        for(int j = 0; j < result.size(); ++j)
+        {
+            // checking if the current_unsorted < result
+            if(current_unsorted->time() <= result.at(j)->time())
+            {
+                result.insert(i, current_unsorted);
+                inserted = true;
+                break;
+            }
+        }
+        if(!inserted) result.push_back(current_unsorted);
+    }
+
+    return result;
+
+}
 
 //-----------------------------------------------------------------------------------------------
 // Assignment operator

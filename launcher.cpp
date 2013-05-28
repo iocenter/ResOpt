@@ -173,7 +173,8 @@ void Launcher::evaluateEntireModel(Case *c)
 
 
     // checking if the reservoir simulator must be rerun
-    bool run_res_sim = rerunReservoirSimulator(c);
+    //bool run_res_sim = rerunReservoirSimulator(c);
+    bool run_res_sim = true;
 
     // setting the variable values according to the case
     for(int i = 0; i < p_model->realVariables().size(); ++i)    // real variables
@@ -221,6 +222,9 @@ void Launcher::evaluateEntireModel(Case *c)
     }
     else
     {
+
+        // removing previous values of the constraints
+        c->clearConstraints();
 
         // copying back the results to the case
         for(int i = 0; i < p_model->constraints().size(); ++i)

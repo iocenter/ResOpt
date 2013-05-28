@@ -22,8 +22,8 @@
 #include "plot.h"
 #include "mainwindow.h"
 
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QPushButton>
 
 namespace ResOptGui
 {

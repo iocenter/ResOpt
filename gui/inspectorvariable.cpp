@@ -21,9 +21,9 @@
 
 #include "inspectorvariable.h"
 
-#include <QtGui/QLineEdit>
-#include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
 #include <QDoubleValidator>
 
 namespace ResOptGui

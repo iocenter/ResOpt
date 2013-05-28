@@ -7,12 +7,14 @@
 QT       += core
 QT       += gui
 QT       += svg
+QT       += printsupport
+QT       += widgets
 
 TARGET = ResOpt
 CONFIG   += console
 CONFIG   += app_bundle
-CONFIG   += static
-
+#CONFIG   += static
+#CONFIG += x86
 
 include(resopt_libs.pri)
 

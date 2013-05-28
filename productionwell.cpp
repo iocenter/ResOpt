@@ -145,7 +145,7 @@ void ProductionWell::updateBhpConstraint()
         {
             cout << endl << "### Runtime Error ###" << endl
                  << "Well and pipe do not have the same number of time steps..." << endl
-                 << "WELL: " << name().toAscii().data() << ", N = " << numberOfStreams() << endl
+                 << "WELL: " << name().toLatin1().constData() << ", N = " << numberOfStreams() << endl
                  << "PIPE: " << p->number() << endl << ", N = " << p->numberOfStreams() << endl;
 
             exit(1);
@@ -157,7 +157,7 @@ void ProductionWell::updateBhpConstraint()
     if(numberOfStreams() != numberOfBhpConstraints())
     {
         cout << endl << "### Runtime Error ###" << endl
-             << "WELL: " << name().toAscii().data() <<  endl
+             << "WELL: " << name().toLatin1().constData() <<  endl
              << "Does not have the same number of streams and bhp constraints... " << endl;
 
         exit(1);
@@ -206,17 +206,22 @@ void ProductionWell::updateBhpConstraint()
 
             c_ts = (p_wf - p_in) / p_wf;
 
+            //cout << "p_wf  = " << p_wf << endl;
+            //cout << "p_in  = " << p_in << endl;
+
         }
 
 
         // updating the value of the constraint for this time
         bhpConstraint(i)->setValue(c_ts);
 
+        //cout << "bhp c = " << c_ts << endl << endl;
+
 
         // printing if violating
         if(c_ts < 0)
         {
-            cout << "BHP constraint for Well " << name().toAscii().data() << " is violated at time = " << stream(i)->time() << ", c = " << c_ts << endl;
+            cout << "BHP constraint for Well " << name().toLatin1().constData() << " is violated at time = " << stream(i)->time() << ", c = " << c_ts << endl;
 
             cout << "Well stream:" << endl;
             stream(i)->printToCout();

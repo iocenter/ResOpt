@@ -46,6 +46,7 @@ class MrstBatchSimulator : public ReservoirSimulator
 private:
 
     bool m_first_launch;
+    int run_number;
 
     bool generateControlInputFile(Model *m);
     bool generateEclIncludeFile(Model *m);

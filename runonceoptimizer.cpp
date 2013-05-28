@@ -92,6 +92,7 @@ void RunonceOptimizer::start()
 
 
 
+
     // letting the runner know that the optimization has finished
     emit finished();
 

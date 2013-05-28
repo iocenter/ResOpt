@@ -26,6 +26,7 @@
 #include <QPushButton>
 #include <QVector>
 
+
 namespace ResOpt
 {
 class InjectionWell;

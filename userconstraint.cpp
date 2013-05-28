@@ -305,7 +305,7 @@ double UserConstraint::resolveArgumentValue(QString arg, bool *ok)
 
 
 
-    cout << "Value for argument " << arg.toAscii().data() << " = " << value << endl;
+    cout << "Value for argument " << arg.toLatin1().constData() << " = " << value << endl;
 
     return value;
 
@@ -319,7 +319,7 @@ void UserConstraint::error(QString msg)
 {
     cout << endl << "### Runtime Error ###" << endl
          << "Could not parse user defined constraint..." << endl
-         << "Message: " << msg.toAscii().data() << endl << endl;
+         << "Message: " << msg.toLatin1().constData() << endl << endl;
 
     exit(1);
 

@@ -31,7 +31,7 @@ PressureDropCalculator* PipeReader::readFile(const QString &file_name)
     // checking if file opened ok...
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qWarning("Could not open PIPE input file: %s", file_name.toAscii().data());
+        qWarning("Could not open PIPE input file: %s", file_name.toLatin1().constData());
         exit(1);
     }
 
@@ -51,8 +51,8 @@ PressureDropCalculator* PipeReader::readFile(const QString &file_name)
         else if(!isEmpty(list))
         {
             cout << endl << "### Error detected in PIPE definition file! ###" << endl
-                 << "File: " << file_name.toAscii().data() << endl
-                 << "Keyword: " << list.join(" ").toAscii().data() << endl
+                 << "File: " << file_name.toLatin1().constData() << endl
+                 << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                  << "Not understood in current context." << endl << endl;
 
             exit(1);
@@ -115,8 +115,8 @@ BeggsBrillCalculator* PipeReader::readBeggsBrill(QFile &file)
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in PIPE definition file! ###" << endl
-                     << "File: " << file.fileName().toAscii().data() << endl
-                     << "Keyword: " << list.join(" ").toAscii().data() << endl
+                     << "File: " << file.fileName().toLatin1().constData() << endl
+                     << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                      << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -135,9 +135,9 @@ BeggsBrillCalculator* PipeReader::readBeggsBrill(QFile &file)
     if(!ok)
     {
         cout << endl << "### Error detected in PIPE definition file! ###" << endl
-             << "File: " << file.fileName().toAscii().data() << endl
+             << "File: " << file.fileName().toLatin1().constData() << endl
              << "Definition is incomplete..." << endl
-             << "Last line: " << list.join(" ").toAscii().data() << endl;
+             << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -200,9 +200,9 @@ DpTableCalculator* PipeReader::readDpTable(QFile &file)
             else
             {
                 cout << endl << "### Error detected in DP table! ###" << endl
-                     << "File: " << file.fileName().toAscii().data() << endl
+                     << "File: " << file.fileName().toLatin1().constData() << endl
                      << "Could not convert line to numbers..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -213,9 +213,9 @@ DpTableCalculator* PipeReader::readDpTable(QFile &file)
         else if(!isEmpty(list))
         {
             cout << endl << "### Error detected in DP table! ###" << endl
-                 << "File: " << file.fileName().toAscii().data() << endl
+                 << "File: " << file.fileName().toLatin1().constData() << endl
                  << "Line does not have the correct number of entries..." << endl
-                 << "Last line: " << list.join(" ").toAscii().data() << endl;
+                 << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
             exit(1);
 

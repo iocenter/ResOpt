@@ -3,6 +3,7 @@
 
 #include "IpTNLP.hpp"
 #include <QVector>
+#include <QFile>
 #include <tr1/memory>
 
 using namespace Ipopt;
@@ -31,6 +32,7 @@ private:
     QVector<double> m_jac_g;    // calculated values for dc/dx
     Case *p_case_last;          // the last case that was run
     Case *p_case_gradients;     // case containing variable values where the gradient and jacobian was calculated
+    QFile *p_grad_file;
 
     /**
      * @brief Generates a Case based on the values in x.

@@ -44,6 +44,7 @@ class BinaryVariable;
 class Constraint;
 class Component;
 class UserConstraint;
+class Cost;
 
 
 /**
@@ -106,6 +107,8 @@ private:
      * @return bool
      */
     bool updateUserDefinedConstraints();
+
+    QVector<Cost*> sortCosts(QVector<Cost*> c);
 
 
 

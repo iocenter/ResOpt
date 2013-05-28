@@ -22,8 +22,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
-#include <QtGui/QMainWindow>
-#include <QtGui/QWidget>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QWidget>
 
 #include "runner.h"
 

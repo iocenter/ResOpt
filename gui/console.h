@@ -22,8 +22,8 @@
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
-#include <QtGui/QDockWidget>
-#include <QtGui/QTextEdit>
+#include <QtWidgets/QDockWidget>
+#include <QtWidgets/QTextEdit>
 
 
 

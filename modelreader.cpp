@@ -81,13 +81,13 @@ ModelReader::ModelReader(const QString &driver)
     // setting the path of the driver file
     QFileInfo info(m_driver_file);
     m_path = info.absoluteDir().absolutePath();
-    cout << "path to driver file: " << m_path.toAscii().data() << endl;
+    cout << "path to driver file: " << m_path.toLatin1().constData() << endl;
 
     //checking if file opened ok...
 
     if(!m_driver_file.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        qWarning("Could not open driver file: %s", driver.toAscii().data());
+        qWarning("Could not open driver file: %s", driver.toLatin1().constData());
         exit(1);
     }
 
@@ -102,7 +102,7 @@ Model* ModelReader::readDriverFile(Runner *r)
 {
     Model *p_model = 0;
 
-    cout << "****  Reading driver file: " << m_driver_file.fileName().toAscii().data() << "  ****" << endl;
+    cout << "****  Reading driver file: " << m_driver_file.fileName().toLatin1().constData() << "  ****" << endl;
 
     QStringList list;
 
@@ -146,7 +146,7 @@ Model* ModelReader::readDriverFile(Runner *r)
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "ADJOINTS level not input correctly..." << endl
                      << "The adjoints level should be either 1, 2, or 3" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
 
@@ -164,7 +164,7 @@ Model* ModelReader::readDriverFile(Runner *r)
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The first keyword must specify the model type..." << endl
                      << "Possible types: COUPLED, DECOUPLED, ADJOINTS_COUPLED" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
             }
@@ -197,7 +197,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("CONSTRAINTS")) readUserDefinedConstraints(p_model);                  // user defined constraints
 
         }
-        else if(list.at(0).startsWith("DEBUG")) r->setDebugFile(list.at(1));                                    // setting the debug file
+        else if(list.at(0).startsWith("DEBUG")) r->setDebugFile(m_path + "/" + list.at(1));                                    // setting the debug file
         else if(list.at(0).startsWith("SIMULATOR"))     // reading the type of reservoir simulator to use
         {
             if(list.at(1).startsWith("GPRS")) r->setReservoirSimulator(new GprsSimulator());
@@ -208,7 +208,7 @@ Model* ModelReader::readDriverFile(Runner *r)
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "Type of SIMULATOR not understood..." << endl
                      << "Possible types: GPRS, VLP" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
             }
@@ -219,7 +219,7 @@ Model* ModelReader::readDriverFile(Runner *r)
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -293,7 +293,7 @@ QVector<double> ModelReader::readMasterSchedule()
     {
         cout << endl << "### Error detected in input file! ###" << endl
              << "MASTERSCHEDULE is not in the right format..."
-             << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+             << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
         exit(1);
     }
@@ -353,7 +353,7 @@ Reservoir* ModelReader::readReservoir()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "PHASES keyword is not in the right format..."
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
 
@@ -375,7 +375,7 @@ Reservoir* ModelReader::readReservoir()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "DENS keyword is not in the right format..."
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
 
@@ -394,7 +394,7 @@ Reservoir* ModelReader::readReservoir()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -483,7 +483,7 @@ Well* ModelReader::readWell()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                                 << "Could not convert COST to number..." << endl
-                                << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                                << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
 
@@ -531,7 +531,7 @@ Well* ModelReader::readWell()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "INSTALLTIME for WELL not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -543,7 +543,7 @@ Well* ModelReader::readWell()
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "INSTALLTIME for WELL not in correct format..." << endl
                      << "Problem detected when converting to numbers."
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -578,7 +578,7 @@ Well* ModelReader::readWell()
             else                                                        // not recognized
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                                << "Well TYPE: " << list.at(1).toAscii().data() << endl
+                                << "Well TYPE: " << list.at(1).toLatin1().constData() << endl
                                 << "Is not a recognized well type." << endl << endl;
 
                 exit(1);
@@ -593,7 +593,7 @@ Well* ModelReader::readWell()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The well TYPE must be specified before any of the START sections..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
                 exit(1);
             }
@@ -609,7 +609,7 @@ Well* ModelReader::readWell()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << " OUTLETPIPES can not be defined for INJECTION wells..."
-                         << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
                     exit(1);
 
                 }
@@ -627,7 +627,7 @@ Well* ModelReader::readWell()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << " GASLIFT can not be defined for INJECTION wells..."
-                         << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
                     exit(1);
 
                 }
@@ -639,7 +639,7 @@ Well* ModelReader::readWell()
             else                                                            // unknown keyword
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -653,7 +653,7 @@ Well* ModelReader::readWell()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -695,7 +695,7 @@ Well* ModelReader::readWell()
     {
         cout << endl << "### Error detected in input file! ###" << endl
              << "The well NAME can not contain underscore (_)..." << endl
-             << "Well name: " <<l_name.toAscii().data() << endl;
+             << "Well name: " <<l_name.toLatin1().constData() << endl;
         exit(1);
 
     }
@@ -772,7 +772,7 @@ bool ModelReader::readWellSchedule(Well *w)
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The SCHEDULE type was not recognized..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                     delete control;
                     control = 0;
@@ -787,7 +787,7 @@ bool ModelReader::readWellSchedule(Well *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The SCHEDULE entry could not be read..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -801,7 +801,7 @@ bool ModelReader::readWellSchedule(Well *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The SCHEDULE entry does not have the right format..."
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -871,7 +871,7 @@ bool ModelReader::readGasLiftSchedule(ProductionWell *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The GASLIFT entry could not be read..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -885,7 +885,7 @@ bool ModelReader::readGasLiftSchedule(ProductionWell *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The GASLIFT entry does not have the right format..."
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -947,7 +947,7 @@ bool ModelReader::readWellConnections(Well *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The CONNECTIONS entry could not be read..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -984,7 +984,7 @@ bool ModelReader::readWellConnections(Well *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The CONNECTIONS entry could not be read..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -1000,7 +1000,7 @@ bool ModelReader::readWellConnections(Well *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The CONNECTIONS entry does not have the right format..."
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -1064,7 +1064,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The OUTLETPIPES entry could not be read..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -1102,7 +1102,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The OUTLETPIPES entry could not be read..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                     exit(1);
 
@@ -1115,7 +1115,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The OUTLETPIPES entry does not have the right format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -1128,7 +1128,7 @@ bool ModelReader::readPipeConnections(ProductionWell *w)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The OUTLETPIPES entry does not have the right format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -1211,7 +1211,7 @@ bool ModelReader::readPipeConnections(MidPipe *p)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The OUTLETPIPES entry could not be read..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -1252,7 +1252,7 @@ bool ModelReader::readPipeConnections(MidPipe *p)
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The OUTLETPIPES entry could not be read..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                     exit(1);
 
@@ -1264,7 +1264,7 @@ bool ModelReader::readPipeConnections(MidPipe *p)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The OUTLETPIPES entry does not have the right format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -1276,7 +1276,7 @@ bool ModelReader::readPipeConnections(MidPipe *p)
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      <<  "The OUTLETPIPES entry does not have the right format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
             }
@@ -1345,7 +1345,7 @@ Objective* ModelReader::readObjective()
             else                                                                    // not recognized
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                                << "Objective TYPE: " << list.at(1).toAscii().data() << endl
+                                << "Objective TYPE: " << list.at(1).toLatin1().constData() << endl
                                 << "Is not a recognized objective type." << endl << endl;
 
                 exit(1);
@@ -1363,7 +1363,7 @@ Objective* ModelReader::readObjective()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -1383,7 +1383,7 @@ Objective* ModelReader::readObjective()
     {
         cout << endl << "### Error detected in input file! ###" << endl
         << "OBJECTIVE definition is incomplete..." << endl
-        << "Last line: " << list.join(" ").toAscii().data() << endl;
+        << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -1443,7 +1443,7 @@ Pipe* ModelReader::readPipe()
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "PIPE definition is overdefined..." << endl
                      << "Did you speficy both OUTLETPIPES and OUTLETPRESSURE for the pipe?"
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                 exit(1);
@@ -1458,7 +1458,7 @@ Pipe* ModelReader::readPipe()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "OUTLETPRESSURE definition not in correct format" << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                     exit(1);
@@ -1494,7 +1494,7 @@ Pipe* ModelReader::readPipe()
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "PIPE definition is overdefined..." << endl
                      << "Did you speficy both OUTLETPIPES and OUTLETPRESSURE for the pipe?"
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                 exit(1);
@@ -1518,7 +1518,7 @@ Pipe* ModelReader::readPipe()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -1538,7 +1538,7 @@ Pipe* ModelReader::readPipe()
     {
         cout << endl << "### Error detected in input file! ###" << endl
         << "PIPE definition is incomplete..." << endl
-        << "Last line: " << list.join(" ").toAscii().data() << endl;
+        << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -1597,7 +1597,7 @@ Capacity* ModelReader::readCapacity()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "The CAPACITY input PIPES were not correctly defined..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                 exit(1);
@@ -1625,7 +1625,7 @@ Capacity* ModelReader::readCapacity()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The CAPACITY WATER constraint was not correctly defined..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                     exit(1);
@@ -1654,7 +1654,7 @@ Capacity* ModelReader::readCapacity()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The CAPACITY GAS constraint was not correctly defined..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                     exit(1);
@@ -1684,7 +1684,7 @@ Capacity* ModelReader::readCapacity()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The CAPACITY OIL constraint was not correctly defined..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                     exit(1);
@@ -1714,7 +1714,7 @@ Capacity* ModelReader::readCapacity()
                 {
                     cout << endl << "### Error detected in input file! ###" << endl
                          << "The CAPACITY LIQUID constraint was not correctly defined..." << endl
-                         << "Last line: " << list.join(" ").toAscii().data() << endl;
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
 
                     exit(1);
@@ -1731,7 +1731,7 @@ Capacity* ModelReader::readCapacity()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -1752,7 +1752,7 @@ Capacity* ModelReader::readCapacity()
         cout << endl << "### Error detected in input file! ###" << endl
         << "CAPACITY definition is incomplete..." << endl
         << "No constraint of any kind detected" << endl
-        << "Last line: " << list.join(" ").toAscii().data() << endl;
+        << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -1764,7 +1764,7 @@ Capacity* ModelReader::readCapacity()
         cout << endl << "### Error detected in input file! ###" << endl
         << "CAPACITY definition is incomplete..." << endl
         << "No input PIPES defined" << endl
-        << "Last line: " << list.join(" ").toAscii().data() << endl;
+        << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -1818,7 +1818,7 @@ Pipe* ModelReader::readSeparator()
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "SEPARATOR TYPE not recognized..." << endl
                      << "The TYPE can either be WATER or GAS" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -1841,7 +1841,7 @@ Pipe* ModelReader::readSeparator()
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "COST for SEPARATOR not in correct format..." << endl
                      << "The COST keyword must be followed by three numbers: constant term, fraction multiplier, capacity multiplier" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -1882,7 +1882,7 @@ Pipe* ModelReader::readSeparator()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "INSTALLTIME for SEPARATOR not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -1927,7 +1927,7 @@ Pipe* ModelReader::readSeparator()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "REMOVE keyword for SEPARATOR not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
                 exit(1);
 
             }
@@ -1970,7 +1970,7 @@ Pipe* ModelReader::readSeparator()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "CAPACITY keyword for SEPARATOR not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
                 exit(1);
 
             }
@@ -1985,7 +1985,7 @@ Pipe* ModelReader::readSeparator()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -2003,7 +2003,7 @@ Pipe* ModelReader::readSeparator()
     {
         cout << endl << "### Error detected in input file! ###" << endl
         << "PIPE definition is incomplete..." << endl
-        << "Last line: " << list.join(" ").toAscii().data() << endl;
+        << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -2067,7 +2067,6 @@ Pipe* ModelReader::readPressureBooster()
     int l_outlet_pipe = -1;
     double l_cost_constant = -1.0;
     double l_cost_fraction = -1.0;
-    double l_cost_capacity = -1.0;
 
 
     list = processLine(m_driver_file.readLine());
@@ -2081,22 +2080,22 @@ Pipe* ModelReader::readPressureBooster()
         else if(list.at(0).startsWith("OUTLETPIPE")) l_outlet_pipe = list.at(1).toInt(&ok);     // getting the outlet pipe number
         else if(list.at(0).startsWith("COST"))                                                  // getting the cost
         {
-            if(list.size() == 4)  // the right number of numbers
+            if(list.size() == 3)  // the right number of numbers
             {
-                bool ok1, ok2, ok3 = true;
+                bool ok1, ok2 = true;
                 l_cost_constant = list.at(1).toDouble(&ok1);
                 l_cost_fraction = list.at(2).toDouble(&ok2);
-                l_cost_capacity = list.at(3).toDouble(&ok3);
 
-                if(!ok1 || !ok2 || !ok3) ok = false;
+
+                if(!ok1 || !ok2) ok = false;
 
             }
             else
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "COST for BOOSTER not in correct format..." << endl
-                     << "The COST keyword must be followed by three numbers: constant term, pressure multiplier, capacity multiplier" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "The COST keyword must be followed by two numbers: constant term, multiplier" << endl
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -2137,7 +2136,7 @@ Pipe* ModelReader::readPressureBooster()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "INSTALLTIME for BOOSTER not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
                 exit(1);
@@ -2182,7 +2181,7 @@ Pipe* ModelReader::readPressureBooster()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "PRESSUREBOOST keyword for BOOSTER not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
                 exit(1);
 
             }
@@ -2225,7 +2224,7 @@ Pipe* ModelReader::readPressureBooster()
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "CAPACITY keyword for BOOSTER not in correct format..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
                 exit(1);
 
             }
@@ -2240,7 +2239,7 @@ Pipe* ModelReader::readPressureBooster()
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);
@@ -2258,7 +2257,7 @@ Pipe* ModelReader::readPressureBooster()
     {
         cout << endl << "### Error detected in input file! ###" << endl
         << "BOOSTER definition is incomplete..." << endl
-        << "Last line: " << list.join(" ").toAscii().data() << endl;
+        << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
         exit(1);
 
@@ -2275,7 +2274,7 @@ Pipe* ModelReader::readPressureBooster()
     Cost *c = new Cost();
     c->setConstant(l_cost_constant);
     c->setFractionMultiplier(l_cost_fraction);
-    c->setCapacityMultiplier(l_cost_capacity);
+    c->setCapacityMultiplier(0.0);
 
     c->setFraction(p_boost->pressureVariable()->value());
     c->setCapacity(p_boost->capacityVariable()->value());
@@ -2362,7 +2361,7 @@ void ModelReader::readOptimizer(Runner *r)
             if(!isEmpty(list))
             {
                 cout << endl << "### Error detected in input file! ###" << endl
-                << "Keyword: " << list.join(" ").toAscii().data() << endl
+                << "Keyword: " << list.join(" ").toLatin1().constData() << endl
                 << "Not understood in current context." << endl << endl;
 
                 exit(1);

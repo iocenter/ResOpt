@@ -43,7 +43,7 @@ VlpTable* VlpSimulator::readVlpTable(const QString &well_name, QFile &input)
 
     // starting to read the file
 
-    cout << "Reading vlp table for WELL: " << well_name.toAscii().data() << "..." << endl;
+    cout << "Reading vlp table for WELL: " << well_name.toLatin1().constData() << "..." << endl;
 
 
     QStringList list;
@@ -82,9 +82,9 @@ VlpTable* VlpSimulator::readVlpTable(const QString &well_name, QFile &input)
             else
             {
                 cout << endl << "### Error detected in VLP table in reservoir input file! ###" << endl
-                     << "File: " << input.fileName().toAscii().data() << endl
+                     << "File: " << input.fileName().toLatin1().constData() << endl
                      << "Could not convert line to numbers..." << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -95,9 +95,9 @@ VlpTable* VlpSimulator::readVlpTable(const QString &well_name, QFile &input)
         else if(!isEmpty(list))
         {
             cout << endl << "### Error detected in VLP table in reservoir input file! ###" << endl
-                 << "File: " << input.fileName().toAscii().data() << endl
+                 << "File: " << input.fileName().toLatin1().constData() << endl
                  << "Line does not have the correct number of entries..." << endl
-                 << "Last line: " << list.join(" ").toAscii().data() << endl;
+                 << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
             exit(1);
 
@@ -112,7 +112,7 @@ VlpTable* VlpSimulator::readVlpTable(const QString &well_name, QFile &input)
     }
 
     cout << "Added " << table->numberOfRows() << " rows to the table..." << endl;
-    cout << "Done reading vlp table for WELL: " << well_name.toAscii().data() << "..." << endl;
+    cout << "Done reading vlp table for WELL: " << well_name.toLatin1().constData() << "..." << endl;
 
     return table;
 
@@ -132,7 +132,7 @@ bool VlpSimulator::readInput(const QString &file)
     // checking if file opened ok...
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        cout << "Could not open reservoir definition file: " << file.toAscii().data() << endl;
+        cout << "Could not open reservoir definition file: " << file.toLatin1().constData() << endl;
 
         exit(1);
     }
@@ -161,7 +161,7 @@ bool VlpSimulator::readInput(const QString &file)
                 cout << endl << "### Error detected in reservoir input file! ###" << endl
                      << "Line does not have the correct number of entries..." << endl
                      << "Correct format: START VLPTABLE wellname" << endl
-                     << "Last line: " << list.join(" ").toAscii().data() << endl;
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
                 exit(1);
 
@@ -174,7 +174,7 @@ bool VlpSimulator::readInput(const QString &file)
         {
             cout << endl << "### Error detected in reservoir input file! ###" << endl
                  << "Keyword not understood..." << endl
-                 << "Last line: " << list.join(" ").toAscii().data() << endl;
+                 << "Last line: " << list.join(" ").toLatin1().constData() << endl;
 
             exit(1);
 
@@ -250,7 +250,7 @@ bool VlpSimulator::readOutput(Model *m)
             if(table == 0)
             {
                 cout << endl << "### Runtime Error ###" << endl
-                     << "Could not find the VLP table for well: " << prod_well->name().toAscii().data() << endl
+                     << "Could not find the VLP table for well: " << prod_well->name().toLatin1().constData() << endl
                      << "Does the well name match the name of the VLP table?" << endl << endl;
 
                 exit(1);

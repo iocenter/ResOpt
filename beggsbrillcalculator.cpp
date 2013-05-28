@@ -278,6 +278,8 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     else if(regime == INTERMITTENT)
     {
         hz_holdup = (0.845 * pow(liquid_content, 0.5351)) / pow(froude_no, 0.0173);
+
+        //cout << "intermittent hz_holdup = " << hz_holdup << endl;
     }
     else if(regime == DISTRIBUTED)
     {
@@ -312,6 +314,8 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     else if(regime == INTERMITTENT)
     {
         cor = (1 - liquid_content) * log(2.96 * pow(liquid_content, -0.305) * pow(nlv, -0.4473) * pow(froude_no, -0.0978));
+
+        //cout << "intermittent cor = " << cor << endl;
     }
     else if(regime == DISTRIBUTED)
     {
@@ -370,6 +374,8 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     }
 
     // done calculating the holdup
+
+    if(holdup > 1.0) holdup = 1.0;
 
 
     // calculating pressure drop due to elevation change

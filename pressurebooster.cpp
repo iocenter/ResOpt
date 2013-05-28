@@ -109,7 +109,9 @@ void PressureBooster::updateCapacityConstraints()
         if(c > 1.0) c = 1.0;
 
         // updating the constraint value
-        m_capacity_constraints.at(i)->setValue(c);
+
+        if(p_install_time->value() > i) m_capacity_constraints.at(i)->setValue(0.5);
+        else m_capacity_constraints.at(i)->setValue(c);
     }
 
 

@@ -22,7 +22,7 @@
 #ifndef PLOT_H
 #define PLOT_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QVector>
 #include "qcustomplot.h"
 

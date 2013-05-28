@@ -22,8 +22,8 @@
 #include "connector.h"
 #include "modelitem.h"
 
-#include <QtGui/QPen>
-#include <QtGui/QPainter>
+#include <QPen>
+#include <QPainter>
 #include <QLineF>
 #include <QPointF>
 #include <QRectF>
@@ -31,8 +31,8 @@
 namespace ResOptGui
 {
 
-Connector::Connector(ModelItem *startItem, ModelItem *endItem, bool active, ConnectionFace con_face, QGraphicsItem *parent, QGraphicsScene *scene)
-    : QGraphicsLineItem(parent, scene),
+Connector::Connector(ModelItem *startItem, ModelItem *endItem, bool active, ConnectionFace con_face, QGraphicsItem *parent)
+    : QGraphicsLineItem(parent),
       p_start_item(startItem),
       p_end_item(endItem),
       m_con_face(con_face)

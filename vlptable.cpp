@@ -44,7 +44,7 @@ Stream* VlpTable::interpolate(double pbh, double glift)
     {
         cout << endl << "### Runtime Error ###" << endl
              << "The specified pressure falls outside the range of the VLP table..." << endl
-             << "WELL : " << m_well_name.toAscii().data() <<  endl
+             << "WELL : " << m_well_name.toLatin1().constData() <<  endl
              << "P    : " << pbh << endl
              << "P_MAX: " << m_pbh_entries.at(m_pbh_entries.size() - 1) << endl
              << "P_MIN: " << m_pbh_entries.at(0) << endl;
@@ -59,7 +59,7 @@ Stream* VlpTable::interpolate(double pbh, double glift)
     {
         cout << endl << "### Runtime Error ###" << endl
              << "The specified gas lift rate falls outside the range of the VLP table..." << endl
-             << "WELL : " << m_well_name.toAscii().data() <<  endl
+             << "WELL : " << m_well_name.toLatin1().constData() <<  endl
              << "Q    : " << glift << endl
              << "Q_MAX: " << m_glift_entries.at(m_glift_entries.size() - 1) << endl
              << "Q_MIN: " << m_glift_entries.at(0) << endl;
@@ -113,7 +113,7 @@ Stream* VlpTable::interpolate(double pbh, double glift)
     {
         cout << "interpolated qo is nan" << endl;
 
-        cout << "Well: " << wellName().toAscii().data() << endl;
+        cout << "Well: " << wellName().toLatin1().constData() << endl;
 
         cout << "glift = " << glift << endl;
         cout << "pbh = " << pbh << endl;

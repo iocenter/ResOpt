@@ -21,8 +21,8 @@
 
 #include "inspectorconstraint.h"
 
-#include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
 
 namespace ResOptGui
 {

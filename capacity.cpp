@@ -106,8 +106,8 @@ void Capacity::setupConstraints(const QVector<double> &master_schedule)
         for(int i = 0; i < master_schedule.size(); ++i)
         {
             shared_ptr<Constraint> c_oil(new Constraint());
-            c_oil->setMax(m_max_oil);
-            c_oil->setMin(-m_max_oil);
+            c_oil->setMax(1.0);
+            c_oil->setMin(-1.0);
             c_oil->setValue(0);
             c_oil->setName("Oil production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
@@ -123,8 +123,8 @@ void Capacity::setupConstraints(const QVector<double> &master_schedule)
         for(int i = 0; i < master_schedule.size(); ++i)
         {
             shared_ptr<Constraint> c_gas(new Constraint());
-            c_gas->setMax(m_max_gas);
-            c_gas->setMin(-m_max_gas);
+            c_gas->setMax(1.0);
+            c_gas->setMin(-1.0);
             c_gas->setValue(0);
             c_gas->setName("Gas production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
@@ -140,8 +140,8 @@ void Capacity::setupConstraints(const QVector<double> &master_schedule)
         for(int i = 0; i < master_schedule.size(); ++i)
         {
             shared_ptr<Constraint> c_wat(new Constraint());
-            c_wat->setMax(m_max_water);
-            c_wat->setMin(-m_max_water);
+            c_wat->setMax(1.0);
+            c_wat->setMin(-1.0);
             c_wat->setValue(0);
             c_wat->setName("Water production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
@@ -157,8 +157,8 @@ void Capacity::setupConstraints(const QVector<double> &master_schedule)
         for(int i = 0; i < master_schedule.size(); ++i)
         {
             shared_ptr<Constraint> c_liq(new Constraint());
-            c_liq->setMax(m_max_liquid);
-            c_liq->setMin(-m_max_liquid);
+            c_liq->setMax(1.0);
+            c_liq->setMin(-1.0);
             c_liq->setValue(0);
             c_liq->setName("Liquid production constraint for capacity: " + name() + " for time = " + QString::number(master_schedule.at(i)));
 
@@ -187,7 +187,7 @@ void Capacity::updateConstraints()
             {
                 cout << endl << "### Runtime Error ###" << endl
                      << "Separator and pipe do not have the same number of time steps..." << endl
-                     << "SEP : " << name().toAscii().data() << ", N = " << m_schedule.size() << endl
+                     << "SEP : " << name().toLatin1().constData() << ", N = " << m_schedule.size() << endl
                      << "PIPE: " << feedPipe(i)->number() << endl << ", N = " << feedPipe(i)->numberOfStreams() << endl;
 
                 exit(1);
@@ -209,10 +209,26 @@ void Capacity::updateConstraints()
             }
 
             // setting new values if the cons are defined
-            if(m_max_oil >= 0) m_cons_oil.at(i)->setValue(s.oilRate(true));
-            if(m_max_gas >= 0) m_cons_gas.at(i)->setValue(s.gasRate(true));
-            if(m_max_water >= 0) m_cons_water.at(i)->setValue(s.waterRate(true));
-            if(m_max_liquid >= 0) m_cons_liquid.at(i)->setValue(s.oilRate(true) + s.waterRate(true));
+            if(m_max_oil >= 0)
+            {
+                double scaled_oil = (s.oilRate(true) - m_max_oil) / m_max_oil;
+                m_cons_oil.at(i)->setValue(scaled_oil + 1.0);
+            }
+            if(m_max_gas >= 0)
+            {
+                double scaled_gas = (s.gasRate(true) - m_max_gas) / m_max_gas;
+                m_cons_gas.at(i)->setValue(scaled_gas + 1.0);
+            }
+            if(m_max_water >= 0)
+            {
+                double scaled_water = (s.waterRate(true) - m_max_water) / m_max_water;
+                m_cons_water.at(i)->setValue(scaled_water + 1.0);
+            }
+            if(m_max_liquid >= 0)
+            {
+                double scaled_liquid = (s.oilRate(true) + s.waterRate(true) - m_max_liquid) / m_max_liquid;
+                m_cons_liquid.at(i)->setValue(scaled_liquid + 1.0);
+            }
 
         }
     }

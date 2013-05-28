@@ -68,6 +68,8 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
     int cost_place = 0;
     bool add_more_costs = true;
 
+
+
     // first adding the up front costs (costs where t < t0)
     while(cost_place < c.size() && add_more_costs)
     {
@@ -75,9 +77,11 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
         {
             npv -= c.at(cost_place)->value();
             ++cost_place;
+
         }
         else add_more_costs = false;
     }
+
 
 
     for(int i = 0; i < s.size(); i++)       // looping through each time step
@@ -109,6 +113,8 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 
 
         }
+
+
 
         // subtracting the costs from the cash flow
         cf -= ts_cost;

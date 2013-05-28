@@ -179,7 +179,7 @@ EOF
 
 
 #include <QtCore>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <iostream>
 
 
@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
         // to launch in console mode with default driver file name
         /*
         a = new QCoreApplication(argc, argv);
-        r = new Runner("driver.dat");
+        r = new Runner("/Users/aleksaju/Skole/Postdoc/ResOpt/Models/case24_console3/driver.dat");
 
         QObject::connect(r,SIGNAL(optimizationFinished()), a, SLOT(quit()));
         QTimer::singleShot(0, r, SLOT(run()));

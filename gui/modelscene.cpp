@@ -425,7 +425,6 @@ ModelItem* ModelScene::addModelItem(Component *c)
     MidPipe *midpipe = dynamic_cast<MidPipe*>(c);
     if(midpipe != 0)
     {
-        cout << "mid pipe" << endl;
         ModelItemMidPipe *mid_item = new ModelItemMidPipe(midpipe);
 
 

@@ -30,15 +30,17 @@
 #include "case.h"
 #include "casequeue.h"
 
-#include <QtGui/QAction>
-#include <QtGui/QKeySequence>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMenu>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QFileDialog>
-#include <QtGui/QTabWidget>
-#include <QtGui/QToolBar>
+#include <QtWidgets/QAction>
+#include <QtWidgets/QAction>
+
+#include <QKeySequence>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QToolBar>
 
 #include <QDir>
 
@@ -162,8 +164,10 @@ void MainWindow::createMenus()
 //-----------------------------------------------------------------------------------------------
 void MainWindow::loadModel()
 {
+
     // letting the user specify the driver file
-    QString fileName = QFileDialog::getOpenFileName(this, "Load Project", QDir::currentPath(), "ResOpt Driver File (*.dat)");
+    QString fileName = QFileDialog::getOpenFileName(this, "Load Project", "/Users", "ResOpt Driver File (*.dat)");
+
 
     // setting up the runner with the specified driver file
     if(p_runner == 0)

@@ -22,7 +22,7 @@
 #ifndef MODELSCENE_H
 #define MODELSCENE_H
 
-#include <QtGui/QGraphicsScene>
+#include <QtWidgets/QGraphicsScene>
 
 namespace ResOpt
 {

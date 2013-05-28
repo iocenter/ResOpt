@@ -28,9 +28,9 @@
 
 using ResOpt::Constraint;
 
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QGridLayout>
 #include <QDoubleValidator>
-#include <QtGui/QGroupBox>
+#include <QtWidgets/QGroupBox>
 #include <tr1/memory>
 
 using std::tr1::shared_ptr;

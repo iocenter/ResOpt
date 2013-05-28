@@ -22,7 +22,7 @@
 #ifndef PLOTSTREAMZ_H
 #define PLOTSTREAMZ_H
 
-#include <QtGui/QWidget>
+#include <QtWidgets/QWidget>
 #include <QVector>
 
 #include "qcustomplot.h"

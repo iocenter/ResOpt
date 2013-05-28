@@ -21,11 +21,11 @@
 
 #include "inspectorvariableinstall.h"
 
-#include <QtGui/QComboBox>
-#include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
 #include <QDoubleValidator>
-#include <QtGui/QLineEdit>
+#include <QtWidgets/QLineEdit>
 
 namespace ResOptGui
 {

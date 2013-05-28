@@ -150,7 +150,7 @@ void Runner::initialize()
 
         if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
         {
-            qWarning("Could not connect to debug file: %s", p_debug->fileName().toAscii().data());
+            qWarning("Could not connect to debug file: %s", p_debug->fileName().toLatin1().constData());
 
             delete p_debug;
             p_debug = 0;
@@ -339,7 +339,7 @@ void Runner::setSummaryFile(const QString &f)
 
     if(!p_summary->open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qWarning("Could not connect to summary file: %s", p_summary->fileName().toAscii().data());
+        qWarning("Could not connect to summary file: %s", p_summary->fileName().toLatin1().constData());
 
         delete p_summary;
         p_summary = 0;
@@ -367,7 +367,7 @@ void Runner::setDebugFileName(const QString &f)
 
     if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qWarning("Could not connect to debug file: %s", p_debug->fileName().toAscii().data());
+        qWarning("Could not connect to debug file: %s", p_debug->fileName().toLatin1().constData());
 
         delete p_debug;
         p_debug = 0;
@@ -894,10 +894,10 @@ void Runner::printDebug(Launcher *l)
             QString p_unit = (s->inputUnits() == Stream::FIELD) ? " (psia)" : " (bara)";
 
             out << "time       = " << s->time() << " (days)" << "\n";
-            out << "gas rate   = " << s->gasRate(true) << qg_unit.toAscii().data() << "\n";
-            out << "oil rate   = " << s->oilRate(true) << ql_unit.toAscii().data() <<  "\n";
-            out << "water rate = " << s->waterRate(true) << ql_unit.toAscii().data() << "\n";
-            out << "pressure   = " << s->pressure(true) << p_unit.toAscii().data() << "\n\n";
+            out << "gas rate   = " << s->gasRate(true) << qg_unit.toLatin1().constData() << "\n";
+            out << "oil rate   = " << s->oilRate(true) << ql_unit.toLatin1().constData() <<  "\n";
+            out << "water rate = " << s->waterRate(true) << ql_unit.toLatin1().constData() << "\n";
+            out << "pressure   = " << s->pressure(true) << p_unit.toLatin1().constData() << "\n\n";
 
         }
     }
@@ -921,7 +921,7 @@ void Runner::printDebug(Launcher *l)
 
             QString p_unit_out = (end_pipe->outletUnit() == Stream::METRIC) ? " (bara)" : " (psia)";
 
-            out << "Minimum outlet pressure = " << end_pipe->outletPressure() << p_unit_out.toAscii().data() << "\n\n";
+            out << "Minimum outlet pressure = " << end_pipe->outletPressure() << p_unit_out.toLatin1().constData() << "\n\n";
         }
 
         else if(mid_pipe != 0)
@@ -984,10 +984,10 @@ void Runner::printDebug(Launcher *l)
             QString p_unit = (s->inputUnits() == Stream::FIELD) ? " (psia)" : " (bara)";
 
             out << "time            = " << s->time() << " (days)" << "\n";
-            out << "gas rate        = " << s->gasRate(true) << qg_unit.toAscii().data() << "\n";
-            out << "oil rate        = " << s->oilRate(true) << ql_unit.toAscii().data() <<  "\n";
-            out << "water rate      = " << s->waterRate(true) << ql_unit.toAscii().data() << "\n";
-            out << "inlet pressure  = " << s->pressure(true) << p_unit.toAscii().data() << "\n\n";
+            out << "gas rate        = " << s->gasRate(true) << qg_unit.toLatin1().constData() << "\n";
+            out << "oil rate        = " << s->oilRate(true) << ql_unit.toLatin1().constData() <<  "\n";
+            out << "water rate      = " << s->waterRate(true) << ql_unit.toLatin1().constData() << "\n";
+            out << "inlet pressure  = " << s->pressure(true) << p_unit.toLatin1().constData() << "\n\n";
 
 
 

@@ -22,10 +22,10 @@
 #ifndef INSPECTOROPTIMIZER_H
 #define INSPECTOROPTIMIZER_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QComboBox>
-#include <QtGui/QLineEdit>
-#include <QtGui/QPushButton>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QPushButton>
 
 namespace ResOpt
 {

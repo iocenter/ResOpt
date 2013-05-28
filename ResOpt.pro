@@ -7,6 +7,8 @@
 QT       += core
 QT       += gui
 QT       += svg
+QT       += printsupport
+QT       += widgets
 
 TARGET = ResOpt
 CONFIG   += console

@@ -22,11 +22,11 @@
 #ifndef INSPECTORENDPIPE_H
 #define INSPECTORENDPIPE_H
 
-#include <QtGui/QWidget>
-#include <QtGui/QPushButton>
-#include <QtGui/QLineEdit>
-#include <QtGui/QComboBox>
-#include <QtGui/QLabel>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QLabel>
 #include <QVector>
 
 namespace ResOpt

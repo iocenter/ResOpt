@@ -21,10 +21,10 @@
 
 #include "inspectorwellcontrol.h"
 
-#include <QtGui/QLineEdit>
-#include <QtGui/QLabel>
-#include <QtGui/QGridLayout>
-#include <QtGui/QComboBox>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QComboBox>
 #include <QDoubleValidator>
 
 

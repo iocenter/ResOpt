@@ -32,7 +32,7 @@ namespace ResOptGui
 {
 
 Connector::Connector(ModelItem *startItem, ModelItem *endItem, bool active, ConnectionFace con_face, QGraphicsItem *parent, QGraphicsScene *scene)
-    : QGraphicsLineItem(parent, scene),
+    : QGraphicsLineItem(parent),
       p_start_item(startItem),
       p_end_item(endItem),
       m_con_face(con_face)

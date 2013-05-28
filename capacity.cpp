@@ -187,7 +187,7 @@ void Capacity::updateConstraints()
             {
                 cout << endl << "### Runtime Error ###" << endl
                      << "Separator and pipe do not have the same number of time steps..." << endl
-                     << "SEP : " << name().toAscii().data() << ", N = " << m_schedule.size() << endl
+                     << "SEP : " << name().toLatin1().constData() << ", N = " << m_schedule.size() << endl
                      << "PIPE: " << feedPipe(i)->number() << endl << ", N = " << feedPipe(i)->numberOfStreams() << endl;
 
                 exit(1);

@@ -22,9 +22,9 @@
 #include "plot.h"
 #include "mainwindow.h"
 
-#include <QtGui/QGridLayout>
-#include <QtGui/QPushButton>
-#include <QtGui/QSlider>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
 
 namespace ResOptGui
 {

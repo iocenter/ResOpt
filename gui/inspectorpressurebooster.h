@@ -24,7 +24,7 @@
 
 #include <QWidget>
 #include <QPushButton>
-#include <QtGui/QComboBox>
+#include <QtWidgets/QComboBox>
 
 namespace ResOpt
 {

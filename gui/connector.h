@@ -22,7 +22,7 @@
 #ifndef CONNECTOR_H
 #define CONNECTOR_H
 
-#include <QtGui/QGraphicsLineItem>
+#include <QtWidgets/QGraphicsLineItem>
 
 namespace ResOptGui
 {

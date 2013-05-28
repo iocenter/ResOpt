@@ -179,7 +179,7 @@ EOF
 
 
 #include <QtCore>
-#include <QtGui/QApplication>
+#include <QtWidgets/QApplication>
 #include <iostream>
 
 

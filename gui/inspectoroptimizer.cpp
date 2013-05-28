@@ -36,8 +36,8 @@ using ResOpt::RunonceOptimizer;
 using ResOpt::IpoptOptimizer;
 using ResOpt::LshOptimizer;
 
-#include <QtGui/QGridLayout>
-#include <QtGui/QLabel>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QLabel>
 #include <QIntValidator>
 
 namespace ResOptGui

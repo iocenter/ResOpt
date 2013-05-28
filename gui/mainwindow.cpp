@@ -30,15 +30,15 @@
 #include "case.h"
 #include "casequeue.h"
 
-#include <QtGui/QAction>
+#include <QtWidgets/QAction>
 #include <QtGui/QKeySequence>
-#include <QtGui/QMenuBar>
-#include <QtGui/QMenu>
-#include <QtGui/QHBoxLayout>
-#include <QtGui/QGraphicsView>
-#include <QtGui/QFileDialog>
-#include <QtGui/QTabWidget>
-#include <QtGui/QToolBar>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QGraphicsView>
+#include <QtWidgets/QFileDialog>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QToolBar>
 
 #include <QDir>
 

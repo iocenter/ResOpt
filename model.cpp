@@ -162,7 +162,8 @@ bool Model::validate()
         if(well(i)->numberOfControls() != numberOfMasterScheduleTimes())
         {
             cout << endl << "###  Model Validation Error  ###" << endl
-                 << "Well: " << well(i)->name().toAscii().data() << endl
+                 //<< "Well: " << well(i)->name().toLatin1().constData() << endl
+                 << "Well: " << well(i)->name().toLatin1().constData() << endl
                  << "Does not have the same number of SHEDULE entries as the MASTERSCHEDULE..." << endl << endl;
             ok = false;
             break;
@@ -176,7 +177,7 @@ bool Model::validate()
                 {
 
                     cout << endl << "###  Model Validation Error  ###" << endl
-                         << "Well: " << well(i)->name().toAscii().data() << endl
+                         << "Well: " << well(i)->name().toLatin1().constData() << endl
                          << "SHEDULE entry: " << well(i)->control(j)->endTime() << endl
                          << "Is not found in the MASTERSCHEDULE..." << endl << endl;
                     ok = false;
@@ -204,7 +205,7 @@ bool Model::validate()
                 if(prod_well->numberOfGasLiftControls() != numberOfMasterScheduleTimes())
                 {
                     cout << endl << "###  Model Validation Error  ###" << endl
-                         << "Well: " << prod_well->name().toAscii().data() << endl
+                         << "Well: " << prod_well->name().toLatin1().constData() << endl
                          << "Does not have the same number of GASLIFT entries as the MASTERSCHEDULE..." << endl << endl;
                     ok = false;
                     break;
@@ -218,7 +219,7 @@ bool Model::validate()
                         {
 
                             cout << endl << "###  Model Validation Error  ###" << endl
-                                 << "Well: " << prod_well->name().toAscii().data() << endl
+                                 << "Well: " << prod_well->name().toLatin1().constData() << endl
                                  << "GASLIFT entry: " << prod_well->gasLiftControl(j)->endTime() << endl
                                  << "Is not found in the MASTERSCHEDULE..." << endl << endl;
                             ok = false;
@@ -289,7 +290,7 @@ bool Model::resolvePipeRouting()
                     cout << endl << "###  Runtime Error  ###" << endl
                         << "Well to Pipe connection could not be established..." << endl
                         << "PIPE: " << pipe_num << endl
-                        << "WELL: " << prod_well->name().toAscii().data() << endl;
+                        << "WELL: " << prod_well->name().toLatin1().constData() << endl;
 
                     exit(1);
 
@@ -302,7 +303,7 @@ bool Model::resolvePipeRouting()
             if(prod_well->numberOfPipeConnections() == 0)
             {
                 cout << endl << "###  Runtime Error  ###" << endl
-                     << "Well " << prod_well->name().toAscii().data() << endl
+                     << "Well " << prod_well->name().toLatin1().constData() << endl
                      << "Is not connected to any pipe..." << endl << endl;
                 exit(1);
 
@@ -550,7 +551,7 @@ bool Model::resolveCapacityConnections()
                 cout << endl << "###  Runtime Error  ###" << endl
                      << "Capacity to Pipe connection could not be established..." << endl
                      << "PIPE:     " << pipe_num << endl
-                     << "CAPACITY: " << s->name().toAscii().data() << endl;
+                     << "CAPACITY: " << s->name().toLatin1().constData() << endl;
 
                 exit(1);
 

@@ -40,6 +40,6 @@ public:
 
 };
 
-} // namespace ResOpt
+} // namespace ResOp
 
 #endif // DPTABLECALCULATOR_H

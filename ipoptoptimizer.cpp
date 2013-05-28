@@ -51,9 +51,9 @@ void IpoptOptimizer::initialize()
     // Change some options
     // Note: The following choices are only examples, they might not be
     //       suitable for your optimization problem.
-    app->Options()->SetNumericValue("tol", 2);
-    app->Options()->SetNumericValue("dual_inf_tol", 3e9);
-    app->Options()->SetNumericValue("compl_inf_tol", 10);
+    app->Options()->SetNumericValue("tol", 1e-5);
+    //app->Options()->SetNumericValue("dual_inf_tol", 3e9);
+    //app->Options()->SetNumericValue("compl_inf_tol", 10);
 
     //app->Options()->SetStringValue("mu_strategy", "adaptive");
     app->Options()->SetStringValue("output_file", runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");

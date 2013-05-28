@@ -570,15 +570,17 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
     // copying the matlab scripts if this is the first time the model is launched.
 
+    QString base_name = m->reservoir()->file().split(".").at(0);
+
     if(m_first_launch)
     {
-        QString base_name = m->reservoir()->file().split(".").at(0);
+
 
         // removing old versions of the files
         QFile::remove(folder() + "/test2.m");
         QFile::remove(folder() + "/runSim2.m");
         QFile::remove(folder() + "/initStateADI.m");
-        QFile::remove(folder() + "/" + base_name + ".mat");
+
 
 
         // copying the originals
@@ -592,6 +594,9 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
         m_first_launch = false;
 
     }
+
+    // removing the .mat file every time, since inconsistent results occur when not removed
+    QFile::remove(folder() + "/" + base_name + ".mat");
 
 
     // generating the control input file

@@ -112,7 +112,11 @@ SOURCES += main.cpp \
     gui/inspectorinjwell.cpp \
     gui/inspectorpressurebooster.cpp \
     gui/inspectorcapacity.cpp \
-    gui/inspectorendpipe.cpp
+    gui/inspectorendpipe.cpp \
+    gui/inspectorvariableinstall.cpp \
+    lshoptimizer.cpp \
+    lshipoptinterface.cpp \
+    lshnomadevaluator.cpp
 
 HEADERS += \
     well.h \
@@ -199,7 +203,11 @@ HEADERS += \
     gui/inspectorinjwell.h \
     gui/inspectorpressurebooster.h \
     gui/inspectorcapacity.h \
-    gui/inspectorendpipe.h
+    gui/inspectorendpipe.h \
+    gui/inspectorvariableinstall.h \
+    lshoptimizer.h \
+    lshipoptinterface.h \
+    lshnomadevaluator.h
 
 RESOURCES += \
     gui/images.qrc

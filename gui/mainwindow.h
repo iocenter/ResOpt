@@ -24,6 +24,7 @@
 
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QWidget>
+#include <QSize>
 
 #include "runner.h"
 
@@ -80,6 +81,8 @@ public:
     explicit MainWindow(QWidget *parent = 0);
 
     ~MainWindow();
+
+    virtual QSize sizeHint() {return QSize(800, 600);}
 
     bool isRunning() {return m_running;}
 

@@ -61,6 +61,8 @@ public:
 
     void clearConstraints() {m_constraint_values.resize(0);}
 
+    void printToCout();
+
     // add functions
     void addRealVariableValue(double v) {m_real_var_values.push_back(v);}
     void addBinaryVariableValue(double v) {m_binary_var_values.push_back(v);}

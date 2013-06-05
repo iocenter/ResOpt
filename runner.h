@@ -81,6 +81,8 @@ private:
     CaseQueue *p_cases;
     Launcher *p_last_run_launcher;
     bool m_paused;
+    QString m_debug_filename;
+    bool m_debug;
 
     int m_debug_case;
 
@@ -136,7 +138,7 @@ public:
     // set functions
 
     void setSummaryFile(const QString &f);
-    void setDebugFile(const QString &f);
+    void setDebugFileName(const QString &f);
 
     void setOptimizer(Optimizer *o) {p_optimizer = o;}
     void setReservoirSimulator(ReservoirSimulator *s) {p_simulator = s;}

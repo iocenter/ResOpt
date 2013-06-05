@@ -80,7 +80,9 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       p_cases(0),
       p_last_run_launcher(0),
       m_paused(false),
+      m_debug(false),
       m_debug_case(0)
+
 {
     p_reader = new ModelReader(driver_file);
 }
@@ -140,6 +142,28 @@ void Runner::initialize()
     // initializing the reservoir simulator
     if(p_simulator == 0) p_simulator = new VlpSimulator();
     p_simulator->setFolder(p_reader->driverFilePath() + "/output");
+
+
+    // setting the debug file
+
+    if(m_debug)
+    {
+        p_debug = new QFile(p_simulator->folder() + "/" + m_debug_filename);
+
+        if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
+        {
+            qWarning("Could not connect to debug file: %s", p_debug->fileName().toLatin1().constData());
+
+            delete p_debug;
+            p_debug = 0;
+        }
+        else
+        {
+            // deleting content from previous launches
+            p_debug->resize(0);
+        }
+
+    }
 
 
     cout << "Initializing the optimizer..." << endl;
@@ -333,8 +357,13 @@ void Runner::setSummaryFile(const QString &f)
 //-----------------------------------------------------------------------------------------------
 // Initializes the debug file
 //-----------------------------------------------------------------------------------------------
-void Runner::setDebugFile(const QString &f)
+void Runner::setDebugFileName(const QString &f)
 {
+
+    m_debug = true;
+
+    m_debug_filename = f;
+
     p_debug = new QFile(f);
 
     if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
@@ -929,9 +958,12 @@ void Runner::printDebug(Launcher *l)
             out << "BOOSTER: " << p->number() << "\n";
             out << "------------------------------\n\n";
 
+            int inst_time = boost->installTime()->value();
+            if(inst_time < 0) inst_time = 0;
+            if(inst_time >= model()->masterSchedule().size()) inst_time = model()->masterSchedule().size() -1;
 
             out << "Downstream pipe   = " << boost->outletConnection()->pipeNumber() << "\n";
-            out << "Installation time = " << model()->masterSchedule().at(boost->installTime()->value()) << "\n";
+            out << "Installation time = " << model()->masterSchedule().at(inst_time) << "\n";
             out << "Boost Pressure    = " << boost->pressureVariable()->value() << "\n";
             out << "Max capacity      = " << boost->capacityVariable()->value() << "\n";
             out << "Current cost      = " << boost->cost()->value() << "\n\n";

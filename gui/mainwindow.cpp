@@ -31,8 +31,6 @@
 #include "casequeue.h"
 
 #include <QtWidgets/QAction>
-#include <QtWidgets/QAction>
-
 #include <QKeySequence>
 #include <QtWidgets/QMenuBar>
 #include <QtWidgets/QMenu>
@@ -69,7 +67,9 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *layout = new QHBoxLayout;
 
     p_model_view = new QGraphicsView(p_model_scene);
-    p_model_view->setMinimumSize(800, 600);
+    p_model_view->setMinimumSize(900, 550);
+
+
 
     layout->addWidget(p_model_view);
 
@@ -87,6 +87,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     p_tab_widget->addTab(widget, "Model");
     p_tab_widget->addTab(p_plot, "Plot");
+
+
 
     setCentralWidget(p_tab_widget);
     setWindowTitle("ResOpt GUI");
@@ -200,7 +202,7 @@ void MainWindow::runModel()
     {
         setRunningState();
 
-        emit sendMsg("Updating launchers with current model...");
+        emit sendMsg("Updating model...");
         p_runner->initializeLaunchers();
 
         // refreshing variables and con lists
@@ -317,6 +319,7 @@ void MainWindow::onStartButtonTriggered()
             emit sendMsg("Resuming optimization...");
             p_runner->setPaused(false);
             p_act_startbutton->setIcon(QIcon(":new/images/pause"));
+            p_act_startbutton->setText("Pause Optimization");
             m_paused = false;
 
 

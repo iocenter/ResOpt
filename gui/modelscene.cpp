@@ -493,9 +493,9 @@ void ModelScene::addCapacities(Model *m)
     for(int i = 0; i < m->numberOfCapacities(); ++i)
     {
         ModelItemCapacity *cap_item = new ModelItemCapacity(m->capacity(i));
-        cap_item->setPos(i*100 + 300, 0);
+        //cap_item->setPos(i*100 + 272, 0);
 
-        addItem(cap_item);
+
         m_capacity_items.append(cap_item);
 
         // adding connectors
@@ -503,9 +503,13 @@ void ModelScene::addCapacities(Model *m)
         {
             ModelItem *feed = itemFromComponent(cap_item->capacity()->feedPipe(j));
 
+            if(i == 0) cap_item->setPos(feed->pos().x() + 6, 0);
+
             Connector *con = new Connector(feed, cap_item, true, Connector::TopConnection);
             addItem(con);
         }
+
+        addItem(cap_item);
     }
 
 }

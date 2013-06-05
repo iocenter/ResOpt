@@ -169,5 +169,36 @@ Case& Case::operator =(const Case &rhs)
     return *this;
 }
 
+//-----------------------------------------------------------------------------------------------
+// prints to the standard output
+//-----------------------------------------------------------------------------------------------
+void Case::printToCout()
+{
+    cout << "CASE DATA:" << endl;
+    cout << "obj =" << objectiveValue() << endl;
+
+    for(int i = 0; i < numberOfRealVariables(); ++i)
+    {
+        cout << "VAR_C_" << i +1 << " = " << realVariableValue(i) << endl;
+    }
+
+    for(int i = 0; i < numberOfBinaryVariables(); ++i)
+    {
+        cout << "VAR_B_" << i +1 << " = " << binaryVariableValue(i) << endl;
+    }
+
+    for(int i = 0; i < numberOfIntegerVariables(); ++i)
+    {
+        cout << "VAR_I_" << i +1 << " = " << integerVariableValue(i) << endl;
+    }
+
+    for(int i = 0; i < numberOfConstraints(); ++i)
+    {
+        cout << "CON_" << i +1 << " = " << constraintValue(i) << endl;
+    }
+
+    cout << endl;
+}
+
 
 } // namespace ResOpt

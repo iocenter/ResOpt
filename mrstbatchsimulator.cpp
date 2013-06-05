@@ -599,7 +599,7 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
     }
 
-    // removing the .mat file
+    // removing the .mat file every time, since inconsistent results occur when not removed
     QFile::remove(folder() + "/" + base_name + ".mat");
 
 
@@ -753,6 +753,7 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
             double pres = list.at(2).toDouble();
 
             // converting the rates and pressures to the correct units
+            // production rates are negative, injection positive
             q_wat = -86400 * q_wat;
             q_oil = -86400 * q_oil;
             pres = 1e-5 * pres;

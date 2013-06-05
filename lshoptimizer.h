@@ -19,63 +19,59 @@
  */
 
 
-#ifndef PLOT_H
-#define PLOT_H
+#ifndef LSHOPTIMIZER_H
+#define LSHOPTIMIZER_H
 
-#include <QtWidgets/QWidget>
+#include "optimizer.h"
 #include <QVector>
-#include "qcustomplot.h"
 
+#include "nomad.hpp"
 
-#include "case.h"
-
-using ResOpt::Case;
-
-class QPushButton;
-class QSlider;
-
-namespace ResOptGui
+namespace ResOpt
 {
 
-class MainWindow;
+class Runner;
+class Pipe;
 
-class Plot : public QWidget
+
+
+
+/**
+ * @brief Runs the project once with the starting point values for the variables.
+ *
+ */
+class LshOptimizer : public Optimizer
 {
-    Q_OBJECT
-
 private:
-    MainWindow *p_mainwindow;
 
-    double m_max;
-    double m_min;
+    QVector<Case*> m_solutions;
+    Case* p_best_solution;
+    Case* p_current_solution;
+    Case* p_current_values;
+    bool m_last_sol_best;
+    bool m_use_nomad;
 
-    QPushButton *p_btn_clear;
-    QPushButton *p_btn_rerun;
-    QSlider *p_sld_xaxis;
-
-    QCustomPlot m_custom_plot;
-    QVector<Case*> m_cases;
-
-    bool m_user_changed_slider;
-
+    void solveContineous();
+    void solveContineousIpopt();
+    void solveContineousNomad();
+    NOMAD::Parameters* generateNomadParameters(NOMAD::Display *disp);
 
 public:
-    Plot(MainWindow *mw, QWidget *parent = 0);
-    ~Plot();
+    LshOptimizer(Runner *r);
+    virtual ~LshOptimizer();
 
-    void savePlot(const QString &fileName);
 
-public slots:
+    virtual void initialize();
 
-    void addCase(Case *c);
-    void clearCases();
-    void onSelectionChanged();
-    void rerunSelectedCase();
-    void onXAxisSliderChanged();
-    void onXAxisSliderPressed();
+    virtual void start();
+
+    void sendCasesToOptimizer(CaseQueue *cases);
+
+    void setCurrentSolution(Case *c);
+
 };
 
+} // namespace ResOpt
 
-} // namespace
 
-#endif // PLOT_H
+#endif // LSHOPTIMIZER_H

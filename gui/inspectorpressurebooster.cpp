@@ -22,6 +22,7 @@
 #include "inspectorpressurebooster.h"
 
 #include "inspectorvariable.h"
+#include "inspectorvariableinstall.h"
 #include "plotstreams.h"
 
 #include "pressurebooster.h"
@@ -76,7 +77,13 @@ void InspectorPressureBooster::construct()
     QVBoxLayout *layout_var = new QVBoxLayout(box_var);
     box_var->setLayout(layout_var);
 
-    p_var_install = new InspectorVariable("Install Time:", p_booster->installTime()->value(), p_booster->installTime()->max(), p_booster->installTime()->min(), this, true);
+    QVector<double> schedule;
+    for(int i = 0; i < p_booster->numberOfStreams(); ++i)
+    {
+        schedule.push_back(p_booster->stream(i)->time());
+    }
+
+    p_var_install = new InspectorVariableInstall(p_booster->installTime()->value(), p_booster->installTime()->max(), p_booster->installTime()->min(), schedule, this, true);
     layout_var->addWidget(p_var_install);
 
     p_var_capacity = new InspectorVariable("Capacity:", p_booster->capacityVariable()->value(), p_booster->capacityVariable()->max(), p_booster->capacityVariable()->min(), this);

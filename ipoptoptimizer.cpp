@@ -107,6 +107,8 @@ void IpoptOptimizer::start()
     if (status == Solve_Succeeded)
     {
         std::cout << std::endl << std::endl << "*** The problem solved!" << std::endl;
+
+
     }
     else
     {

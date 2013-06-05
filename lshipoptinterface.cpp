@@ -1,10 +1,31 @@
+/*
+ * This file is part of the ResOpt project.
+ *
+ * Copyright (C) 2011-2013 Aleksander O. Juell <aleksander.juell@ntnu.no>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
 
-#include "ipoptinterface.h"
+
+#include "lshipoptinterface.h"
+
 #include <cassert>
 #include <QVector>
-#include <QTextStream>
+#include <iostream>
 
-#include "ipoptoptimizer.h"
+#include "lshoptimizer.h"
 #include "runner.h"
 #include "model.h"
 #include "realvariable.h"
@@ -14,7 +35,6 @@
 #include "objective.h"
 #include "case.h"
 #include "casequeue.h"
-#include "reservoirsimulator.h"
 
 using std::cout;
 using std::endl;
@@ -23,43 +43,22 @@ namespace ResOpt
 {
 
 /* Constructor. */
-IpoptInterface::IpoptInterface(IpoptOptimizer *o)
+LshIpoptInterface::LshIpoptInterface(LshOptimizer *o)
     : p_optimizer(o),
       p_case_last(0),
       p_case_gradients(0)
 {
     m_vars = p_optimizer->runner()->model()->realVariables();
     m_cons = p_optimizer->runner()->model()->constraints();
-
-
-    // setting up the gradients file
-    p_grad_file= new QFile(p_optimizer->runner()->reservoirSimulator()->folder() + "/ipopt_gradients.dat");
-
-    if(!p_grad_file->open(QIODevice::WriteOnly | QIODevice::Text))
-    {
-        qWarning("Could not connect to IPOPT gradients file: %s", p_grad_file->fileName().toLatin1().constData());
-
-        delete p_grad_file;
-        p_grad_file = 0;
-
-        exit(1);
-    }
-    else
-    {
-        // deleting content from previous launches
-        p_grad_file->resize(0);
-
-    }
-
 }
 
-IpoptInterface::~IpoptInterface()
+LshIpoptInterface::~LshIpoptInterface()
 {
     if(p_case_last != 0) delete p_case_last;
     if(p_case_gradients != 0) delete p_case_gradients;
 }
 
-bool IpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
+bool LshIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
                          Index& nnz_h_lag, IndexStyleEnum& index_style)
 {
     cout << "Giving Ipopt the dimensions of the problem..." << endl;
@@ -80,23 +79,21 @@ bool IpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
     return true;
 }
 
-bool IpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
+bool LshIpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
                             Index m, Number* g_l, Number* g_u)
 {
-    cout << "Giving Ipopt bounds of variables and constraints..." << endl;
-
     assert(n == m_vars.size());
     assert(m == m_cons.size());
+
+    int n_var = 0;  // variable index used by the optimizer
 
     // setting the real variable bounds
     for(int i = 0; i < m_vars.size(); ++i)
     {
-        x_l[i] = m_vars.at(i)->min();   // lower bound
-        x_u[i] = m_vars.at(i)->max();   // upper bound
+        x_l[n_var] = m_vars.at(i)->min();   // lower bound
+        x_u[n_var] = m_vars.at(i)->max();   // upper bound
 
-        cout << m_vars.at(i)->min() << " < x[" << i << "] < " << m_vars.at(i)->max() << endl;
-
-
+        ++n_var;
     }
 
     // setting the constraint bounds
@@ -109,7 +106,7 @@ bool IpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
     return true;
 }
 
-bool IpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
+bool LshIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
                                bool init_z, Number* z_L, Number* z_U,
                                Index m, bool init_lambda,
                                Number* lambda)
@@ -123,24 +120,23 @@ bool IpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
     assert(!init_z);
     assert(!init_lambda);
 
+    int n_var = 0;  // variable index used by the optimizer
 
     // setting the variable starting points
     for(int i = 0; i < m_vars.size(); ++i)
     {
-        x[i] = m_vars.at(i)->value();  // current value = starting point
+        x[n_var] = m_vars.at(i)->value();  // current value = starting point
 
-        cout <<  " < x[" << i << "] = " << m_vars.at(i)->value() << endl;
-
-
+        ++n_var;
     }
 
     return true;
 
 }
 
-bool IpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
+bool LshIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
 {
-    cout << "Evaluating objective function for Ipopt..." << endl;
+    //cout << "Evaluating objective function for Ipopt..." << endl;
 
     // checking if this is a new set of variable values
     if(newVariableValues(n, x))
@@ -157,7 +153,7 @@ bool IpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_va
         case_queue->push_back(case_new);
 
         // sending the new case to the runner
-        p_optimizer->runCases(case_queue);
+        p_optimizer->sendCasesToOptimizer(case_queue);
 
         // setting the case as the last case
         p_case_last = case_new;
@@ -173,9 +169,9 @@ bool IpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_va
 
 }
 
-bool IpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
+bool LshIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
-    cout << "Evaluating the objective function gradients for Ipopt..." << endl;
+    // cout << "Evaluating the objective function gradient for Ipopt..." << endl;
 
     // first checking if gradients are allready calculated
     if(!gradientsAreUpdated(n,x))
@@ -184,7 +180,6 @@ bool IpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* g
         calculateGradients(n,x);
         cout << "done calculating new gradients..." << endl;
     }
-    else cout << "gradients are already calculated for this point..." << endl;
 
     // copying the calculated gradients to Ipopt
     for(int i = 0; i < n; i++)
@@ -198,9 +193,9 @@ bool IpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* g
 
 }
 
-bool IpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
+bool LshIpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
 {
-    cout << "Evaluating the constraints for Ipopt..." << endl;
+    //cout << "Evaluating the constraints for Ipopt..." << endl;
 
     // checking if this is a new set of variable values
     if(newVariableValues(n, x))
@@ -217,7 +212,7 @@ bool IpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Numbe
         case_queue->push_back(case_new);
 
         // sending the new case to the runner
-        p_optimizer->runCases(case_queue);
+        p_optimizer->sendCasesToOptimizer(case_queue);
 
         // setting the case as the last case
         p_case_last = case_new;
@@ -238,7 +233,7 @@ bool IpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Numbe
     return true;
 }
 
-bool IpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
+bool LshIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
                        Index m, Index nele_jac, Index* iRow, Index *jCol,
                        Number* values)
 {
@@ -261,7 +256,7 @@ bool IpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
     }
     else    // the structure is already set, getting the values
     {
-        cout << "Evaluating the jacobian for Ipopt..." << endl;
+        //cout << "Evaluating the jacobian for Ipopt..." << endl;
 
         // checking if gradients are calculated
         if(!gradientsAreUpdated(n,x))
@@ -280,7 +275,7 @@ bool IpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
 
 }
 
-bool IpoptInterface::eval_h(Index n, const Number* x, bool new_x,
+bool LshIpoptInterface::eval_h(Index n, const Number* x, bool new_x,
                    Number obj_factor, Index m, const Number* lambda,
                    bool new_lambda, Index nele_hess, Index* iRow,
                    Index* jCol, Number* values)
@@ -289,7 +284,7 @@ bool IpoptInterface::eval_h(Index n, const Number* x, bool new_x,
     return true;
 }
 
-void IpoptInterface::finalize_solution(SolverReturn status,
+void LshIpoptInterface::finalize_solution(SolverReturn status,
                               Index n, const Number* x, const Number* z_L, const Number* z_U,
                               Index m, const Number* g, const Number* lambda,
                               Number obj_value,
@@ -321,11 +316,12 @@ void IpoptInterface::finalize_solution(SolverReturn status,
 
     cout << endl;
 
-    cout << "Writing the final solution to the summary file..." << endl;
+    cout << "Transfering final solution to LSH..." << endl;
     Case *c = generateCase(n,x);
     c->setObjectiveValue(-obj_value);
 
-    p_optimizer->sendBestCaseToRunner(c);
+    p_optimizer->setCurrentSolution(c);
+
 }
 
 
@@ -333,7 +329,7 @@ void IpoptInterface::finalize_solution(SolverReturn status,
 //-----------------------------------------------------------------------------------------------
 // Checks if the x values are the same as the current model values for the variables
 //-----------------------------------------------------------------------------------------------
-bool IpoptInterface::newVariableValues(Index n, const Number *x)
+bool LshIpoptInterface::newVariableValues(Index n, const Number *x)
 {
     bool x_new = false;
 
@@ -345,16 +341,17 @@ bool IpoptInterface::newVariableValues(Index n, const Number *x)
     if(n != n_var_case) return false;
 
     // checking if the real variables are the same
-
+    int n_var = 0;
 
     for(int i = 0; i < p_case_last->numberOfRealVariables(); ++i)
     {
-        if(x[i] != p_case_last->realVariableValue(i))
+        if(x[n_var] != p_case_last->realVariableValue(i))
         {
             x_new = true;
             break;
         }
 
+        ++n_var;
     }
 
     return x_new;
@@ -364,7 +361,7 @@ bool IpoptInterface::newVariableValues(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 // Calculates the perturbated value a variable
 //-----------------------------------------------------------------------------------------------
-double IpoptInterface::perturbedVariableValue(double value, double max, double min)
+double LshIpoptInterface::perturbedVariableValue(double value, double max, double min)
 {
     double x_perturbed;
 
@@ -391,9 +388,8 @@ double IpoptInterface::perturbedVariableValue(double value, double max, double m
 //-----------------------------------------------------------------------------------------------
 // Calculates the gradients
 //-----------------------------------------------------------------------------------------------
-void IpoptInterface::calculateGradients(Index n, const Number *x)
+void LshIpoptInterface::calculateGradients(Index n, const Number *x)
 {
-    cout << "Starting perturbations to calculate gradients for IPOPT" << endl;
     // checking if the gradient vectors have the correct size
     int n_grad = m_vars.size();
     if(m_grad_f.size() != n_grad) m_grad_f = QVector<double>(n_grad);
@@ -417,7 +413,7 @@ void IpoptInterface::calculateGradients(Index n, const Number *x)
         case_queue->push_back(case_new);
 
         // sending the new case to the runner
-        p_optimizer->runCases(case_queue);
+        p_optimizer->sendCasesToOptimizer(case_queue);
 
         // setting the case as the last case
         p_case_last  = case_new;
@@ -436,144 +432,94 @@ void IpoptInterface::calculateGradients(Index n, const Number *x)
     CaseQueue *case_queue = new CaseQueue();
 
     // adding the real variable perturbations
-    for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
+    for(int i = 0; i < m_vars.size(); ++i)
     {
         // calculating the perturbed value of the variable
         double x_perturbed = perturbedVariableValue(p_case_gradients->realVariableValue(i), m_vars.at(i)->max(), m_vars.at(i)->min());
 
-        cout << "x[" << i << "] perturbed = " << x_perturbed << endl;
-
         // setting up a new case
-        Case *case_perturbed = new Case(*p_case_gradients);
+        Case *case_perturbed = generateCase(n,x);;
 
         // changing the value of the variable to the perturbe value
         case_perturbed->setRealVariableValue(i, x_perturbed);
-
-        // running the case
-        p_optimizer->runCase(case_perturbed);
 
         // adding the case to the queue
         case_queue->push_back(case_perturbed);
     }
 
     // sending the cases to the runner for evaluation
-    //p_optimizer->runCases(case_queue);
+    p_optimizer->sendCasesToOptimizer(case_queue);
 
-
-    // setting up the text stream for gradients info
-    QTextStream out(p_grad_file);
-
-    // printing header
-
-    out << "\n ------ GRADIENTS FOR IPOPT -----------\n";
-    out << "VAR #\t OBJ \t";
-
-    for(int i = 0; i < m_cons.size(); ++i)
-    {
-        out << "CON" << i+1 << "\t";
-    }
-
-    out << "\n";
+    int n_var = 0;
 
     // calculating the gradients of the real variables
     for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
     {
         // calculating the perturbation size of the variable
-        double dx = p_case_gradients->realVariableValue(i) - case_queue->at(i)->realVariableValue(i);
+        double dx = p_case_gradients->realVariableValue(i) - case_queue->at(n_var)->realVariableValue(i);
 
         // calculating the gradient of the objective
-        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(i)->objectiveValue()) / dx;
+        double dfdx = -(p_case_gradients->objectiveValue() - case_queue->at(n_var)->objectiveValue()) / dx;
 
         // setting the value to the objective gradient vector
-        m_grad_f.replace(i, dfdx);
-
-        //printing var # and obj
-        out << i+1 << "\t" << dfdx << "\t";
+        m_grad_f.replace(n_var, dfdx);
 
 
         // calculating the gradients of the constraints
-        int entry = i*p_case_gradients->numberOfConstraints();
+        int entry = n_var*p_case_gradients->numberOfConstraints();
         for(int j = 0; j < p_case_gradients->numberOfConstraints(); ++j)
         {
-            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(i)->constraintValue(j)) / dx;
+            double dcdx = (p_case_gradients->constraintValue(j) - case_queue->at(n_var)->constraintValue(j)) / dx;
             m_jac_g.replace(entry, dcdx);
             ++entry;
-
-            // printing con deriv
-            out << dcdx << "\t";
         }
 
-        out << "\n";
-
-        /*
-        // printing base case
-        out << p_case_gradients->realVariableValue(i) << " (b)\t" << p_case_gradients->objectiveValue() << "\t";
-        for(int k = 0; k < p_case_gradients->numberOfConstraints(); ++k)
-        {
-            out << p_case_gradients->constraintValue(k) << "\t";
-        }
-        out << "\n";
-
-        // printing pertrubarion
-        out << case_queue->at(i)->realVariableValue(i) << " (p)\t" << case_queue->at(i)->objectiveValue() << "\t";
-        for(int k = 0; k < case_queue->at(i)->numberOfConstraints(); ++k)
-        {
-            out << case_queue->at(i)->constraintValue(k) << "\t";
-        }
-        out << "\n";
-        */
-
-
-
+        ++n_var;
     }
 
     // deleting the perturbed cases
     for(int i = 0; i < case_queue->size(); ++i) delete case_queue->at(i);
     delete case_queue;
 
-    p_grad_file->flush();
-
 }
 
 //-----------------------------------------------------------------------------------------------
 // Checks if the gradients are up to date
 //-----------------------------------------------------------------------------------------------
-bool IpoptInterface::gradientsAreUpdated(Index n, const Number *x)
+bool LshIpoptInterface::gradientsAreUpdated(Index n, const Number *x)
 {
 
     // fist checking if the gradients case has been initialized
     if(p_case_gradients == 0) return false;
 
-    bool updated = false;
-
     if(p_case_gradients->numberOfRealVariables() == m_vars.size())
     {
         // checking if the variable values are the same as the gradients case
-
+        int n_var = 0;
         bool new_x = false;
 
         // real variables
         for(int i = 0; i < p_case_gradients->numberOfRealVariables(); ++i)
         {
-            if(x[i] != p_case_gradients->realVariableValue(i))
+            if(x[n_var] != p_case_gradients->realVariableValue(i))
             {
                 new_x = true;
                 break;
             }
-
+            ++n_var;
         }
 
-        if(!new_x) updated = true;
+        if(new_x) return new_x;
 
     }
 
-    return updated;
+    else return false;
 }
 
 //-----------------------------------------------------------------------------------------------
 // Generates a Case based on the values in x
 //-----------------------------------------------------------------------------------------------
-Case* IpoptInterface::generateCase(Index n, const Number *x)
+Case* LshIpoptInterface::generateCase(Index n, const Number *x)
 {
     // checking that the problem has the right dimensions
     assert(n == m_vars.size());
@@ -584,12 +530,9 @@ Case* IpoptInterface::generateCase(Index n, const Number *x)
     // updating the variable values
     int n_var = 0;
 
-    cout << "Generating new case for IPOPT: " << endl;
     // real variables
     for(int i = 0; i < m_vars.size(); ++i)
     {
-        cout << "x[" << i << "] = " << x[n_var] << endl;
-
         case_new->addRealVariableValue(x[n_var]);
         ++n_var;
     }

@@ -530,7 +530,7 @@ bool GprsSimulator::launchSimulator()
 
 
 
-    //cout << QString(gprs.readAll()).toAscii().data() << endl;
+    //cout << QString(gprs.readAll()).toLatin1().constData() << endl;
 
 
 
@@ -601,7 +601,7 @@ bool GprsSimulator::readWellOutput(Well *w, QString file_name)
 
     // starting to read the file
 
-    //cout << "Reading simulator output for WELL: " << w->name().toAscii().data() << "..." << endl;
+    //cout << "Reading simulator output for WELL: " << w->name().toLatin1().constData() << "..." << endl;
 
 
     QStringList list;

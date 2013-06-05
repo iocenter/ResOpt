@@ -213,6 +213,10 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     // checking if the rates are zero
     double total_rate = s->gasRate(Stream::FIELD) + s->oilRate(Stream::FIELD) + s->waterRate(Stream::FIELD);
     if(total_rate <= 0) return 0.0;
+    if(s->oilRate(true) < 0) return 0.0;
+    if(s->gasRate(true) < 0) return 0.0;
+    if(s->waterRate(true) < 0) return 0.0;
+    if(p <= 0) return 0.0;
 
     // else getting on with the calculations
 
@@ -229,11 +233,17 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     double vm = vsl + vsg;                              // superficial two phase velocity
 
 
+    //cout << "vsl = " << vsl << endl;
+    //cout << "vsg = " << vsg << endl;
 
+    //cout << "p   = " << p << endl;
+    //cout << "z   = " << z_fac << endl;
 
     double froude_no = pow(vm, 2) / d_in / g;  // froude number
 
     double liquid_content = vsl / vm;
+
+    //cout << "vm = " << vm << endl;
 
     // if the liquid content is 0, changing it to something small
     if(liquid_content < 1e-8) liquid_content = 1e-8;
@@ -279,7 +289,10 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
     {
         hz_holdup = (0.845 * pow(liquid_content, 0.5351)) / pow(froude_no, 0.0173);
 
+        // cor = (1 - liquid_content) * log(2.96 * pow(liquid_content, -0.305) * pow(nlv, -0.4473) * pow(froude_no, -0.0978));
+
         //cout << "intermittent hz_holdup = " << hz_holdup << endl;
+        //cout << "liquid_content         = " << liquid_content << endl;
     }
     else if(regime == DISTRIBUTED)
     {
@@ -439,6 +452,8 @@ double BeggsBrillCalculator::pressureDrop(Stream *s, double p, Stream::units uni
 
     // total pressure drop in psi
     double dp_psi_tot = dp_tot * length_ft;
+
+
 
     if(unit == Stream::FIELD) return dp_psi_tot;
     else return dp_psi_tot / 14.5037738;

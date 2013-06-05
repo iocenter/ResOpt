@@ -79,7 +79,8 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       m_number_of_res_sim_runs(0),
       p_cases(0),
       p_last_run_launcher(0),
-      m_paused(false)
+      m_paused(false),
+      m_debug_case(0)
 {
     p_reader = new ModelReader(driver_file);
 }
@@ -765,7 +766,7 @@ void Runner::printDebug(Launcher *l)
     QTextStream out(p_debug);
 
     Model *m = l->model();
-
+    out << "RUN # " << ++m_debug_case << "\n";
     out << "CURRENT MODEL STATE:" << "\n";
     out << "###############################\n\n";
 

@@ -82,6 +82,8 @@ private:
     Launcher *p_last_run_launcher;
     bool m_paused;
 
+    int m_debug_case;
+
 
 
 

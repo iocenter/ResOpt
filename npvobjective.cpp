@@ -49,12 +49,12 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 {
 
     // printing the costs
-    /*
+
     for(int i = 0; i < c.size(); ++i)
     {
         cout << "COST = " << c.at(i)->value() << ", TIME = " << c.at(i)->time() << endl;
     }
-    */
+
 
     // checking if the discount factor is entered as fraction or percent
     if(m_dcf >= 1.0)

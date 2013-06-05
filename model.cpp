@@ -734,8 +734,8 @@ void Model::updateObjectiveValue()
         {
             *s += *p_end_pipes.at(j)->stream(i);
 
-            cout << "Rates used for objective value:" <<endl;
-            s->printToCout();
+            //cout << "Rates used for objective value:" <<endl;
+            //s->printToCout();
         }
 
         field_rates.push_back(s);
@@ -761,7 +761,7 @@ void Model::updateObjectiveValue()
 
             if(time_cost <= 0) p_sep->cost()->setTime(0.0);
             else if(time_cost >= m_master_schedule.size()) p_sep->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1) + 1);
-            else p_sep->cost()->setTime(m_master_schedule.at(time_cost));
+            else p_sep->cost()->setTime(m_master_schedule.at(time_cost-1));
 
             // adding the cost to the vector
             costs.push_back(p_sep->cost());
@@ -789,13 +789,13 @@ void Model::updateObjectiveValue()
 
             if(time_cost <= 0) p_boost->cost()->setTime(0.0);
             else if(time_cost >= m_master_schedule.size()) p_boost->cost()->setTime(m_master_schedule.at(m_master_schedule.size()-1) + 1);
-            else p_boost->cost()->setTime(m_master_schedule.at(time_cost));
+            else p_boost->cost()->setTime(m_master_schedule.at(time_cost-1));
 
             // adding the cost to the vector
             costs.push_back(p_boost->cost());
 
-            //cout << "Cost for booster #" << p_boost->number() << " = " << p_boost->cost()->value() << endl;
-            //cout << "Install time   = " << p_boost->cost()->time() << endl << endl;
+            cout << "Cost for booster #" << p_boost->number() << " = " << p_boost->cost()->value() << endl;
+            cout << "Install time   = " << p_boost->cost()->time() << endl << endl;
         }
     }
 
@@ -872,7 +872,7 @@ QVector<Cost*> Model::sortCosts(QVector<Cost *> c)
             // checking if the current_unsorted < result
             if(current_unsorted->time() <= result.at(j)->time())
             {
-                result.insert(i, current_unsorted);
+                result.insert(j, current_unsorted);
                 inserted = true;
                 break;
             }

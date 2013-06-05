@@ -156,7 +156,18 @@ void PressureBooster::calculateInletPressure()
         // if the booster is installed, the inlet pressure should be outlet - pressure_change
         // else the inlet pressure should be equal to the outlet pressure
         double p_in = p_out;
-        if(p_install_time->value() <= i) p_in -= p_pressure_change->value();
+        if(p_install_time->value() <= i)
+        {
+            p_in -= p_pressure_change->value();
+            if(p_in < 0.1)
+            {
+                cout << endl << "### Warning ###" << endl;
+                cout << "The downstream pressure for booster #" << number() << " is less than the boosting pressure..." << endl;
+                cout << "Setting the upstream pressure to 0" << endl;
+
+                p_in = 0.1;
+            }
+        }
 
         // setting inlet pressure
         stream(i)->setPressure(p_in);

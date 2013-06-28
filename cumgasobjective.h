@@ -39,6 +39,8 @@ public:
 
     virtual Objective* clone() {return new CumgasObjective(*this);}
 
+    virtual QString description() const;
+
     /**
      * @brief Calculates the cumulative oil produced from the input streams
      *

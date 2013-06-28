@@ -73,9 +73,9 @@ public:
     void reduceRemainingCapacity(int i, double q);
 
     // get functions
-    TYPE type() {return m_type;}
+    TYPE type() const {return m_type;}
     PipeConnection* outletConnection() {return p_outlet_connection;}
-    Cost* cost() {return p_cost;}
+    Cost* cost() const {return p_cost;}
     shared_ptr<IntVariable> installTime() {return p_install_time;}
     shared_ptr<RealVariable> removeFraction() {return p_remove_fraction;}
     shared_ptr<RealVariable> removeCapacity() {return p_remove_capacity;}

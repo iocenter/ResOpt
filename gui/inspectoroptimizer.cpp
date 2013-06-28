@@ -28,6 +28,7 @@
 #include "runonceoptimizer.h"
 #include "ipoptoptimizer.h"
 #include "lshoptimizer.h"
+#include "nomadipoptoptimizer.h"
 
 using ResOpt::Optimizer;
 using ResOpt::BonminOptimizer;
@@ -35,6 +36,7 @@ using ResOpt::NomadOptimizer;
 using ResOpt::RunonceOptimizer;
 using ResOpt::IpoptOptimizer;
 using ResOpt::LshOptimizer;
+using ResOpt::NomadIpoptOptimizer;
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
@@ -73,7 +75,8 @@ void InspectorOptimizer::construct()
     p_algorithm->addItem("NOMAD");
     p_algorithm->addItem("Run Once");
     p_algorithm->addItem("IPOPT");
-    p_algorithm->addItem("LSH");
+    p_algorithm->addItem("NOIP");
+
 
     // finding out what type of optimizer is currently used
 
@@ -81,7 +84,7 @@ void InspectorOptimizer::construct()
     NomadOptimizer *l_nomad = dynamic_cast<NomadOptimizer*>(p_runner->optimizer());
     RunonceOptimizer *l_runonce = dynamic_cast<RunonceOptimizer*>(p_runner->optimizer());
     IpoptOptimizer *l_ipopt = dynamic_cast<IpoptOptimizer*>(p_runner->optimizer());
-    LshOptimizer *l_lsh = dynamic_cast<LshOptimizer*>(p_runner->optimizer());
+    NomadIpoptOptimizer *l_noip = dynamic_cast<NomadIpoptOptimizer*>(p_runner->optimizer());
 
     if(l_bonmin != 0)
     {
@@ -103,7 +106,7 @@ void InspectorOptimizer::construct()
         p_algorithm->setCurrentIndex(3);
         m_alg_in_runner = 3;
     }
-    else if(l_lsh != 0)
+    else if(l_noip != 0)
     {
         p_algorithm->setCurrentIndex(4);
         m_alg_in_runner = 4;
@@ -151,7 +154,7 @@ void InspectorOptimizer::saveAndClose()
         else if(p_algorithm->currentIndex() == 1) o = new NomadOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 2) o = new RunonceOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 3) o = new IpoptOptimizer(p_runner);
-        else if(p_algorithm->currentIndex() == 4) o = new LshOptimizer(p_runner);
+        else if(p_algorithm->currentIndex() == 4) o = new NomadIpoptOptimizer(p_runner);
 
         // setting values to the new optimizer
         o->setMaxIterations(max_iter);

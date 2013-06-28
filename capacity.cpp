@@ -237,4 +237,30 @@ void Capacity::updateConstraints()
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString Capacity::description() const
+{
+    QString str("START CAPACITY\n");
+    str.append(" NAME " + name() + "\n");
+
+    str.append(" PIPES ");
+    for(int i = 0; i < numberOfFeedPipeNumbers(); ++i)
+    {
+        str.append(QString::number(feedPipeNumber(i)) + " ");
+    }
+    str.append("\n");
+
+    if(m_max_gas >= 0) str.append(" GAS " + QString::number(m_max_gas) + "\n");
+    if(m_max_oil >= 0) str.append(" OIL " + QString::number(m_max_oil) + "\n");
+    if(m_max_water >= 0) str.append(" WATER " + QString::number(m_max_water) + "\n");
+    if(m_max_liquid >= 0) str.append(" LIQUID " + QString::number(m_max_liquid) + "\n");
+
+    str.append("END CAPACITY\n\n");
+    return str;
+}
+
+
+
 } // namespace ResOpt

@@ -29,6 +29,9 @@
 #include "pipe.h"
 #include "midpipe.h"
 #include "stream.h"
+#include "wellconnection.h"
+#include "intvariable.h"
+#include "cost.h"
 
 
 
@@ -304,7 +307,62 @@ double ProductionWell::flowFraction(Pipe *p, bool *ok)
 // generates a description for driver file
 //-----------------------------------------------------------------------------------------------
 QString ProductionWell::description() const
-{}
+{
+    QString str("START WELL\n");
+    str.append(" NAME " + name() + "\n");
+    str.append(" TYPE P \n");
+    str.append(" GROUP " + group() + "\n");
+    str.append(" BHPLIMIT " + QString::number(bhpLimit()) + "\n");
+
+    if(hasInstallTime())
+    {
+        str.append(" INSTALLTIME " + QString::number(installTime()->value()) + " " + QString::number(installTime()->max()) + " " + QString::number(installTime()->min()) + "\n");
+    }
+
+    if(hasCost())
+    {
+        str.append(" COST " + QString::number(cost()->constantCost()) + " " + QString::number(cost()->fractionCost()) + " " + QString::number(cost()->capacityCost()) + "\n");
+    }
+
+    str.append(" START OUTLETPIPES\n");
+
+    foreach(PipeConnection *pc, m_pipe_connections)
+    {
+        str.append("  " + QString::number(pc->pipeNumber()) + "   " + QString::number(pc->variable()->value()) + "  ");
+        if(pc->variable()->isVariable()) str.append("BIN\n");
+        else str.append("\n");
+    }
+
+    str.append(" END OUTLETPIPES\n\n");
+
+    str.append(" START CONNECTIONS\n");
+    for(int i = 0; i < numberOfConnections(); ++i)
+    {
+        WellConnection *wc = connection(i);
+        if(wc->cell() >= 0) str.append("  " + QString::number(wc->cell()) + " " + QString::number(wc->wellIndex()) + "\n");
+        else str.append("  " + QString::number(wc->i()) + " " +
+                        QString::number(wc->j()) + " " +
+                        QString::number(wc->k1()) + " " +
+                        QString::number(wc->k2()) + " " +
+                        QString::number(wc->wellIndex()) + "\n");
+
+    }
+
+    str.append(" END CONNECTIONS\n\n");
+
+
+    str.append(" START SCHEDULE\n");
+
+    for(int i = 0; i < numberOfControls(); ++i) str.append(control(i)->description());
+
+    str.append(" END SCHEDULE\n\n");
+
+    str.append("END WELL\n\n");
+    return str;
+
+}
+
+
 
 
 } // namespace ResOpt

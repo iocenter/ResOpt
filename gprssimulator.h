@@ -64,6 +64,8 @@ public:
 
     virtual ReservoirSimulator* clone() const {return new GprsSimulator(*this);}
 
+    virtual QString description() const {return QString("SIMULATOR GPRS\n\n");}
+
     virtual bool generateInputFiles(Model *m);
     virtual bool launchSimulator();
     virtual bool readOutput(Model *m);

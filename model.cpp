@@ -794,8 +794,7 @@ void Model::updateObjectiveValue()
             // adding the cost to the vector
             costs.push_back(p_boost->cost());
 
-            cout << "Cost for booster #" << p_boost->number() << " = " << p_boost->cost()->value() << endl;
-            cout << "Install time   = " << p_boost->cost()->time() << endl << endl;
+
         }
     }
 

@@ -23,6 +23,8 @@
 
 #include <tr1/memory>
 
+#include <QString>
+
 
 
 
@@ -65,6 +67,10 @@ public:
     WellControl(const WellControl &c);
 
     ~WellControl();
+
+    // misc functions
+
+    QString description() const;
 
     // set functions
 

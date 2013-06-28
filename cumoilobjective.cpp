@@ -24,6 +24,7 @@
 
 #include <math.h>
 #include <iostream>
+#include <QString>
 
 
 using std::cout;
@@ -73,6 +74,22 @@ void CumoilObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
     setValue(cumoil);
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString CumoilObjective::description() const
+{
+    QString str("START OBJECTIVE\n");
+
+    str.append(" TYPE CUMOIL \n");
+
+    str.append("END OBJECTIVE\n\n");
+
+    return str;
+
+}
+
 
 
 } // namespace ResOpt

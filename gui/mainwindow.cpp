@@ -29,6 +29,13 @@
 #include "model.h"
 #include "case.h"
 #include "casequeue.h"
+#include "objective.h"
+#include "well.h"
+#include "pipe.h"
+#include "capacity.h"
+#include "userconstraint.h"
+#include "reservoirsimulator.h"
+#include "reservoir.h"
 
 #include <QtWidgets/QAction>
 #include <QKeySequence>
@@ -47,6 +54,13 @@ using ResOpt::Case;
 using ResOpt::CaseQueue;
 using ResOpt::Optimizer;
 using ResOpt::Model;
+using ResOpt::Objective;
+using ResOpt::Well;
+using ResOpt::Pipe;
+using ResOpt::Capacity;
+using ResOpt::UserConstraint;
+using ResOpt::ReservoirSimulator;
+using ResOpt::Reservoir;
 
 namespace ResOptGui
 {
@@ -126,9 +140,13 @@ void MainWindow::createMenus()
     // ----------- creating file menu ---------------------
     QMenu *p_file_menu = menuBar()->addMenu("File");
 
-    // load project
-    QAction *p_act_load =  p_file_menu->addAction("Load Project");
+    // load model
+    QAction *p_act_load =  p_file_menu->addAction("Load Model");
     connect(p_act_load, SIGNAL(triggered()), this, SLOT(loadModel()));
+
+    // save model
+    QAction *p_act_savemodel = p_file_menu->addAction("Save Model");
+    connect(p_act_savemodel, SIGNAL(triggered()), this, SLOT(saveModelAs()));
 
     // save plot
     QAction *p_act_saveplot = p_file_menu->addAction("Save Plot");
@@ -306,6 +324,101 @@ void MainWindow::savePlot()
 
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Saves the model description to file
+//-----------------------------------------------------------------------------------------------
+void MainWindow::saveModelAs()
+{
+    // getting the file name
+    QString fileName = QFileDialog::getSaveFileName(this, "Save Model Description", QDir::currentPath(), "Driver file (*.dat)");
+
+
+
+    // openging the driver file
+    QFile driver(fileName);
+
+
+    if(!driver.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        emit sendMsg("Could not write to driver file: " + fileName);
+
+
+    }
+    else
+    {
+        emit sendMsg("Saving the model to file...");
+
+        driver.resize(0);
+
+        QTextStream out(&driver);
+
+        // --- starting to write the model description
+
+        // model type
+        out << p_runner->model()->description();
+
+        // simulator
+        out << p_runner->reservoirSimulator()->description();
+
+        // debug file
+        if(p_runner->hasDebugFile()) out << "DEBUG " << p_runner->debugFileName() << "\n\n";
+
+        // optimizer
+        out << p_runner->optimizer()->description();
+
+        // objective
+        out << p_runner->model()->objective()->description();
+
+        // master schedule
+        out << "START MASTERSCHEDULE\n";
+        for(int i = 0; i < p_runner->model()->masterSchedule().size(); ++i)
+        {
+            out << " " << p_runner->model()->masterSchedule().at(i) << "\n";
+        }
+        out << "END MASTERSCHEDULE\n\n";
+
+        // reservoir
+        out << p_runner->model()->reservoir()->description();
+
+        // wells
+        for(int i = 0; i < p_runner->model()->numberOfWells(); ++i)
+        {
+            out << p_runner->model()->well(i)->description();
+        }
+
+        // pipes
+        for(int i = 0; i < p_runner->model()->numberOfPipes(); ++i)
+        {
+            out << p_runner->model()->pipe(i)->description();
+        }
+
+        // capacities
+        for(int i = 0; i < p_runner->model()->numberOfCapacities(); ++i)
+        {
+            out << p_runner->model()->capacity(i)->description();
+        }
+
+        // user constraints
+        if(p_runner->model()->numberOfUserDefinedConstraints() > 0)
+        {
+            out << "START CONSTRAINTS\n";
+            for(int i = 0; i < p_runner->model()->numberOfUserDefinedConstraints(); ++i)
+            {
+                out << " " << p_runner->model()->userDefinedConstraint(i)->expression() << "\n";
+            }
+            out << "END CONSTRAINTS\n\n";
+        }
+
+        out.flush();
+    }
+
+
+
+
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // called when the start/pause button is triggered

@@ -48,6 +48,8 @@ public:
 
     virtual Objective* clone() {return new NpvObjective(*this);}
 
+    virtual QString description() const;
+
     // set functions
 
     /**

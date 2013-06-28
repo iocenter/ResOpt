@@ -181,7 +181,24 @@ void PressureBooster::calculateInletPressure()
 // generates a description for driver file
 //-----------------------------------------------------------------------------------------------
 QString PressureBooster::description() const
-{}
+{
+    QString str("START BOOSTER\n");
+    str.append(" NUMBER " + QString::number(number()) + "\n");
+    if(p_install_time != 0)
+    {
+        str.append(" INSTALLTIME " + QString::number(p_install_time->value()) + " " + QString::number(p_install_time->max()) + " " + QString::number(p_install_time->min()) + "\n");
+    }
+
+    str.append(" COST " + QString::number(p_cost->constantCost()) + " " + QString::number(p_cost->fractionCost())  + "\n");
+    str.append(" OUTLETPIPE " + QString::number(p_outlet_connection->pipeNumber()) + "\n");
+    str.append(" PRESSUREBOOST " + QString::number(p_pressure_change->value()) + " " + QString::number(p_pressure_change->max()) + " " + QString::number(p_pressure_change->min()) + "\n");
+    str.append(" CAPACITY " + QString::number(p_capacity->value()) + " " + QString::number(p_capacity->max()) + " " + QString::number(p_capacity->min()) + "\n");
+
+    str.append("END BOOSTER\n\n");
+    return str;
+
+}
+
 
 
 } // namespace ResOpt

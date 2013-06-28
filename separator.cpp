@@ -126,9 +126,26 @@ void Separator::calculateInletPressure()
 // generates a description for driver file
 //-----------------------------------------------------------------------------------------------
 QString Separator::description() const
-{}
+{
+    QString str("START SEPARATOR\n");
+    str.append(" NUMBER " + QString::number(number()) + "\n");
+    str.append(" TYPE ");
+    if(type() == WATER) str.append("WATER\n");
+    else if(type() == GAS) str.append("GAS\n");
+    if(p_install_time != 0)
+    {
+        str.append(" INSTALLTIME " + QString::number(p_install_time->value()) + " " + QString::number(p_install_time->max()) + " " + QString::number(p_install_time->min()) + "\n");
+    }
 
+    str.append(" COST " + QString::number(p_cost->constantCost()) + " " + QString::number(p_cost->fractionCost()) + " " + QString::number(p_cost->capacityCost()) + "\n");
+    str.append(" OUTLETPIPE " + QString::number(p_outlet_connection->pipeNumber()) + "\n");
+    str.append(" REMOVE " + QString::number(p_remove_fraction->value()) + " " + QString::number(p_remove_fraction->max()) + " " + QString::number(p_remove_fraction->min()) + "\n");
+    str.append(" CAPACITY " + QString::number(p_remove_capacity->value()) + " " + QString::number(p_remove_capacity->max()) + " " + QString::number(p_remove_capacity->min()) + "\n");
 
+    str.append("END SEPARATOR\n\n");
+    return str;
+
+}
 
 
 } // namespace ResOpt

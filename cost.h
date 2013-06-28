@@ -58,6 +58,9 @@ public:
     // get functions
     double time() const {return m_time;}
     double value() const {return m_const + m_mult_frac*m_fraction + m_mult_cap*m_capacity;}
+    double constantCost() const {return m_const;}
+    double fractionCost() const {return m_mult_frac;}
+    double capacityCost() const {return m_mult_cap;}
 
     // overloaded operators
     bool operator<(const Cost &rhs) const;

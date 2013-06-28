@@ -52,6 +52,8 @@ public:
 
     virtual ReservoirSimulator* clone() const = 0;
 
+    virtual QString description() const = 0;
+
 
     virtual bool generateInputFiles(Model *m) = 0;
     virtual bool launchSimulator() = 0;

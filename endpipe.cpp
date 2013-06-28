@@ -78,7 +78,20 @@ void EndPipe::calculateInletPressure()
 // generates a description for driver file
 //-----------------------------------------------------------------------------------------------
 QString EndPipe::description() const
-{}
+{
+    QString str("START PIPE\n");
+    str.append(" NUMBER " + QString::number(number()) + "\n");
+    str.append(" FILE " + fileName() + "\n");
+
+    str.append(" OUTLETPRESSURE " + QString::number(outletPressure()));
+    if(outletUnit() == Stream::METRIC) str.append(" BARA\n");
+    else str.append(" PSIA\n");
+
+
+
+    str.append("END PIPE\n\n");
+    return str;
+}
 
 
 } // namespace ResOpt

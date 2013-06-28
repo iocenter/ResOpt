@@ -147,6 +147,8 @@ public:
     Model* model() {return p_model;}
     Optimizer* optimizer() {return p_optimizer;}
     ReservoirSimulator* reservoirSimulator() {return p_simulator;}
+    bool hasDebugFile() const {return m_debug;}
+    QString debugFileName() const {return m_debug_filename;}
 
 
 

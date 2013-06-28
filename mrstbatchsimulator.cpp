@@ -626,11 +626,12 @@ bool MrstBatchSimulator::launchSimulator()
     cout << "Launching MRST in batch mode..." << endl;
 
 
-    //QString program = "/usr/local/MATLAB/R2012b/bin/glnxa64/MATLAB";  // linux virtual
+    //QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
     //QString program = "matlab";   // beehive
     //QString program = "/Applications/MATLAB_R2011b.app/bin/matlab";     // mac
     //QString program = "/Volumes/SSD\ BOOT/Applications/MATLAB_R2012B.APP/bin/matlab";     // mats mac
     QString program = "/Applications/MATLAB_R2013a.app/bin/matlab";     // eirik mac
+
     QStringList args;
     args.push_back("-nosplash");
     args.push_back("-nodesktop");

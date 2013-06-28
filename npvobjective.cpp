@@ -24,6 +24,7 @@
 #include "cost.h"
 #include <math.h>
 #include <iostream>
+#include <QString>
 
 
 
@@ -47,13 +48,6 @@ NpvObjective::NpvObjective()
 //-----------------------------------------------------------------------------------------------
 void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 {
-
-    // printing the costs
-
-    for(int i = 0; i < c.size(); ++i)
-    {
-        cout << "COST = " << c.at(i)->value() << ", TIME = " << c.at(i)->time() << endl;
-    }
 
 
     // checking if the discount factor is entered as fraction or percent
@@ -135,5 +129,22 @@ void NpvObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString NpvObjective::description() const
+{
+    QString str("START OBJECTIVE\n");
+    str.append(" TYPE NPV \n\n");
+
+    str.append(" DCF " + QString::number(dcf()) + "\n");
+    str.append(" OILPRICE " + QString::number(oilPrice()) + "\n");
+    str.append(" GASPRICE " + QString::number(gasPrice()) + "\n");
+    str.append(" WATERPRICE " + QString::number(waterPrice()) + "\n");
+    str.append("END OBJECTIVE\n\n");
+
+    return str;
+
+}
 
 } // namespace ResOpt

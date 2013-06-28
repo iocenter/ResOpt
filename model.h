@@ -118,6 +118,8 @@ public:
     virtual ~Model();
 
     // virtual functions
+    virtual QString description() const = 0;
+
 
     /**
      * @brief Calcuates the entire upstream part of the model

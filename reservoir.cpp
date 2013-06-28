@@ -34,4 +34,42 @@ Reservoir::Reservoir()
 {
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString Reservoir::description() const
+{
+    QString str("START RESERVOIR\n");
+    str.append(" NAME " + name() + "\n");
+    str.append(" FILE " + file() + "\n");
+
+    str.append(" TIME " + QString::number(endTime()) + "\n");
+
+    str.append(" PHASES " + QString::number(m_gas_phase) + " " +
+               QString::number(m_oil_phase) + " " +
+               QString::number(m_wat_phase) + "\n");
+
+    str.append(" DENS " + QString::number(m_den_gas) + " " +
+               QString::number(m_den_oil) + " " +
+               QString::number(m_den_wat) + "\n");
+
+    str.append("END RESERVOIR\n\n");
+
+    return str;
+
+}
+
+/*
+!----------------- Reservoir Definition ----------------------------
+START RESERVOIR
+ NAME RES1
+ FILE SIMPLE10x5x10.DATA
+ TIME 3650
+ PHASES 0 1 1             ! gas oil water
+ DENS 0.06054 49.1 64.79  ! gas oil water
+END RESERVOIR
+
+ */
+
+
 } // namespace ResOpt

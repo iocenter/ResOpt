@@ -200,7 +200,9 @@ QString MidPipe::description() const
 {
     QString str("START PIPE\n");
     str.append(" NUMBER " + QString::number(number()) + "\n");
-    str.append(" FILE " + fileName() + "\n\n");
+    str.append(" FILE " + fileName() + "\n");
+    if(p_connection_constraint->min() == 1.0) str.append(" MUSTROUTE \n\n");
+
     str.append(" START OUTLETPIPES\n");
 
     foreach(PipeConnection *pc, m_outlet_connections)

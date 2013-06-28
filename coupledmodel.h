@@ -92,6 +92,8 @@ public:
     // virtual functions
     virtual Model* clone() const {return new CoupledModel(*this);}
 
+    virtual QString description() const {return QString("COUPLED MODEL\n\n");}
+
     virtual void initialize();
     virtual void process();
 

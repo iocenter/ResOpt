@@ -20,6 +20,7 @@
 
 #include "cumgasobjective.h"
 #include "stream.h"
+#include <QString>
 
 namespace ResOpt
 {
@@ -54,5 +55,21 @@ void CumgasObjective::calculateValue(QVector<Stream *> s, QVector<Cost *> c)
     setValue(cumgas);
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString CumgasObjective::description() const
+{
+    QString str("START OBJECTIVE\n");
+
+    str.append(" TYPE CUMGAS \n");
+
+    str.append("END OBJECTIVE\n\n");
+
+    return str;
+
+}
+
 
 } // namespace ResOpt

@@ -89,6 +89,8 @@ public:
      */
     void updateConstraints();
 
+    QString description() const;
+
 
     // add functions
 

@@ -61,6 +61,8 @@ public:
      */
     virtual void calculateValue(QVector<Stream*> s, QVector<Cost*> c) = 0;
 
+    virtual QString description() const = 0;
+
     // set functions
 
     /**

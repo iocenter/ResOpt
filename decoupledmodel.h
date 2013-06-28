@@ -102,6 +102,8 @@ public:
     // virtual functions
     virtual Model* clone() const {return new DecoupledModel(*this);}
 
+    virtual QString description() const {return QString("DECOUPLED MODEL\n\n");}
+
     virtual void initialize();
     virtual void process();
 

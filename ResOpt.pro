@@ -116,7 +116,10 @@ SOURCES += main.cpp \
     gui/inspectorvariableinstall.cpp \
     lshoptimizer.cpp \
     lshipoptinterface.cpp \
-    lshnomadevaluator.cpp
+    lshnomadevaluator.cpp \
+    nomadipoptoptimizer.cpp \
+    nomadipoptevaluator.cpp \
+    nomadipoptinterface.cpp
 
 HEADERS += \
     well.h \
@@ -207,7 +210,10 @@ HEADERS += \
     gui/inspectorvariableinstall.h \
     lshoptimizer.h \
     lshipoptinterface.h \
-    lshnomadevaluator.h
+    lshnomadevaluator.h \
+    nomadipoptoptimizer.h \
+    nomadipoptevaluator.h \
+    nomadipoptinterface.h
 
 RESOURCES += \
     gui/images.qrc

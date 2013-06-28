@@ -56,6 +56,9 @@ public:
  */
     Reservoir();
 
+    // misc functions
+    QString description() const;
+
     // set functions
 
     /**
@@ -99,21 +102,21 @@ public:
      *
      * @return QString
      */
-    QString name() {return m_name;}
+    QString name() const {return m_name;}
 
     /**
      * @brief Returns the file name of the reservoir description file
      *
      * @return QString
      */
-    QString file() {return m_file;}
+    QString file() const {return m_file;}
 
     /**
      * @brief Returns the end time of the simulation
      *
      * @return End time in days
      */
-    double endTime() {return m_endtime;}
+    double endTime() const {return m_endtime;}
 
     double gasDensity() {return m_den_gas;}
     double oilDensity() {return m_den_oil;}

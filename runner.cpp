@@ -146,6 +146,7 @@ void Runner::initialize()
 
     // setting the debug file
 
+    /*
     if(m_debug)
     {
         p_debug = new QFile(p_simulator->folder() + "/" + m_debug_filename);
@@ -164,7 +165,7 @@ void Runner::initialize()
         }
 
     }
-
+    */
 
     cout << "Initializing the optimizer..." << endl;
     // if the optimizer has not been set yet, setting it to runonce
@@ -365,6 +366,7 @@ void Runner::setDebugFileName(const QString &f)
     m_debug_filename = f;
 
     p_debug = new QFile(f);
+
 
     if(!p_debug->open(QIODevice::WriteOnly | QIODevice::Text))
     {

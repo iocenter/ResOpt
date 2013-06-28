@@ -61,6 +61,8 @@ public:
 
     virtual void start() = 0;
 
+    virtual QString description() const = 0;
+
 
     void sendBestCaseToRunner(Case *c);
 

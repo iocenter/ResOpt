@@ -101,6 +101,7 @@ public slots:
     void openOptimizerInspector();
     void onStartButtonTriggered();
     void savePlot();
+    void saveModelAs();
     void onLastCaseBeforePause(Case *c);
     
 };

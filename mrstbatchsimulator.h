@@ -68,6 +68,8 @@ public:
 
     virtual ReservoirSimulator* clone() const {return new MrstBatchSimulator(*this);}
 
+    virtual QString description() const {return QString("SIMULATOR MRST_BATCH\n\n");}
+
     virtual bool generateInputFiles(Model *m);
     virtual bool launchSimulator();
     virtual bool readOutput(Model *m);

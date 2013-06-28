@@ -1,11 +1,33 @@
-#include "nomadoptimizer.h"
+/*
+ * This file is part of the ResOpt project.
+ *
+ * Copyright (C) 2011-2013 Aleksander O. Juell <aleksander.juell@ntnu.no>
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
+ */
+
+
+#include "nomadipoptoptimizer.h"
+
 
 #include <exception>
 #include <tr1/memory>
 #include <QDir>
 
 #include "nomad.hpp"
-#include "nomadevaluator.h"
+#include "nomadipoptevaluator.h"
 #include "runner.h"
 #include "model.h"
 #include "binaryvariable.h"
@@ -22,7 +44,7 @@ using std::tr1::shared_ptr;
 namespace ResOpt
 {
 
-NomadOptimizer::NomadOptimizer(Runner *r)
+NomadIpoptOptimizer::NomadIpoptOptimizer(Runner *r)
     : Optimizer(r),
       p_evaluator(0),
       p_param(0),
@@ -31,7 +53,7 @@ NomadOptimizer::NomadOptimizer(Runner *r)
 {
 }
 
-NomadOptimizer::~NomadOptimizer()
+NomadIpoptOptimizer::~NomadIpoptOptimizer()
 {
     if(p_evaluator != 0) delete p_evaluator;
     if(p_param != 0) delete p_param;
@@ -42,7 +64,7 @@ NomadOptimizer::~NomadOptimizer()
 //-----------------------------------------------------------------------------------------------
 // Initializes NOMAD
 //-----------------------------------------------------------------------------------------------
-void NomadOptimizer::initialize()
+void NomadIpoptOptimizer::initialize()
 {
       // display:
       p_disp = new NOMAD::Display( std::cout );
@@ -56,7 +78,7 @@ void NomadOptimizer::initialize()
 //-----------------------------------------------------------------------------------------------
 // Starts the optimization
 //-----------------------------------------------------------------------------------------------
-void NomadOptimizer::start()
+void NomadIpoptOptimizer::start()
 {
     cout << "Starting the NOMAD optimizer..." << endl;
 
@@ -74,7 +96,7 @@ void NomadOptimizer::start()
         generateParameters();
 
         // custom evaluator creation:
-        p_evaluator = new NomadEvaluator(*p_param, this);
+        p_evaluator = new NomadIpoptEvaluator(*p_param, this);
 
 
         // algorithm creation and execution:
@@ -120,13 +142,13 @@ void NomadOptimizer::start()
 //-----------------------------------------------------------------------------------------------
 // Sets up the parameters object
 //-----------------------------------------------------------------------------------------------
-void NomadOptimizer::generateParameters()
+void NomadIpoptOptimizer::generateParameters()
 {
 
     p_param = new NOMAD::Parameters(*p_disp);
 
     // finding the number of variables
-    int n_var = runner()->model()->realVariables().size() + runner()->model()->binaryVariables().size() + runner()->model()->integerVariables().size();
+    int n_var = runner()->model()->binaryVariables().size() + runner()->model()->integerVariables().size();
 
     p_param->set_DIMENSION (n_var);     // number of variables
 
@@ -138,24 +160,7 @@ void NomadOptimizer::generateParameters()
     // setting all the values for each variable
 
     int var_num = 0;
-    for(int i = 0; i < runner()->model()->realVariables().size(); ++i)
-    {
-        shared_ptr<RealVariable> v = runner()->model()->realVariables().at(i);
 
-        // setting the type
-        p_param->set_BB_INPUT_TYPE(var_num, NOMAD::CONTINUOUS);
-
-        // setting the starting point
-        sp[var_num] = v->value();
-
-        // setting the upper bound
-        ub[var_num] = v->max();
-
-        //setting the lower bound
-        lb[var_num] = v->min();
-
-        ++var_num;
-    }
     for(int i = 0; i < runner()->model()->binaryVariables().size(); ++i)
     {
         shared_ptr<BinaryVariable> v = runner()->model()->binaryVariables().at(i);
@@ -245,10 +250,10 @@ void NomadOptimizer::generateParameters()
 //-----------------------------------------------------------------------------------------------
 // generates a description for driver file
 //-----------------------------------------------------------------------------------------------
-QString NomadOptimizer::description() const
+QString NomadIpoptOptimizer::description() const
 {
     QString str("START OPTIMIZER\n");
-    str.append(" TYPE NOMAD \n");
+    str.append(" TYPE NOIP \n");
     str.append(" ITERATIONS " + QString::number(maxIterations()) + "\n");
     str.append(" PERTURBATION " + QString::number(pertrurbationSize()) + "\n");
     str.append(" PARALLELRUNS " + QString::number(parallelRuns()) + "\n");

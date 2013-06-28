@@ -55,6 +55,8 @@ public:
 
     void initialize();
 
+
+
     // set functions
     void setExpression(const QString &e) {m_expression = e;}
 

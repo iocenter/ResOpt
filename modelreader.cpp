@@ -62,6 +62,7 @@
 #include "nomadoptimizer.h"
 #include "ipoptoptimizer.h"
 #include "lshoptimizer.h"
+#include "nomadipoptoptimizer.h"
 
 #include "gprssimulator.h"
 #include "vlpsimulator.h"
@@ -198,7 +199,11 @@ Model* ModelReader::readDriverFile(Runner *r)
             else if(list.at(1).startsWith("CONSTRAINTS")) readUserDefinedConstraints(p_model);                  // user defined constraints
 
         }
-        else if(list.at(0).startsWith("DEBUG")) r->setDebugFileName(m_path + "/" + list.at(1));                                    // setting the debug file
+        else if(list.at(0).startsWith("DEBUG"))
+        {
+            //cout << "model reader path: " << m_path.toLatin1().constData() << endl;
+            r->setDebugFileName(m_path + "/" + list.at(1));                                    // setting the debug file
+        }
         else if(list.at(0).startsWith("SIMULATOR"))     // reading the type of reservoir simulator to use
         {
             if(list.at(1).startsWith("GPRS")) r->setReservoirSimulator(new GprsSimulator());
@@ -2363,6 +2368,7 @@ void ModelReader::readOptimizer(Runner *r)
             else if(list.at(1).startsWith("NOMAD")) o = new NomadOptimizer(r);
             else if(list.at(1).startsWith("IPOPT")) o = new IpoptOptimizer(r);
             else if(list.at(1).startsWith("LSH")) o = new LshOptimizer(r);
+            else if(list.at(1).startsWith("NOIP")) o = new NomadIpoptOptimizer(r);
 
         }
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations

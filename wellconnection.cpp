@@ -25,7 +25,13 @@ namespace ResOpt
 {
 
 
-WellConnection::WellConnection()
+WellConnection::WellConnection() :
+    m_cell(-1),
+    m_i(-1),
+    m_j(-1),
+    m_k1(-1),
+    m_k2(-1),
+    m_wi(-1.0)
 {
 }
 

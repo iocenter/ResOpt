@@ -116,6 +116,22 @@ Case* RunonceOptimizer::buildCase(Pipe *p)
 }
 
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString RunonceOptimizer::description() const
+{
+    QString str("START OPTIMIZER\n");
+    str.append(" TYPE RUNONCE \n");
+    str.append(" ITERATIONS " + QString::number(maxIterations()) + "\n");
+    str.append(" PERTURBATION " + QString::number(pertrurbationSize()) + "\n");
+    str.append(" PARALLELRUNS " + QString::number(parallelRuns()) + "\n");
+    str.append("END OPTIMIZER\n\n");
+    return str;
+}
+
+
+
 
 
 } // namespace ResOpt

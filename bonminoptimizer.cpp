@@ -122,4 +122,20 @@ void BonminOptimizer::start()
       emit finished();
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates a description for driver file
+//-----------------------------------------------------------------------------------------------
+QString BonminOptimizer::description() const
+{
+    QString str("START OPTIMIZER\n");
+    str.append(" TYPE BONMIN \n");
+    str.append(" ITERATIONS " + QString::number(maxIterations()) + "\n");
+    str.append(" PERTURBATION " + QString::number(pertrurbationSize()) + "\n");
+    str.append(" PARALLELRUNS " + QString::number(parallelRuns()) + "\n");
+    str.append("END OPTIMIZER\n\n");
+    return str;
+}
+
+
+
 } // namespace ResOpt

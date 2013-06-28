@@ -33,6 +33,8 @@ public:
 
     virtual void start();
 
+    virtual QString description() const;
+
 };
 
 } // namespace ResOpt

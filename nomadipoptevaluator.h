@@ -19,61 +19,34 @@
  */
 
 
-#ifndef LSHOPTIMIZER_H
-#define LSHOPTIMIZER_H
-
-#include "optimizer.h"
-#include <QVector>
+#ifndef NOMADIPOPTEVALUATOR_H
+#define NOMADIPOPTEVALUATOR_H
 
 #include "nomad.hpp"
 
 namespace ResOpt
 {
+class NomadIpoptOptimizer;
+class Case;
 
-class Runner;
-class Pipe;
-
-
-
-
-/**
- * @brief Runs the project once with the starting point values for the variables.
- *
- */
-class LshOptimizer : public Optimizer
+class NomadIpoptEvaluator : public NOMAD::Evaluator
 {
 private:
+    NomadIpoptOptimizer *p_optimizer;
 
-    QVector<Case*> m_solutions;
-    Case* p_best_solution;
-    Case* p_current_solution;
-    Case* p_current_values;
-    bool m_last_sol_best;
-    bool m_use_nomad;
 
-    void solveContineous();
-    void solveContineousIpopt();
-    void solveContineousNomad();
-    NOMAD::Parameters* generateNomadParameters(NOMAD::Display *disp);
+    Case* solveContineousProblem(Case *discrete_vars) const;
+
+
 
 public:
-    LshOptimizer(Runner *r);
-    virtual ~LshOptimizer();
+    NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptOptimizer *o);
 
+    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval) const;
 
-    virtual void initialize();
-
-    virtual void start();
-
-    virtual QString description() const;
-
-    void sendCasesToOptimizer(CaseQueue *cases);
-
-    void setCurrentSolution(Case *c);
-
+    Case* generateCase(const NOMAD::Eval_Point &x) const;
 };
 
 } // namespace ResOpt
 
-
-#endif // LSHOPTIMIZER_H
+#endif // NOMADIPOPTEVALUATOR_H

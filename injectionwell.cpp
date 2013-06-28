@@ -20,6 +20,10 @@
 
 
 #include "injectionwell.h"
+#include "intvariable.h"
+#include "cost.h"
+#include "wellconnection.h"
+#include "wellcontrol.h"
 
 namespace ResOpt
 {
@@ -45,6 +49,52 @@ InjectionWell::~InjectionWell()
 //-----------------------------------------------------------------------------------------------
 QString InjectionWell::description() const
 {
+    QString str("START WELL\n");
+    str.append(" NAME " + name() + "\n");
+    str.append(" TYPE I \n");
+    str.append(" GROUP " + group() + "\n");
+    str.append(" BHPLIMIT " + QString::number(bhpLimit()) + "\n");
+    str.append(" BHPINJ ");
+    if(bhpInj() == WellControl::QWAT) str.append("WATER\n");
+    else if(bhpInj() == WellControl::QOIL) str.append("OIL\n");
+    else if(bhpInj() == WellControl::QGAS) str.append("GAS\n");
+
+
+    if(hasInstallTime())
+    {
+        str.append(" INSTALLTIME " + QString::number(installTime()->value()) + " " + QString::number(installTime()->max()) + " " + QString::number(installTime()->min()) + "\n");
+    }
+
+    if(hasCost())
+    {
+        str.append(" COST " + QString::number(cost()->constantCost()) + " " + QString::number(cost()->fractionCost()) + " " + QString::number(cost()->capacityCost()) + "\n");
+    }
+
+    str.append(" START CONNECTIONS\n");
+    for(int i = 0; i < numberOfConnections(); ++i)
+    {
+        WellConnection *wc = connection(i);
+
+        if(wc->cell() >= 0) str.append("  " + QString::number(wc->cell()) + " " + QString::number(wc->wellIndex()) + "\n");
+        else str.append("  " + QString::number(wc->i()) + " " +
+                        QString::number(wc->j()) + " " +
+                        QString::number(wc->k1()) + " " +
+                        QString::number(wc->k2()) + " " +
+                        QString::number(wc->wellIndex()) + "\n");
+
+    }
+
+    str.append(" END CONNECTIONS\n\n");
+
+
+    str.append(" START SCHEDULE\n");
+
+    for(int i = 0; i < numberOfControls(); ++i) str.append(control(i)->description());
+
+    str.append(" END SCHEDULE\n\n");
+
+    str.append("END WELL\n\n");
+    return str;
 
 }
 

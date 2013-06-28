@@ -87,8 +87,8 @@ public:
     void initialize();
 
     bool isInstalled(int i);
-    bool hasInstallTime() {return p_install_time != 0;}
-    bool hasCost() {return p_cost != 0;}
+    bool hasInstallTime() const {return p_install_time != 0;}
+    bool hasCost() const {return p_cost != 0;}
 
     // virtual functions
 
@@ -229,7 +229,7 @@ public:
      * @param i
      * @return Connection number i
      */
-    WellConnection* connection(int i) {return m_connections.at(i);}
+    WellConnection* connection(int i) const {return m_connections.at(i);}
 
     /**
      * @brief Returns the number of well control set points in the shcedule of the well.
@@ -244,10 +244,10 @@ public:
      * @param i
      * @return WellControl
      */
-    WellControl* control(int i) {return m_schedule.at(i);}
+    WellControl* control(int i) const {return m_schedule.at(i);}
 
-    Cost* cost() {return p_cost;}
-    shared_ptr<IntVariable> installTime() {return p_install_time;}
+    Cost* cost() const {return p_cost;}
+    shared_ptr<IntVariable> installTime() const {return p_install_time;}
 
 
 

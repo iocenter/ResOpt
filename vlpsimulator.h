@@ -37,6 +37,7 @@ public:
 
     virtual ReservoirSimulator* clone() const {return new VlpSimulator(*this);}
 
+    virtual QString description() const {return QString("SIMULATOR VLP\n\n");}
 
     virtual bool generateInputFiles(Model *m);
     virtual bool launchSimulator();

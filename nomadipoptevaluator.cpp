@@ -154,8 +154,8 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
 
     // Change some options
     app->Options()->SetStringValue("output_file", p_optimizer->runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
-    app->Options()->SetIntegerValue("max_iter", 30);
-    app->Options()->SetNumericValue("tol", 0.001);
+    app->Options()->SetIntegerValue("max_iter", 20);
+    app->Options()->SetNumericValue("tol", 0.01);
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
 
     // Initialize the IpoptApplication and process the options

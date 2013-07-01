@@ -86,7 +86,7 @@ NomadIpoptInterface::~NomadIpoptInterface()
 bool NomadIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
                          Index& nnz_h_lag, IndexStyleEnum& index_style)
 {
-    cout << "Giving Ipopt the dimensions of the problem..." << endl;
+    //cout << "Giving Ipopt the dimensions of the problem..." << endl;
 
     n = m_vars.size();  // number of variables
     m = m_cons.size();  // number of constraints
@@ -107,7 +107,7 @@ bool NomadIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
 bool NomadIpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
                             Index m, Number* g_l, Number* g_u)
 {
-    cout << "Giving Ipopt bounds of variables and constraints..." << endl;
+    //cout << "Giving Ipopt bounds of variables and constraints..." << endl;
 
     assert(n == m_vars.size());
     assert(m == m_cons.size());
@@ -138,7 +138,7 @@ bool NomadIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
                                Index m, bool init_lambda,
                                Number* lambda)
 {
-    cout << "Giving Ipopt the starting point..." << endl;
+    //cout << "Giving Ipopt the starting point..." << endl;
 
     assert(n == m_vars.size());
 
@@ -153,7 +153,7 @@ bool NomadIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
     {
         x[i] = m_vars.at(i)->value();  // current value = starting point
 
-        cout <<  " < x[" << i << "] = " << m_vars.at(i)->value() << endl;
+        //cout <<  " < x[" << i << "] = " << m_vars.at(i)->value() << endl;
 
 
     }
@@ -164,7 +164,7 @@ bool NomadIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
 
 bool NomadIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
 {
-    cout << "Evaluating objective function for Ipopt..." << endl;
+    //cout << "Evaluating objective function for Ipopt..." << endl;
 
     // checking if this is a new set of variable values
     if(newVariableValues(n, x))
@@ -199,16 +199,16 @@ bool NomadIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& o
 
 bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
-    cout << "Evaluating the objective function gradients for Ipopt..." << endl;
+    //cout << "Evaluating the objective function gradients for Ipopt..." << endl;
 
     // first checking if gradients are allready calculated
     if(!gradientsAreUpdated(n,x))
     {
-        cout << "need to calculate new gradients..." << endl;
+        //cout << "need to calculate new gradients..." << endl;
         calculateGradients(n,x);
-        cout << "done calculating new gradients..." << endl;
+        //cout << "done calculating new gradients..." << endl;
     }
-    else cout << "gradients are already calculated for this point..." << endl;
+    //else cout << "gradients are already calculated for this point..." << endl;
 
     // copying the calculated gradients to Ipopt
     for(int i = 0; i < n; i++)
@@ -224,7 +224,7 @@ bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Numb
 
 bool NomadIpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
 {
-    cout << "Evaluating the constraints for Ipopt..." << endl;
+    //cout << "Evaluating the constraints for Ipopt..." << endl;
 
     // checking if this is a new set of variable values
     if(newVariableValues(n, x))
@@ -269,7 +269,7 @@ bool NomadIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
     // checking if the structure of the jacobian has been set
     if (values == NULL)
     {
-        cout << "Giving Ipopt the structure of the jacobian..." << endl;
+        //cout << "Giving Ipopt the structure of the jacobian..." << endl;
 
         int entry = 0;
         for ( int col = 0; col < n; col++ )
@@ -285,7 +285,7 @@ bool NomadIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
     }
     else    // the structure is already set, getting the values
     {
-        cout << "Evaluating the jacobian for Ipopt..." << endl;
+        //cout << "Evaluating the jacobian for Ipopt..." << endl;
 
         // checking if gradients are calculated
         if(!gradientsAreUpdated(n,x))
@@ -309,7 +309,7 @@ bool NomadIpoptInterface::eval_h(Index n, const Number* x, bool new_x,
                    bool new_lambda, Index nele_hess, Index* iRow,
                    Index* jCol, Number* values)
 {
-    cout << "Evaluating the constraint hessian for Ipopt..." << endl;
+    //cout << "Evaluating the constraint hessian for Ipopt..." << endl;
     return true;
 }
 

@@ -23,6 +23,7 @@
 #define NOMADIPOPTEVALUATOR_H
 
 #include "nomad.hpp"
+#include <QList>
 
 namespace ResOpt
 {
@@ -33,7 +34,7 @@ class NomadIpoptEvaluator : public NOMAD::Evaluator
 {
 private:
     NomadIpoptOptimizer *p_optimizer;
-
+    QList<Case*> m_results;
 
     Case* solveContineousProblem(Case *discrete_vars) const;
 
@@ -41,10 +42,12 @@ private:
 
 public:
     NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptOptimizer *o);
+    ~NomadIpoptEvaluator();
 
-    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval) const;
+    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval);
 
     Case* generateCase(const NOMAD::Eval_Point &x) const;
+    Case* findResult(Case *c);
 };
 
 } // namespace ResOpt

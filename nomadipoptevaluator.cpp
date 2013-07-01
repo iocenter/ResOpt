@@ -53,10 +53,15 @@ NomadIpoptEvaluator::NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptO
 {
 }
 
+NomadIpoptEvaluator::~NomadIpoptEvaluator()
+{
+    for(int i = 0; i < m_results.size(); ++i) delete m_results.at(i);
+}
+
 //-----------------------------------------------------------------------------------------------
 // evaluates the model
 //-----------------------------------------------------------------------------------------------
-bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval) const
+bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval)
 {
     cout << "staring new evaluation for NOMAD" << endl;
 
@@ -101,9 +106,12 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
         x.set_bb_output(i+1, val_input);
     }
 
+    // adding to results vector
+    m_results.push_back(result);
+
     // deleting the case from the heap
     delete c;
-    delete result;
+
 
     return true;
 
@@ -140,6 +148,50 @@ Case* NomadIpoptEvaluator::generateCase(const NOMAD::Eval_Point &x) const
 }
 
 //-----------------------------------------------------------------------------------------------
+// Finds a result case with int and bin var values in c
+//-----------------------------------------------------------------------------------------------
+Case* NomadIpoptEvaluator::findResult(Case *c)
+{
+    for(int i = 0; i < m_results.size(); ++i)
+    {
+        Case *r = m_results.at(i);
+
+        // checking the results case for match
+        if(r->numberOfBinaryVariables() != c->numberOfBinaryVariables()) return 0;
+        if(r->numberOfIntegerVariables() != c->numberOfIntegerVariables()) return 0;
+
+        bool ok = true;
+        for(int j = 0; j < c->numberOfBinaryVariables(); ++j)
+        {
+            if(c->binaryVariableValue(j) != r->binaryVariableValue(j))
+            {
+                ok = false;
+                break;
+            }
+
+        }
+        if(ok)
+        {
+            for(int j = 0; j < c->numberOfIntegerVariables(); ++j)
+            {
+                if(c->integerVariableValue(j) != r->integerVariableValue(j))
+                {
+                    ok = false;
+                    break;
+                }
+            }
+        }
+
+        if(ok) return r;
+
+    }
+
+    return 0;
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
 // solves the contineous sub-problem using IPOPT
 //-----------------------------------------------------------------------------------------------
 Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
@@ -155,7 +207,7 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
     // Change some options
     app->Options()->SetStringValue("output_file", p_optimizer->runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
     app->Options()->SetIntegerValue("max_iter", 30);
-    app->Options()->SetNumericValue("tol", 0.001);
+    app->Options()->SetNumericValue("tol", 0.1);
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
 
     // Initialize the IpoptApplication and process the options

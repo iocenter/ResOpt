@@ -109,17 +109,23 @@ void NomadIpoptOptimizer::start()
         {
             const NOMAD::Point outputs = best_feas->get_bb_outputs();
 
-            // the variable values
+            // setting the variable values
             Case *c = p_evaluator->generateCase(*best_feas);
 
-            // the objective
-            c->setObjectiveValue(-outputs[0].value());
+            // trying to find a result case in the evaluator
+            Case *res = p_evaluator->findResult(c);
 
-            // the constraints
-            //for(int i = 1; i < outputs.size(); ++i) c->addConstraintValue(outputs[i].value());
+            if(res != 0) sendBestCaseToRunner(res);
+            else
+            {
+                // the objective
+                c->setObjectiveValue(-outputs[0].value());
 
-            // sending it to the runner
-            sendBestCaseToRunner(c);
+                // sending it to the runner
+                sendBestCaseToRunner(c);
+            }
+
+
 
             delete c;
         }

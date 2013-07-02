@@ -98,8 +98,8 @@ bool NomadIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
     // index_style = FORTRAN_STYLE;
     index_style = TNLP::C_STYLE;    // c style numbering, starting at 0
 
-    cout << "Number of variables   = " << n << endl;
-    cout << "Number of constraints = " << m << endl;
+    //cout << "Number of variables   = " << n << endl;
+    //cout << "Number of constraints = " << m << endl;
 
     return true;
 }

@@ -33,8 +33,8 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
     QWidget(parent),
     p_mainwindow(mw),
     m_custom_plot(this),
-    m_max(10),
-    m_min(0),
+    m_max(6),
+    m_min(5),
     m_user_changed_slider(false)
 {
     QGridLayout *layout = new QGridLayout;

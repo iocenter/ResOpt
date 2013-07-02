@@ -75,18 +75,6 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 {
     bool ok = true;
 
-    // checking that the model corresponds to the fixed case we are looking at
-    if(m->numberOfWells() != 3)
-    {
-        cout << "### Error! ###" << endl;
-        cout << "The number of wells is not 3..." << endl;
-        cout << "NUMBER OF WELLS = " << m->numberOfWells() << endl;
-
-        exit(1);
-    }
-
-
-    // done checking, starting to generate the control file
 
 
     QFile ctrl_file(folder() + "/test2.m");
@@ -602,6 +590,9 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
     // removing the .mat file every time, since inconsistent results occur when not removed
     QFile::remove(folder() + "/" + base_name + ".mat");
+
+    // removing old output file
+    QFile::remove(folder() + "/" + base_name + "_RES.TXT");
 
 
     // generating the control input file

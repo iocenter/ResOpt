@@ -37,6 +37,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QRadioButton>
 
 
 using ResOpt::IntVariable;
@@ -75,10 +76,11 @@ void InspectorInjWell::construct()
     setLayout(layout);
 
     // setting up the control variables
-    QGroupBox *box_control = new QGroupBox("Control Variables", this);
+    box_control = new QGroupBox("Control Variables", this);
     box_control->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
 
     QVBoxLayout *layout_control = new QVBoxLayout(box_control);
+    layout_control->setSizeConstraint(QLayout::SetFixedSize);
     box_control->setLayout(layout_control);
 
 
@@ -90,10 +92,14 @@ void InspectorInjWell::construct()
         layout_control->addWidget(iwc);
     }
 
+    // show/hide
+    QRadioButton *p_rdo_controls = new QRadioButton("Hide control variables", this);
+    p_rdo_controls->setChecked(false);
+    layout_control->addWidget(p_rdo_controls);
+    connect(p_rdo_controls, SIGNAL(clicked(bool)), this, SLOT(hideControls(bool)));
+
 
     layout->addWidget(box_control, 0, 0, 1, 3);
-
-    // setting up the bhp constraints
 
 
     // setting up the buttons
@@ -105,6 +111,9 @@ void InspectorInjWell::construct()
 
     layout->addWidget(&m_btn_close, 1, 2);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
+
+
+
 
 
 
@@ -142,6 +151,18 @@ void InspectorInjWell::openPlot()
     PlotStreams *plt = new PlotStreams(title, p_well->streams());
 }
 
+//-----------------------------------------------------------------------------------------------
+// hides or shows the controls
+//-----------------------------------------------------------------------------------------------
+void InspectorInjWell::hideControls(bool b)
+{
+    for(int i = 0; i < m_controls.size(); ++i)
+    {
+        m_controls.at(i)->setHidden(b);
+    }
+
+    box_control->adjustSize();
+}
 
 
 } // namespace

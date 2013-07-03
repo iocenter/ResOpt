@@ -25,6 +25,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVector>
+#include <QtWidgets/QGroupBox>
 
 
 namespace ResOpt
@@ -47,7 +48,7 @@ private:
     InjectionWell *p_well;
 
     QVector<InspectorWellControl*> m_controls;
-
+    QGroupBox *box_control;
 
     QPushButton m_btn_close;
     QPushButton m_btn_ok;
@@ -65,6 +66,7 @@ signals:
 public slots:
     void saveAndClose();
     void openPlot();
+    void hideControls(bool b);
 
 };
 

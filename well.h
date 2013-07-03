@@ -228,6 +228,7 @@ public:
      */
     int numberOfConnections() const {return (m_connections.size() + m_var_connections.size());}
     int numberOfVariableConnections() const {return m_var_connections.size();}
+    int numberOfConstantConnections() const {return m_connections.size();}
 
     /**
      * @brief Returns the cell number of connection i
@@ -237,7 +238,8 @@ public:
      */
     WellConnection* connection(int i) const;
 
-    WellConnectionVariable* variableConnection(int i) {return m_var_connections.at(i);}
+    WellConnectionVariable* variableConnection(int i) const {return m_var_connections.at(i);}
+    WellConnection* constantConnection(int i) const {return m_connections.at(i);}
     /**
      * @brief Returns the number of well control set points in the shcedule of the well.
      *

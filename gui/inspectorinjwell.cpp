@@ -23,12 +23,15 @@
 
 #include "inspectorvariable.h"
 #include "inspectorwellcontrol.h"
+#include "inspectorwellconnectionvariable.h"
 #include "plotstreams.h"
 
 #include "injectionwell.h"
 #include "intvariable.h"
 #include "realvariable.h"
 #include "wellcontrol.h"
+#include "wellconnectionvariable.h"
+#include "wellconnection.h"
 
 
 
@@ -43,6 +46,8 @@
 using ResOpt::IntVariable;
 using ResOpt::RealVariable;
 using ResOpt::WellControl;
+using ResOpt::WellConnectionVariable;
+using ResOpt::WellConnection;
 
 namespace ResOptGui
 {
@@ -72,10 +77,11 @@ void InspectorInjWell::construct()
     setWindowTitle("Injection Well " + p_well->name() + " Properties");
 
     QGridLayout *layout = new QGridLayout(this);
+    int row = 0;
 
     setLayout(layout);
 
-    // setting up the control variables
+    // ---- setting up the control variables -----
     box_control = new QGroupBox("Control Variables", this);
     box_control->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
 
@@ -99,19 +105,52 @@ void InspectorInjWell::construct()
     connect(p_rdo_controls, SIGNAL(clicked(bool)), this, SLOT(hideControls(bool)));
 
 
-    layout->addWidget(box_control, 0, 0, 1, 3);
+    layout->addWidget(box_control, row, 0, 1, 3, Qt::AlignCenter);
+    ++row;
 
 
-    // setting up the buttons
-    layout->addWidget(&m_btn_ok, 1, 0);
+    // ---- setting up the variable well connections
+    if(p_well->hasVariableConnections())
+    {
+        QGroupBox *box_varcon = new QGroupBox("Connection Variables", this);
+        box_varcon->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+
+        QVBoxLayout *layout_varcon = new QVBoxLayout(box_varcon);
+        layout_varcon->setSizeConstraint(QLayout::SetFixedSize);
+        box_varcon->setLayout(layout_varcon);
+
+        for(int i = 0; i < p_well->numberOfVariableConnections(); ++i)
+        {
+            WellConnectionVariable *wcv = p_well->variableConnection(i);
+            InspectorWellConnectionVariable *iwcv = new InspectorWellConnectionVariable(wcv->iVariable()->value(),
+                                                                                        wcv->iVariable()->max(),
+                                                                                        wcv->iVariable()->min(),
+                                                                                        wcv->jVariable()->value(),
+                                                                                        wcv->jVariable()->max(),
+                                                                                        wcv->jVariable()->min(),
+                                                                                        wcv->wellConnection()->k1(),
+                                                                                        wcv->wellConnection()->k2(),
+                                                                                        wcv->wellConnection()->wellIndex(),
+                                                                                        this);
+            layout_varcon->addWidget(iwcv);
+
+        }
+        layout->addWidget(box_varcon, row, 0, 1, 3, Qt::AlignCenter);
+        ++row;
+
+    }
+
+
+    // ---- setting up the buttons ----
+    layout->addWidget(&m_btn_ok, row, 0);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
 
-    layout->addWidget(&m_btn_plot, 1, 1);
+    layout->addWidget(&m_btn_plot, row, 1);
     connect(&m_btn_plot, SIGNAL(clicked()), this, SLOT(openPlot()));
 
-    layout->addWidget(&m_btn_close, 1, 2);
+    layout->addWidget(&m_btn_close, row, 2);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
-
+    ++row;
 
 
 

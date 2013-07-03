@@ -106,6 +106,8 @@ private:
      */
     bool readWellConnections(Well *w);
 
+    bool readVariableWellConnections(Well *w);
+
 
     /**
      * @brief Reads the OUTLETPIPES part of a well definition

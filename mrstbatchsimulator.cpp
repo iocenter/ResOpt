@@ -169,17 +169,20 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
 
     *out_ctrl << "u  = [";
+    QString names;
 
     for(int i = 0; i < (well_names.size()-1); ++i)
     {
         *out_ctrl << well_names.at(i) << "; ";
+        names.append(well_names.at(i) + "; ");
     }
     *out_ctrl << well_names.last() << "];\n\n";
+    names.append(well_names.last());
 
     *out_ctrl << "try" << "\n";
     *out_ctrl << " %write control file:" << "\n";
     *out_ctrl << " fid = fopen('" <<  m->reservoir()->file().split(".").at(0) << "_CONTROLS.TXT', 'w');" << "\n";
-    *out_ctrl << " fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  [i1; p1; p2]);" << "\n";
+    *out_ctrl << " fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  [" + names + "]);" << "\n";
     *out_ctrl << " fclose(fid);" << "\n\n";
     *out_ctrl << " runSim2;" << "\n";
     *out_ctrl << "catch err" << "\n";

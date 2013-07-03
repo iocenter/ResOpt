@@ -31,6 +31,7 @@
 #include "pressurebooster.h"
 #include "capacity.h"
 #include "userconstraint.h"
+#include "wellconnectionvariable.h"
 
 #include <iostream>
 
@@ -474,13 +475,24 @@ QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables(bool force_ref
 
         }
 
-        // collecting the install time variables for the wells
+        // collecting the install time variables and connection variables for the wells
         for(int i = 0 ; i < numberOfWells(); ++i)
         {
             // checking if the well has an install time variable
             if(well(i)->hasInstallTime())
             {
                 if(well(i)->installTime()->isVariable()) m_vars_integer.push_back(well(i)->installTime());  // adding install time if it is a variable
+            }
+
+            // checking if the well has connection variables
+            if(well(i)->hasVariableConnections())
+            {
+                for(int j = 0; j < well(i)->numberOfVariableConnections(); ++j)
+                {
+                    if(well(i)->variableConnection(j)->iVariable()->isVariable()) m_vars_integer.push_back(well(i)->variableConnection(j)->iVariable());
+                    if(well(i)->variableConnection(j)->jVariable()->isVariable()) m_vars_integer.push_back(well(i)->variableConnection(j)->jVariable());
+                }
+
             }
         }
 

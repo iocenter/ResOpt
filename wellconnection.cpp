@@ -21,6 +21,7 @@
 
 #include "wellconnection.h"
 
+
 namespace ResOpt
 {
 
@@ -34,6 +35,8 @@ WellConnection::WellConnection() :
     m_wi(-1.0)
 {
 }
+
+
 
 
 } // namespace ResOpt

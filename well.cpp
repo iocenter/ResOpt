@@ -23,6 +23,7 @@
 #include <iostream>
 
 #include "wellconnection.h"
+#include "wellconnectionvariable.h"
 #include "stream.h"
 #include "pipe.h"
 #include "constraint.h"
@@ -62,9 +63,15 @@ Well::Well(const Well &w)
     m_bhp_inj = w.m_bhp_inj;
 
     // copying connections
-    for(int i = 0; i < w.numberOfConnections(); i++)
+    for(int i = 0; i < w.m_connections.size(); i++)
     {
         m_connections.push_back(new WellConnection(*w.m_connections.at(i)));
+    }
+
+    // copying variable connections
+    for(int i = 0; i < w.m_var_connections.size(); ++i)
+    {
+        m_var_connections.push_back(new WellConnectionVariable(*w.m_var_connections.at(i)));
     }
 
     // copying controls
@@ -88,6 +95,11 @@ Well::~Well()
     for(int i = 0; i < m_connections.size(); i++)
     {
         delete m_connections.at(i);
+    }
+
+    for(int i = 0; i < m_var_connections.size(); ++i)
+    {
+        delete m_var_connections.at(i);
     }
 
     for(int i = 0; i < m_schedule.size(); i++)
@@ -129,6 +141,31 @@ bool Well::isInstalled(int i)
 {
     if(p_install_time == 0) return true;
     else return (i >= p_install_time->value());
+}
+
+//-----------------------------------------------------------------------------------------------
+// returns a well connection
+//-----------------------------------------------------------------------------------------------
+WellConnection* Well::connection(int i) const
+{
+    if(i < m_connections.size()) return m_connections.at(i);
+    else if(i < (m_connections.size() + m_var_connections.size()))
+    {
+        return m_var_connections.at(i - m_connections.size())->wellConnection();
+    }
+    else return 0;
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// adds a variable connection
+//-----------------------------------------------------------------------------------------------
+void Well::addVariableConnection(WellConnectionVariable *vc)
+{
+    vc->iVariable()->setName("I-direction connection variable for well: " + name());
+    vc->jVariable()->setName("J-direction connection variable for well: " + name());
+
+    m_var_connections.push_back(vc);
 }
 
 } // namespace ResOpt

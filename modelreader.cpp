@@ -40,6 +40,7 @@
 #include "constraint.h"
 #include "wellcontrol.h"
 #include "wellconnection.h"
+#include "wellconnectionvariable.h"
 #include "pipeconnection.h"
 #include "npvobjective.h"
 #include "cumoilobjective.h"
@@ -604,9 +605,10 @@ Well* ModelReader::readWell()
                 exit(1);
             }
 
-            if(list.at(1).startsWith("SCHEDULE")) readWellSchedule(w);      // reading SCHEDULE
-            else if(list.at(1).startsWith("CON")) readWellConnections(w);   // reading CONNECTIONS
-            else if(list.at(1).startsWith("OUTLETPIPE"))                    // reading OUTLETPIPES
+            if(list.at(1).startsWith("SCHEDULE")) readWellSchedule(w);                  // reading SCHEDULE
+            else if(list.at(1).startsWith("CON")) readWellConnections(w);               // reading CONNECTIONS
+            else if(list.at(1).startsWith("VARCON")) readVariableWellConnections(w);    // reading VARCONNECTIONS
+            else if(list.at(1).startsWith("OUTLETPIPE"))                                // reading OUTLETPIPES
             {
 
                 // checking if this is a production well
@@ -1023,6 +1025,98 @@ bool ModelReader::readWellConnections(Well *w)
     return true;
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Reads the well VARCONNECTIONS (variable perforations)
+//-----------------------------------------------------------------------------------------------
+bool ModelReader::readVariableWellConnections(Well *w)
+{
+    cout << "        variable connections table..." << endl;
+
+    QStringList list;
+
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+
+        if(list.size() == 9) // correct number of elements (i, i_max, i_min, j, j_max, j_min, k1, k2, PI)
+        {
+            // checking the numbers
+            QVector<double> nums;
+            bool ok = true;
+
+            for(int i = 0; i < 9; ++i)
+            {
+                nums.push_back(list.at(i).toDouble(&ok));
+                if(!ok) break;
+            }
+
+            // got all the numbers ok
+            if(ok)
+            {
+                WellConnectionVariable *wcv = new WellConnectionVariable();
+
+                shared_ptr<IntVariable> i_var(new IntVariable(w));
+                i_var->setValue(nums.at(0));
+                i_var->setMax(nums.at(1));
+                i_var->setMin(nums.at(2));
+                wcv->setIVariable(i_var);
+
+                shared_ptr<IntVariable> j_var(new IntVariable(w));
+                j_var->setValue(nums.at(3));
+                j_var->setMax(nums.at(4));
+                j_var->setMin(nums.at(5));
+                wcv->setJVariable(j_var);
+
+                wcv->setK1(nums.at(6));
+                wcv->setK2(nums.at(7));
+                wcv->setWellIndex(nums.at(8));
+
+                w->addVariableConnection(wcv);
+
+            }
+            else     // error when reading numbers in the connections line
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The VARCONNECTIONS entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+
+
+        else        // wrong number of arguments on line
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The VARCONNECTIONS entry does not have the right format..."
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+            }
+        }
+
+
+
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    return true;
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Reads the well OUTLETPIPES section for a well

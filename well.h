@@ -33,6 +33,7 @@ using std::tr1::shared_ptr;
 namespace ResOpt
 {
 class WellConnection;
+class WellConnectionVariable;
 class Stream;
 class Cost;
 class IntVariable;
@@ -59,8 +60,9 @@ private:
     WellControl::contol_type m_bhp_inj;         // the phase injected when injector is on BHP control
 
 
-    QVector<WellConnection*> m_connections;     // the perforations of the well
-    QVector<WellControl*> m_schedule;           // the control schedule of the well /**< TODO */
+    QVector<WellConnection*> m_connections;                 // the perforations of the well
+    QVector<WellConnectionVariable*> m_var_connections;     // variable perforations
+    QVector<WellControl*> m_schedule;                       // the control schedule of the well /**< TODO */
 
     Cost *p_cost;                               // the cost associated with installing the well (only used if the install time is set
     shared_ptr<IntVariable> p_install_time;     // the installation time of the separator
@@ -89,6 +91,7 @@ public:
     bool isInstalled(int i);
     bool hasInstallTime() const {return p_install_time != 0;}
     bool hasCost() const {return p_cost != 0;}
+    bool hasVariableConnections() const {return m_var_connections.size()>0;}
 
     // virtual functions
 
@@ -107,6 +110,8 @@ public:
      * @param c
      */
     void addConnection(WellConnection *c) {m_connections.push_back(c);}
+
+    void addVariableConnection(WellConnectionVariable *vc);
 
     /**
      * @brief Adds a control element to the schedule of the well.
@@ -221,7 +226,8 @@ public:
      *
      * @return int
      */
-    int numberOfConnections() const {return m_connections.size();}
+    int numberOfConnections() const {return (m_connections.size() + m_var_connections.size());}
+    int numberOfVariableConnections() const {return m_var_connections.size();}
 
     /**
      * @brief Returns the cell number of connection i
@@ -229,8 +235,9 @@ public:
      * @param i
      * @return Connection number i
      */
-    WellConnection* connection(int i) const {return m_connections.at(i);}
+    WellConnection* connection(int i) const;
 
+    WellConnectionVariable* variableConnection(int i) {return m_var_connections.at(i);}
     /**
      * @brief Returns the number of well control set points in the shcedule of the well.
      *

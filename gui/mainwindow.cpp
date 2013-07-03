@@ -348,7 +348,7 @@ void MainWindow::saveModelAs()
 
 
     }
-    else
+    else if(p_runner != 0)
     {
         emit sendMsg("Saving the model to file...");
 
@@ -414,6 +414,10 @@ void MainWindow::saveModelAs()
         }
 
         out.flush();
+    }
+    else
+    {
+        emit sendMsg("No model is loaded, unable to save...");
     }
 
 

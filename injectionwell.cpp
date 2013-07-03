@@ -23,6 +23,7 @@
 #include "intvariable.h"
 #include "cost.h"
 #include "wellconnection.h"
+#include "wellconnectionvariable.h"
 #include "wellcontrol.h"
 
 namespace ResOpt
@@ -70,21 +71,46 @@ QString InjectionWell::description() const
         str.append(" COST " + QString::number(cost()->constantCost()) + " " + QString::number(cost()->fractionCost()) + " " + QString::number(cost()->capacityCost()) + "\n");
     }
 
-    str.append(" START CONNECTIONS\n");
-    for(int i = 0; i < numberOfConnections(); ++i)
+    if(numberOfConstantConnections() > 0)
     {
-        WellConnection *wc = connection(i);
+        str.append(" START CONNECTIONS\n");
+        for(int i = 0; i < numberOfConnections(); ++i)
+        {
+            WellConnection *wc = constantConnection(i);
+            if(wc->cell() >= 0) str.append("  " + QString::number(wc->cell()) + " " + QString::number(wc->wellIndex()) + "\n");
+            else str.append("  " + QString::number(wc->i()) + " " +
+                            QString::number(wc->j()) + " " +
+                            QString::number(wc->k1()) + " " +
+                            QString::number(wc->k2()) + " " +
+                            QString::number(wc->wellIndex()) + "\n");
 
-        if(wc->cell() >= 0) str.append("  " + QString::number(wc->cell()) + " " + QString::number(wc->wellIndex()) + "\n");
-        else str.append("  " + QString::number(wc->i()) + " " +
-                        QString::number(wc->j()) + " " +
-                        QString::number(wc->k1()) + " " +
-                        QString::number(wc->k2()) + " " +
-                        QString::number(wc->wellIndex()) + "\n");
+        }
+
+        str.append(" END CONNECTIONS\n\n");
 
     }
 
-    str.append(" END CONNECTIONS\n\n");
+    if(numberOfVariableConnections() > 0)
+    {
+        str.append(" START VARCONNECTIONS\n");
+
+        for(int i = 0; i < numberOfVariableConnections(); ++i)
+        {
+            WellConnectionVariable *wcv = variableConnection(i);
+
+            str.append("  " + QString::number(wcv->iVariable()->value()) + " " +
+                       QString::number(wcv->iVariable()->max()) + " " +
+                       QString::number(wcv->iVariable()->min()) + " " +
+                       QString::number(wcv->jVariable()->value()) + " " +
+                       QString::number(wcv->jVariable()->max()) + " " +
+                       QString::number(wcv->jVariable()->min()) + " " +
+                       QString::number(wcv->wellConnection()->k1()) + " " +
+                       QString::number(wcv->wellConnection()->k2()) + " " +
+                       QString::number(wcv->wellConnection()->wellIndex()) + "\n");
+        }
+
+        str.append(" END VARCONNECTIONS\n");
+    }
 
 
     str.append(" START SCHEDULE\n");

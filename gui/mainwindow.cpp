@@ -142,10 +142,12 @@ void MainWindow::createMenus()
 
     // load model
     QAction *p_act_load =  p_file_menu->addAction("Load Model");
+    p_act_load->setShortcut(QKeySequence::Open);
     connect(p_act_load, SIGNAL(triggered()), this, SLOT(loadModel()));
 
     // save model
     QAction *p_act_savemodel = p_file_menu->addAction("Save Model");
+    p_act_savemodel->setShortcut(QKeySequence::Save);
     connect(p_act_savemodel, SIGNAL(triggered()), this, SLOT(saveModelAs()));
 
     // save plot
@@ -173,6 +175,7 @@ void MainWindow::createMenus()
 
     QToolBar *toolbar = addToolBar("Tools");
     p_act_startbutton = toolbar->addAction(QIcon(":new/images/play"), "Start Optimization");
+    p_act_startbutton->setShortcut(Qt::CTRL + Qt::Key_R);
 
     connect(p_act_startbutton, SIGNAL(triggered()), this, SLOT(onStartButtonTriggered()));
 

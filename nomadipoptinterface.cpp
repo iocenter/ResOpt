@@ -118,7 +118,7 @@ bool NomadIpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
         x_l[i] = m_vars.at(i)->min();   // lower bound
         x_u[i] = m_vars.at(i)->max();   // upper bound
 
-        cout << m_vars.at(i)->min() << " < x[" << i << "] < " << m_vars.at(i)->max() << endl;
+       // cout << m_vars.at(i)->min() << " < x[" << i << "] < " << m_vars.at(i)->max() << endl;
 
 
     }

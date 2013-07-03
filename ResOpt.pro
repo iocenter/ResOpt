@@ -120,7 +120,8 @@ SOURCES += main.cpp \
     nomadipoptoptimizer.cpp \
     nomadipoptevaluator.cpp \
     nomadipoptinterface.cpp \
-    wellconnectionvariable.cpp
+    wellconnectionvariable.cpp \
+    gui/inspectorwellconnectionvariable.cpp
 
 HEADERS += \
     well.h \
@@ -215,7 +216,8 @@ HEADERS += \
     nomadipoptoptimizer.h \
     nomadipoptevaluator.h \
     nomadipoptinterface.h \
-    wellconnectionvariable.h
+    wellconnectionvariable.h \
+    gui/inspectorwellconnectionvariable.h
 
 RESOURCES += \
     gui/images.qrc

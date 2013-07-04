@@ -28,7 +28,7 @@
 
 class QLineEdit;
 class QLabel;
-class QComboBox;
+
 
 namespace ResOptGui
 {
@@ -49,6 +49,9 @@ private:
     InspectorVariable *p_var_i;
     InspectorVariable *p_var_j;
 
+    QLineEdit *p_led_k1;
+    QLineEdit *p_led_k2;
+    QLineEdit *p_led_wi;
 
 
 };

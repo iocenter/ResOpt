@@ -165,6 +165,7 @@ void MainWindow::createMenus()
 
     // properties
     QAction *p_act_opt_prop = p_opt_menu->addAction("Properties");
+    p_act_opt_prop->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_P));
     connect(p_act_opt_prop, SIGNAL(triggered()), this, SLOT(openOptimizerInspector()));
 
 

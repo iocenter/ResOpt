@@ -40,6 +40,7 @@ namespace ResOptGui
 
 class InspectorVariable;
 class InspectorWellControl;
+class InspectorWellConnectionVariable;
 
 class InspectorInjWell : public QWidget
 {
@@ -48,7 +49,12 @@ private:
     InjectionWell *p_well;
 
     QVector<InspectorWellControl*> m_controls;
+    QVector<InspectorWellConnectionVariable*> m_varcons;
     QGroupBox *box_control;
+    QGroupBox *box_varcon;
+
+    QPushButton *p_btn_control;
+    QPushButton *p_btn_varcon;
 
     QPushButton m_btn_close;
     QPushButton m_btn_ok;
@@ -67,6 +73,7 @@ public slots:
     void saveAndClose();
     void openPlot();
     void hideControls(bool b);
+    void hideConnectionVariables(bool b);
 
 };
 

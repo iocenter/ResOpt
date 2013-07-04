@@ -90,8 +90,8 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
     // starting to generate the file
 
-    //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2012b';" << "\n"; // beehive
-    *out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2012b';" << "\n"; // linux virtual
+    *out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2012b';" << "\n"; // beehive
+    //*out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2012b';" << "\n"; // linux virtual
     //*out_ctrl << "mrstPath = '/Users/aleksaju/Skole/Postdoc/MRST/versions/2012b';" << "\n"; // mac
     //*out_ctrl << "mrstPath = '/Volumes/Macintosh HD/MATS/Dropbox/Skole/_Masteroppgave/Matlab/mrst-2012b';" << "\n"; // mats mac
     //*out_ctrl << "mrstPath = '/Users/eirikhaug/Desktop/mrst-2013a';" << "\n"; // eirik mac
@@ -625,8 +625,8 @@ bool MrstBatchSimulator::launchSimulator()
     cout << "Launching MRST in batch mode..." << endl;
 
 
-    QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
-    //QString program = "matlab";   // beehive
+    //QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
+    QString program = "matlab";   // beehive
     //QString program = "/Applications/MATLAB_R2011b.app/bin/matlab";     // mac
     //QString program = "/Volumes/SSD\ BOOT/Applications/MATLAB_R2012B.APP/bin/matlab";     // mats mac
     //QString program = "/Applications/MATLAB_R2013a.app/bin/matlab";     // eirik mac

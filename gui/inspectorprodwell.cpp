@@ -24,12 +24,14 @@
 #include "inspectorvariable.h"
 #include "inspectorwellcontrol.h"
 #include "inspectorconstraint.h"
+#include "inspectorwellconnectionvariable.h"
 #include "plotstreams.h"
 
 #include "productionwell.h"
 #include "intvariable.h"
 #include "realvariable.h"
 #include "wellcontrol.h"
+#include "wellconnectionvariable.h"
 #include "constraint.h"
 
 
@@ -38,12 +40,14 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QRadioButton>
 
 
 using ResOpt::IntVariable;
 using ResOpt::RealVariable;
 using ResOpt::WellControl;
 using ResOpt::Constraint;
+using ResOpt::WellConnectionVariable;
 
 namespace ResOptGui
 {
@@ -73,14 +77,17 @@ void InspectorProdWell::construct()
     setWindowTitle("Production Well " + p_well->name() + " Properties");
 
     QGridLayout *layout = new QGridLayout(this);
+    int row = 0;
 
     setLayout(layout);
 
-    // setting up the control variables
-    QGroupBox *box_control = new QGroupBox("Control Variables", this);
+    // ---- setting up the control variables -----
+    box_control = new QGroupBox("Control Variables", this);
     box_control->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+    box_control->setMinimumWidth(500);
 
     QVBoxLayout *layout_control = new QVBoxLayout(box_control);
+    //layout_control->setSizeConstraint(QLayout::SetFixedSize);
     box_control->setLayout(layout_control);
 
 
@@ -92,12 +99,70 @@ void InspectorProdWell::construct()
         layout_control->addWidget(iwc);
     }
 
+    // show/hide
+    p_btn_control = new QPushButton("-", this);
+    p_btn_control->setFixedSize(25, 25);
+    p_btn_control->setCheckable(true);
+    p_btn_control->setChecked(false);
+    connect(p_btn_control, SIGNAL(toggled(bool)), this, SLOT(hideControls(bool)));
+    layout_control->addWidget(p_btn_control);
 
-    layout->addWidget(box_control, 0, 0, 1, 3);
 
-    // setting up the bhp constraints
-    QGroupBox *box_bhp_con = new QGroupBox("BHP Constraints", this);
+
+    layout->addWidget(box_control, row, 0, 1, 3, Qt::AlignCenter);
+    ++row;
+
+
+    // ---- setting up the variable well connections
+    if(p_well->hasVariableConnections())
+    {
+        box_varcon = new QGroupBox("Connection Variables", this);
+        box_varcon->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+        box_varcon->setMinimumWidth(500);
+
+        QVBoxLayout *layout_varcon = new QVBoxLayout(box_varcon);
+        //layout_varcon->setSizeConstraint(QLayout::SetFixedSize);
+        box_varcon->setLayout(layout_varcon);
+
+        for(int i = 0; i < p_well->numberOfVariableConnections(); ++i)
+        {
+            WellConnectionVariable *wcv = p_well->variableConnection(i);
+            InspectorWellConnectionVariable *iwcv = new InspectorWellConnectionVariable(wcv->iVariable()->value(),
+                                                                                        wcv->iVariable()->max(),
+                                                                                        wcv->iVariable()->min(),
+                                                                                        wcv->jVariable()->value(),
+                                                                                        wcv->jVariable()->max(),
+                                                                                        wcv->jVariable()->min(),
+                                                                                        wcv->wellConnection()->k1(),
+                                                                                        wcv->wellConnection()->k2(),
+                                                                                        wcv->wellConnection()->wellIndex(),
+                                                                                        this);
+            m_varcons.push_back(iwcv);
+            layout_varcon->addWidget(iwcv);
+
+        }
+
+        // show/hide
+        p_btn_varcon = new QPushButton("-", this);
+        p_btn_varcon->setFixedSize(25, 25);
+        p_btn_varcon->setCheckable(true);
+        p_btn_varcon->setChecked(false);
+        connect(p_btn_varcon, SIGNAL(toggled(bool)), this, SLOT(hideConnectionVariables(bool)));
+        layout_varcon->addWidget(p_btn_varcon);
+
+
+        layout->addWidget(box_varcon, row, 0, 1, 3, Qt::AlignCenter);
+        ++row;
+
+    }
+
+
+
+
+    // ----- setting up the bhp constraints ------
+    box_bhp_con = new QGroupBox("BHP Constraints", this);
     box_bhp_con->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+    box_bhp_con->setMinimumWidth(500);
 
     QVBoxLayout *layout_bhp_con = new QVBoxLayout(box_bhp_con);
     box_bhp_con->setLayout(layout_bhp_con);
@@ -112,21 +177,28 @@ void InspectorProdWell::construct()
         layout_bhp_con->addWidget(ic);
     }
 
+    // show/hide
+    p_btn_bhp_con = new QPushButton("+", this);
+    p_btn_bhp_con->setFixedSize(25, 25);
+    p_btn_bhp_con->setCheckable(true);
+    connect(p_btn_bhp_con, SIGNAL(toggled(bool)), this, SLOT(hideBhpConstraints(bool)));
+    layout_bhp_con->addWidget(p_btn_bhp_con);
+    p_btn_bhp_con->setChecked(true);
 
-    layout->addWidget(box_bhp_con, 1, 0, 1, 3);
+    layout->addWidget(box_bhp_con, row, 0, 1, 3, Qt::AlignCenter);
+    ++row;
 
 
-
-    // setting up the buttons
-    layout->addWidget(&m_btn_ok, 2, 0);
+    // ---- setting up the buttons ----
+    layout->addWidget(&m_btn_ok, row, 0);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
 
-    layout->addWidget(&m_btn_plot, 2, 1);
+    layout->addWidget(&m_btn_plot, row, 1);
     connect(&m_btn_plot, SIGNAL(clicked()), this, SLOT(openPlot()));
 
-    layout->addWidget(&m_btn_close, 2, 2);
+    layout->addWidget(&m_btn_close, row, 2);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
-
+    ++row;
 
 
 }
@@ -163,6 +235,53 @@ void InspectorProdWell::openPlot()
     PlotStreams *plt = new PlotStreams(title, p_well->streams());
 }
 
+//-----------------------------------------------------------------------------------------------
+// hides or shows the controls
+//-----------------------------------------------------------------------------------------------
+void InspectorProdWell::hideControls(bool b)
+{
+    for(int i = 0; i < m_controls.size(); ++i)
+    {
+        m_controls.at(i)->setHidden(b);
+    }
 
+    p_btn_control->setText(b ? "+" : "-");
+
+    box_control->adjustSize();
+    this->adjustSize();
+}
+
+//-----------------------------------------------------------------------------------------------
+// hides or shows the connection variables
+//-----------------------------------------------------------------------------------------------
+void InspectorProdWell::hideConnectionVariables(bool b)
+{
+    for(int i = 0; i < m_varcons.size(); ++i)
+    {
+        m_varcons.at(i)->setHidden(b);
+    }
+
+    p_btn_varcon->setText(b ? "+" : "-");
+
+    if(box_varcon != 0) box_varcon->adjustSize();
+    this->adjustSize();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// hides or shows the bhp constraints
+//-----------------------------------------------------------------------------------------------
+void InspectorProdWell::hideBhpConstraints(bool b)
+{
+    for(int i = 0; i < m_bhp_constraints.size(); ++i)
+    {
+        m_bhp_constraints.at(i)->setHidden(b);
+    }
+
+    p_btn_bhp_con->setText(b ? "+" : "-");
+
+    box_bhp_con->adjustSize();
+    this->adjustSize();
+}
 
 } // namespace

@@ -24,6 +24,7 @@
 #include <QWidget>
 #include <QPushButton>
 #include <QVector>
+#include <QtWidgets/QGroupBox>
 
 namespace ResOpt
 {
@@ -38,6 +39,7 @@ namespace ResOptGui
 class InspectorVariable;
 class InspectorWellControl;
 class InspectorConstraint;
+class InspectorWellConnectionVariable;
 
 class InspectorProdWell : public QWidget
 {
@@ -47,7 +49,15 @@ private:
 
     QVector<InspectorWellControl*> m_controls;
     QVector<InspectorConstraint*> m_bhp_constraints;
+    QVector<InspectorWellConnectionVariable*> m_varcons;
 
+    QGroupBox *box_control;
+    QGroupBox *box_varcon;
+    QGroupBox *box_bhp_con;
+
+    QPushButton *p_btn_control;
+    QPushButton *p_btn_varcon;
+    QPushButton *p_btn_bhp_con;
 
     QPushButton m_btn_close;
     QPushButton m_btn_ok;
@@ -65,6 +75,10 @@ signals:
 public slots:
     void saveAndClose();
     void openPlot();
+    void hideControls(bool b);
+    void hideConnectionVariables(bool b);
+    void hideBhpConstraints(bool b);
+
 
 };
 

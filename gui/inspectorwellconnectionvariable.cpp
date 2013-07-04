@@ -21,9 +21,7 @@
 
 #include "inspectorwellconnectionvariable.h"
 
-#include "inspectorvariable.h"
 
-#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QGridLayout>
 #include <QDoubleValidator>
@@ -61,6 +59,7 @@ InspectorWellConnectionVariable::InspectorWellConnectionVariable(int i, int i_ma
     p_lbl_k1->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     p_led_k1 = new QLineEdit(QString::number(k1), this);
     p_led_k1->setFixedWidth(50);
+    p_led_k1->setValidator(new QIntValidator(this));
     layout->addWidget(p_lbl_k1, 3, 0);
     layout->addWidget(p_led_k1, 3, 1);
 
@@ -70,6 +69,7 @@ InspectorWellConnectionVariable::InspectorWellConnectionVariable(int i, int i_ma
     p_lbl_k2->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     p_led_k2 = new QLineEdit(QString::number(k2), this);
     p_led_k2->setFixedWidth(50);
+    p_led_k2->setValidator(new QIntValidator(this));
     layout->addWidget(p_lbl_k2, 3, 2, Qt::AlignRight);
     layout->addWidget(p_led_k2, 3, 3);
 
@@ -79,6 +79,7 @@ InspectorWellConnectionVariable::InspectorWellConnectionVariable(int i, int i_ma
     p_lbl_wi->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
     p_led_wi = new QLineEdit(QString::number(wi), this);
     p_led_wi->setFixedWidth(100);
+    p_led_wi->setValidator(new QIntValidator(this));
     layout->addWidget(p_lbl_wi, 3, 4, Qt::AlignRight);
     layout->addWidget(p_led_wi, 3, 5);
 

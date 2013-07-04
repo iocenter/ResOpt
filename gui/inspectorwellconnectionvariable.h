@@ -30,15 +30,31 @@ class QLineEdit;
 class QLabel;
 
 
+#include "inspectorvariable.h"
+#include <QtWidgets/QLineEdit>
+
 namespace ResOptGui
 {
-class InspectorVariable;
+
 
 class InspectorWellConnectionVariable : public QWidget
 {
     Q_OBJECT
 public:
     explicit InspectorWellConnectionVariable(int i, int i_max, int i_min, int j, int j_max, int j_min, int k1, int k2, int wi ,  QWidget *parent = 0);
+
+    int i() {return p_var_i->value();}
+    int iMax() {return p_var_i->max();}
+    int iMin() {return p_var_i->min();}
+
+    int j() {return p_var_j->value();}
+    int jMax() {return p_var_j->max();}
+    int jMin() {return p_var_j->min();}
+
+    int k1() {return p_led_k1->text().toInt();}
+    int k2() {return p_led_k2->text().toInt();}
+
+    double wi() {return p_led_wi->text().toDouble();}
 
 
 signals:

@@ -49,6 +49,8 @@ InspectorWellConnectionVariable::InspectorWellConnectionVariable(int i, int i_ma
     p_var_j = new InspectorVariable("j-direction: ", j, j_max, j_min, this, false);
     layout->addWidget(p_var_j, 1, 0);
 
+    setDisabled(true);
+
 
 }
 

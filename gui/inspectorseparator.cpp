@@ -21,6 +21,7 @@
 
 #include "inspectorseparator.h"
 #include "inspectorvariable.h"
+#include "inspectorvariableinstall.h"
 #include "plotstreams.h"
 
 #include "separator.h"
@@ -75,8 +76,18 @@ void InspectorSeparator::construct()
     QVBoxLayout *layout_var = new QVBoxLayout(box_var);
     box_var->setLayout(layout_var);
 
-    p_var_install = new InspectorVariable("Install Time:", p_separator->installTime()->value(), p_separator->installTime()->max(), p_separator->installTime()->min(), this, true);
+    QVector<double> schedule;
+    for(int i = 0; i < p_separator->numberOfStreams(); ++i)
+    {
+        schedule.push_back(p_separator->stream(i)->time());
+    }
+
+    p_var_install = new InspectorVariableInstall(p_separator->installTime()->value(), p_separator->installTime()->max(), p_separator->installTime()->min(), schedule, this, true);
     layout_var->addWidget(p_var_install);
+
+
+    //p_var_install = new InspectorVariable("Install Time:", p_separator->installTime()->value(), p_separator->installTime()->max(), p_separator->installTime()->min(), this, true);
+    //layout_var->addWidget(p_var_install);
 
     p_var_capacity = new InspectorVariable("Capacity:", p_separator->removeCapacity()->value(), p_separator->removeCapacity()->max(), p_separator->removeCapacity()->min(), this);
     layout_var->addWidget(p_var_capacity);

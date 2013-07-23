@@ -218,7 +218,10 @@ void Launcher::evaluateEntireModel(Case *c)
 
     if(am != 0)
     {
+        cout << "Launcher: copying results from adjoints model..." << endl;
         *c = *am->results();
+
+        cout << "done copying from adjoints model..." << endl;
     }
     else
     {

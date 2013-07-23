@@ -39,9 +39,8 @@
 #include "realvariable.h"
 #include "intvariable.h"
 #include "stream.h"
-#include "cumgasobjective.h"
-#include "cumoilobjective.h"
-#include "npvobjective.h"
+#include "adjoint.h"
+#include "adjointcollection.h"
 
 namespace ResOpt
 {
@@ -90,8 +89,8 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
     // starting to generate the file
 
-    //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2012b';" << "\n"; // beehive
-    //*out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2012b';" << "\n"; // linux virtual
+    //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2013a';" << "\n"; // beehive
+    *out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2013a';" << "\n"; // linux virtual
     //*out_ctrl << "mrstPath = '/Users/aleksaju/Skole/Postdoc/MRST/versions/2012b';" << "\n"; // mac
     //*out_ctrl << "mrstPath = '/Volumes/Macintosh HD/MATS/Dropbox/Skole/_Masteroppgave/Matlab/mrst-2012b';" << "\n"; // mats mac
     *out_ctrl << "mrstPath = '/Users/eirikhaug/Desktop/mrst-2013a';" << "\n"; // eirik mac
@@ -208,7 +207,7 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 //-----------------------------------------------------------------------------------------------
 // generates the MRST Run2 function
 //-----------------------------------------------------------------------------------------------
-bool MrstBatchSimulator::generateMRSTScript(Model *m)
+bool MrstBatchSimulator::generateMRSTScript(Model *m, bool adjoints)
 {
     QFile mrst_file(folder() + "/runSim2.m");
 
@@ -222,31 +221,6 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
 
     // base file name
     QString base_name = m->reservoir()->file().split(".").at(0);
-
-    // product prices for objective
-    double price_oil = 0.0;
-    double price_gas = 0.0;
-    double price_wat_prod = 0.0;
-    double price_wat_inj = 0.0;
-    double dcf = 0.0;
-
-    CumgasObjective *cg = dynamic_cast<CumgasObjective*>(m->objective());
-    if(cg != 0) price_gas = 1.0;
-
-
-    CumoilObjective *co = dynamic_cast<CumoilObjective*>(m->objective());
-    if(co != 0) price_oil = 1.0;
-
-    NpvObjective *npv = dynamic_cast<NpvObjective*>(m->objective());
-    if(npv != 0)
-    {
-        price_oil = npv->oilPrice();
-        price_gas = npv->gasPrice();
-        price_wat_prod = npv->waterPrice();
-        dcf = npv->dcf();
-
-    }
-
 
 
 
@@ -333,28 +307,237 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m)
     *out_mrst << "fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  [wrats(:) orats(:) bhps(:)]');\n";
     *out_mrst << "fclose(fid);\n\n";
 
+    if(adjoints)
+    {
+        *out_mrst << "% Compute gradients and print to file\n";
+        *out_mrst << "sens = runAdjointWellSensitivities(G, rock, fluid, schedule, system, 'ForwardStates', states);\n";
+        *out_mrst << "W = processWellsLocal(G, rock, schedule.control(1));\n";
+        *out_mrst << "writeWellSensitivities(W, sens, gradNm);\n\n";
 
-    *out_mrst << "% Create objective functions and compute gradient\n";
-    //*out_mrst << "objective = @(tstep)NPVOW(G, wellSols, schedule, 'ComputePartials', true, ...\n";
-    //*out_mrst << "'tStep', tstep, ...\n";
-    //*out_mrst << "'OilPrice',             " << price_oil << " , ...\n";
-    //*out_mrst << "'WaterProductionCost',  " << price_wat_prod << " , ...\n";
-    //*out_mrst << "'WaterInjectionCost',   " << price_wat_inj << " , ...\n";
-    //*out_mrst << "'DiscountFactor',       " << dcf << " );\n\n";
-
-    //*out_mrst << "gradient = runAdjointADI(G, rock, fluid, schedule, objective, system, 'ForwardStates', states);\n";
-    //*out_mrst << "gradient = full(cell2mat(gradient));\n";
-    //*out_mrst << "fid = fopen(gradNm, 'w');\n";
-    //*out_mrst << "fprintf(fid, '%+12.6e\\n', gradient);\n";
-    //*out_mrst << "fclose(fid);\n\n";
-    *out_mrst << "end\n";
+    }
 
 
+
+    *out_mrst << "end\n\n";
+
+
+    if(adjoints) generateMRSTScriptAdjoints(out_mrst);
 
     return true;
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// generates the Adjoints part of the MRST runSim2 function
+//-----------------------------------------------------------------------------------------------
+bool MrstBatchSimulator::generateMRSTScriptAdjoints(QTextStream *out_mrst)
+{
+    // ---- printing the function to calculate adjoints ------
+
+    *out_mrst << "function grad = runAdjointWellSensitivities(G, rock, fluid, schedule, system, varargin) \n\n";
+    *out_mrst << "   directory = fullfile(fileparts(mfilename('fullpath')), 'cache');\n\n";
+
+    *out_mrst << "   opt = struct('Verbose',             mrstVerbose, ...\n";
+    *out_mrst << "                'writeOutput',         false, ...\n";
+    *out_mrst << "                'directory',           directory, ...\n";
+    *out_mrst << "                'outputName',          'adjoint', ...\n";
+    *out_mrst << "                'outputNameFunc',      [], ...\n";
+    *out_mrst << "                'simOutputName',       'state', ...\n";
+    *out_mrst << "                'simOutputNameFunc',   [], ...\n";
+    *out_mrst << "                'ForwardStates',       [], ...\n";
+    *out_mrst << "                'ControlVariables',    [],...\n";
+    *out_mrst << "                'scaling',             []);\n\n";
+    *out_mrst << "   opt = merge_options(opt, varargin{:});\n\n";
+    *out_mrst << "   vb = opt.Verbose;\n";
+    *out_mrst << "   states = opt.ForwardStates;\n\n";
+
+    *out_mrst << "   if ~isempty(opt.scaling)\n";
+    *out_mrst << "      scalFacs = opt.scaling;\n";
+    *out_mrst << "   else\n";
+    *out_mrst << "      scalFacs.rate = 1; scalFacs.pressure = 1;\n";
+    *out_mrst << "   end\n\n";
+
+    *out_mrst << "   %--------------------------------------------------------------------------\n";
+    *out_mrst << "   dts = schedule.step.val;\n";
+    *out_mrst << "   tm = cumsum(dts);\n";
+    *out_mrst << "   dispif(vb, '*****************************************************************\\n')\n";
+    *out_mrst << "   dispif(vb, '**** Starting adjoint simulation: %5.0f steps, %5.0f days *******\\n', numel(dts), tm(end)/day)\n";
+    *out_mrst << "   dispif(vb, '*****************************************************************\\n')\n";
+    *out_mrst << "   %--------------------------------------------------------------------------\n\n";
+
+    *out_mrst << "   if opt.writeOutput\n";
+    *out_mrst << "      % delete existing output\n";
+    *out_mrst << "      % delete([opt.outputName, '*.mat']);\n";
+    *out_mrst << "      % output file-names\n";
+    *out_mrst << "      if isempty(opt.outputNameFunc)\n";
+    *out_mrst << "         outNm  = @(tstep)fullfile(opt.directory, [opt.outputName, sprintf('%05.0f', tstep)]);\n";
+    *out_mrst << "      else\n";
+    *out_mrst << "         outNm  = @(tstep)fullfile(opt.directory, opt.outputNameFunc(tstep));\n";
+    *out_mrst << "      end\n";
+    *out_mrst << "   end\n";
+    *out_mrst << "   if isempty(opt.simOutputNameFunc)\n";
+    *out_mrst << "      inNm  = @(tstep)fullfile(opt.directory, [opt.simOutputName, sprintf('%05.0f', tstep)]);\n";
+    *out_mrst << "   else\n";
+    *out_mrst << "      inNm  = @(tstep)fullfile(opt.directory, opt.simOutputNameFunc(tstep));\n";
+    *out_mrst << "   end\n\n";
+
+    *out_mrst << "   nsteps = numel(dts);\n\n";
+
+    *out_mrst << "   prevControl = inf;\n";
+    *out_mrst << "   adjVec    = [];\n";
+    *out_mrst << "   eqs_p       = [];\n";
+    *out_mrst << "   gradFull = cell(1, numel(dts));\n\n";
+
+    *out_mrst << "   % Load state - either from passed states in memory or on disk\n";
+    *out_mrst << "   % representation.\n";
+    *out_mrst << "   state = loadState(states, inNm, numel(dts));\n\n";
+
+    *out_mrst << "   %-----------------------------------------------------------------------\n";
+    *out_mrst << "   numControlSteps = numel(schedule.control);\n";
+    *out_mrst << "   numWells        = [];\n\n";
+
+    *out_mrst << "   timero = tic;\n";
+    *out_mrst << "   for tstep = numel(dts):-1:1\n";
+    *out_mrst << "       dispif(vb, 'Time step: %5.0f\\n', tstep); timeri = tic;\n";
+    *out_mrst << "       control = schedule.step.control(tstep);\n";
+    *out_mrst << "       if control~=prevControl\n";
+    *out_mrst << "           if (control==0)\n";
+    *out_mrst << "               W = processWellsLocal(G, rock, [], 'createDefaultWell', true);\n";
+    *out_mrst << "           else\n";
+    *out_mrst << "           W = processWellsLocal(G, rock, schedule.control(control), 'Verbose', opt.Verbose, ...\n";
+    *out_mrst << "                             'DepthReorder', true);\n";
+    *out_mrst << "           if isempty(numWells) %initialize\n";
+    *out_mrst << "               numWells = numel(W); %assum numWells is equa for all cont steps\n";
+    *out_mrst << "               %if isfield(state.wellSol(1), 'qGs')\n";
+    *out_mrst << "               %    numWellProps = 4;\n";
+    *out_mrst << "               %else\n";
+    *out_mrst << "                   numWellProps = 3;\n";
+    *out_mrst << "               %end\n";
+    *out_mrst << "               numRHS  = numControlSteps*numWells*numWellProps;\n";
+    *out_mrst << "               %numVars = 2*numel(state.pressure) + numWells*numWellProps;\n";
+    *out_mrst << "           end\n";
+    *out_mrst << "           end\n";
+    *out_mrst << "       end\n\n";
+
+    *out_mrst << "       state_m = loadState(states, inNm, tstep-1);\n";
+    *out_mrst << "       eqs = system.getEquations(state_m, state  , dts(tstep), G, W, system.s, fluid);\n";
+    *out_mrst << "       numVars = cellfun(@numval, eqs)';\n";
+    *out_mrst << "       cumVars = cumsum(numVars);\n";
+    *out_mrst << "       ii = [[1;cumVars(1:end-1)+1], cumVars];\n";
+    *out_mrst << "       eqs = cat(eqs{:});\n";
+    *out_mrst << "       rhs = getRHS1(control, [sum(numVars), numRHS], numWells, numWellProps);\n\n";
+
+    *out_mrst << "       if tstep < nsteps\n";
+    *out_mrst << "           eqs_p = system.getEquations(state  , state_p, dts(tstep+1), G, W_p, system.s, fluid, ...\n";
+    *out_mrst << "               'reverseMode', true);\n";
+    *out_mrst << "           eqs_p = cat(eqs_p{:});\n";
+    *out_mrst << "           rhs = rhs - eqs_p.jac{1}'*adjVec;\n";
+    *out_mrst << "       end\n\n";
+
+    *out_mrst << "       adjVec = eqs.jac{1}'\\rhs;\n\n";
+
+    *out_mrst << "       if isempty(opt.ControlVariables)\n";
+    *out_mrst << "           gradFull{tstep} = -adjVec(ii(end,1):ii(end,2),:);\n";
+    *out_mrst << "       else\n";
+    *out_mrst << "           gradFull{tstep} = -adjVec(mcolon(ii(opt.ControlVariables,1),ii(opt.ControlVariables,2)),:);\n";
+    *out_mrst << "       end\n\n";
+
+    *out_mrst << "       state   = state_m;\n";
+    *out_mrst << "       state_p = state;\n";
+    *out_mrst << "       W_p = W;\n";
+    *out_mrst << "       prevControl = control;\n";
+    *out_mrst << "       dispif(vb, 'Done %6.2f\\n', toc(timeri))\n";
+    *out_mrst << "       if opt.writeOutput\n";
+    *out_mrst << "           save(outNm(tstep), 'adjVec');\n";
+    *out_mrst << "       end\n";
+    *out_mrst << "   end\n\n";
+
+    *out_mrst << "   grad = cell(1, numel(schedule.control));\n";
+    *out_mrst << "   %take gradient for controll-step as average of time-steps\n";
+    *out_mrst << "   for k = 1:numel(schedule.control)\n";
+    *out_mrst << "       ck = find((schedule.step.control == k));\n";
+    *out_mrst << "       for m = 1:numel(ck)\n";
+    *out_mrst << "           if m == 1\n";
+    *out_mrst << "               grad{k} = gradFull{ck(1)}/numel(ck);\n";
+    *out_mrst << "           else\n";
+    *out_mrst << "               grad{k} = grad{k} + gradFull{ck(1)}/numel(ck);\n";
+    *out_mrst << "           end\n";
+    *out_mrst << "       end\n";
+    *out_mrst << "   end\n\n";
+
+    *out_mrst << "   dispif(vb, '************Simulation done: %7.2f seconds ********************\\n', toc(timero))\n";
+    *out_mrst << "end\n";
+    *out_mrst << "%--------------------------------------------------------------------------\n\n";
+
+    *out_mrst << "function state = loadState(states, inNm, tstep)\n";
+    *out_mrst << "if ~isempty(states)\n";
+    *out_mrst << "    % State has been provided, no need to look for it.\n";
+    *out_mrst << "    state = states{tstep+1};\n";
+    *out_mrst << "    return\n";
+    *out_mrst << "end\n";
+    *out_mrst << "out = load(inNm(tstep));\n";
+    *out_mrst << "fn  = fieldnames(out);\n";
+    *out_mrst << "if numel(fn) ~= 1\n";
+    *out_mrst << "    error('Unexpected format for simulation output')\n";
+    *out_mrst << "else\n";
+    *out_mrst << "    state = out.(fn{:});\n";
+    *out_mrst << "end\n";
+    *out_mrst << "end\n\n";
+
+
+    *out_mrst << "function rhs = getRHS1(cStep, sz, nWells, nWQ)\n";
+    *out_mrst << "j1 = (cStep-1)*nWells*nWQ +1;\n";
+    *out_mrst << "j2 = cStep*nWells*nWQ;\n";
+    *out_mrst << "i1 = sz(1)-nWells*nWQ +1;\n";
+    *out_mrst << "i2 = sz(1);\n";
+    *out_mrst << "rhs = sparse(i1:i2, j1:j2, -1, sz(1), sz(2));\n";
+    *out_mrst << "end\n\n";
+
+
+    // ----- printing the function to write adjoints to file ------
+
+
+    *out_mrst << "function [] = writeWellSensitivities(W, sens, fnm)\n";
+    *out_mrst << "fid = fopen(fnm, 'w');\n\n";
+
+    *out_mrst << "nw = numel(W);\n";
+    *out_mrst << "ns = numel(sens);\n";
+    *out_mrst << "numPh = size(sens{1}, 2)/(nw*ns)-1;\n";
+    *out_mrst << "%index mappings\n";
+    *out_mrst << "if numPh == 2\n";
+    *out_mrst << "    ix1 = repmat([1 3 4]', [1, ns*nw]);\n";
+    *out_mrst << "    ix1 = ix1 + 4*ones(3,1)*(0:(nw*ns-1));\n";
+    *out_mrst << "    ix1 = ix1(:);\n";
+    *out_mrst << "    ix2 = repmat([nw+1, 1, 2*nw+1]', [1, nw]);\n";
+    *out_mrst << "    ix2 = ix2 + ones(3,1)*(0:(nw-1));\n";
+    *out_mrst << "    ix2 = ix2(:);\n";
+    *out_mrst << "    ix2 = repmat(ix2, [1, ns]);\n";
+    *out_mrst << "    ix2 = ix2 + 3*nw*ones(3*nw,1)*(0:(ns-1));\n";
+    *out_mrst << "    ix2 = ix2(:);\n";
+    *out_mrst << "end\n\n";
+
+    *out_mrst << "%first, output well-names\n";
+    *out_mrst << "for k = 1:nw\n";
+    *out_mrst << "    fprintf(fid, [W(k).name, '\\n']);\n";
+    *out_mrst << "end\n\n";
+
+    *out_mrst << "%loop over control steps\n";
+    *out_mrst << "fmt = '%+12.6e ';\n";
+    *out_mrst << "lft = [repmat(fmt, [1, 4*nw*ns]), '\\n'];\n";
+    *out_mrst << "MG  = zeros(nw, 4*nw*ns);\n";
+    *out_mrst << "for cstep = 1:ns\n";
+    *out_mrst << "    fprintf(fid, '\\nSTEP %2.0d\\n', cstep);\n";
+    *out_mrst << "    M = full(sens{cstep});\n";
+    *out_mrst << "    MG(:,ix1) = M(:, ix2);\n";
+    *out_mrst << "    fprintf(fid, lft, MG');\n";
+    *out_mrst << "end\n";
+    *out_mrst << "fprintf(fid, '\\n');\n";
+    *out_mrst << "fclose(fid);\n";
+    *out_mrst << "end\n";
+
+
+    return true;
+}
 
 //-----------------------------------------------------------------------------------------------
 // generates the ECL include file
@@ -585,15 +768,17 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
         // copying the originals
         QFile::copy(m->driverPath() + "/initStateADI.m", folder() + "/initStateADI.m");
 
-        // generating schedule and runsim2
-        generateMRSTScript(m);
+        // generating runsim2
+        AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(m);
+        generateMRSTScript(m, am != 0);
 
 
         m_first_launch = false;
 
     }
 
-     generateEclIncludeFile(m);
+    // generating schedule
+    generateEclIncludeFile(m);
 
 
     // removing the .mat file every time, since inconsistent results occur when not removed
@@ -601,7 +786,7 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
     // removing old output file
     QFile::remove(folder() + "/" + base_name + "_RES.TXT");
-
+    QFile::remove(folder() + "/" + base_name + "_GRAD.TXT");
 
     // generating the control input file
     generateControlInputFile(m);
@@ -625,11 +810,11 @@ bool MrstBatchSimulator::launchSimulator()
     cout << "Launching MRST in batch mode..." << endl;
 
 
-    //QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
+    QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
     //QString program = "matlab";   // beehive
     //QString program = "/Applications/MATLAB_R2011b.app/bin/matlab";     // mac
     //QString program = "/Volumes/SSD\ BOOT/Applications/MATLAB_R2012B.APP/bin/matlab";     // mats mac
-    QString program = "/Applications/MATLAB_R2013a.app/bin/matlab";     // eirik mac
+    //QString program = "/Applications/MATLAB_R2013a.app/bin/matlab";     // eirik mac
 
     QStringList args;
     args.push_back("-nosplash");
@@ -685,12 +870,15 @@ bool MrstBatchSimulator::readOutput(Model *m)
     // reading rates and pressures
     if(!readStandardOutput(m)) ok = false;
 
+
     // reading adjoints if needed
     AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(m);
     if(am != 0)
     {
         if(!readAdjoints(am)) ok = false;
     }
+    else cout << "No adjoints model!" << endl;
+
 
     return ok;
 
@@ -795,6 +983,7 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
 //-----------------------------------------------------------------------------------------------
 bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
 {
+    cout << "Reading adjoints file..." << endl;
 
     QString base_name = m->reservoir()->file().split(".").at(0);
 
@@ -809,6 +998,150 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
         cout << "Could not open MRST adjoints file: " << input.fileName().toLatin1().constData() << endl;
         exit(1);
     }
+
+    cout << "starting to read" << endl;
+
+
+    // ---- starting to read the adjoints -----
+
+    // reading the order of the wells
+    QList<Well*> wells;
+    QStringList list = processLine(input.readLine());
+
+
+    while(!input.atEnd() && !list.at(0).startsWith("STEP"))
+    {
+
+        if(!isEmpty(list))
+        {
+
+            // finding the corresponding well
+            Well *w = m->wellByName(list.at(0));
+
+            if(w != 0) wells.push_back(w);
+            else
+            {
+                cout << endl << "### Runtime Error ###" << endl
+                     << "WELL: " << list.at(0).toLatin1().constData() <<  endl
+                     << "found in adjoints file, but not in model... " << endl;
+
+                exit(1);
+            }
+        }
+
+        list = processLine(input.readLine());
+
+    }
+
+
+
+
+    // starting to loop through the time steps
+    for(int ts = 0; ts < m->numberOfMasterScheduleTimes(); ++ts)
+    {
+        // looping through the wells for the time step
+        for(int i = 0; i < wells.size(); ++i)
+        {
+            // reading the next line
+            list = processLine(input.readLine());
+            if(input.atEnd())
+            {
+                cout << endl << "### Runtime Error ###" << endl
+                     << "Reached end of file before all adjoins have been read..." << endl;
+
+                exit(1);
+            }
+
+            // finding the correct adjoints collection
+            shared_ptr<RealVariable> var = wells.at(i)->control(ts)->controlVar();
+            AdjointCollection *ac = m->adjointCollection(var);
+
+
+            if(ac != 0)
+            {
+
+                // looping through the adjoints in the collection
+                int col = 0;
+                for(int ts_i = 0; ts_i < m->numberOfMasterScheduleTimes(); ++ts_i)
+                {
+                    for(int k = 0; k < wells.size(); ++k)
+                    {
+                        Adjoint *a = ac->adjoint(wells.at(k), ts_i);
+
+                        if(a != 0)
+                        {
+
+                            // doing unit conversions
+                            double c_p = 1.0;
+                            double c_q = 1.0;
+
+                            if(wells.at(i)->control(ts)->type() == WellControl::BHP)
+                            {
+                                // variable is pressure
+                                if(wells.at(i)->type() != wells.at(k)->type())
+                                {
+
+                                }
+                                else
+                                {
+
+                                }
+                                c_q = -1e5 * 86400;
+
+                            }
+                            else
+                            {
+                                // variable is rate
+                                if(wells.at(i)->type() != wells.at(k)->type())
+                                {
+
+                                }
+                                else
+                                {
+
+                                }
+                                c_p = -1e-5 / 86400;
+                            }
+
+                            // if one is prod and the other is injector, switch sign
+
+
+                            a->setDqoDx(list.at(col++).toDouble() * c_q);
+                            a->setDqgDx(list.at(col++).toDouble() * c_q);
+                            a->setDqwDx(list.at(col++).toDouble() * c_q);
+                            a->setDpDx(list.at(col++).toDouble() * c_p);
+                        }
+                        else cout << "!!! no adjoint !!!" << endl;
+                    }
+                }
+
+
+            }
+            else
+            {
+                cout << endl << "### Runtime Error ###" << endl
+                     << "Model not set up to accept adjoints for variable..." << endl
+                     << "VARIABLE: " << wells.at(i)->control(ts)->controlVar()->name().toLatin1().constData() <<  endl;
+
+
+                exit(1);
+            }
+
+
+
+
+
+
+        }
+
+        // finding the next STEP header in the file
+        while(!input.atEnd() && !list.at(0).startsWith("STEP"))
+        {
+            list = processLine(input.readLine());
+        }
+    }
+
+
 
 
     return true;
@@ -831,5 +1164,28 @@ QStringList MrstBatchSimulator::processLine(const QString& line)
     return list;
 }
 
+//-----------------------------------------------------------------------------------------------
+// Checks if the line is empty or not (white spaces)
+//-----------------------------------------------------------------------------------------------
+bool MrstBatchSimulator::isEmpty(const QStringList &list)
+{
+    bool ok = true;
+
+    for(int i = 0; i < list.size(); i++)
+    {
+        QString temp = list.at(i);
+
+        temp.remove(QRegExp("\\s+"));
+
+        if(temp.size() != 0)
+        {
+            ok = false;
+            break;
+        }
+
+    }
+
+    return ok;
+}
 
 } // namespace ResOpt

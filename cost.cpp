@@ -21,6 +21,9 @@
 
 #include "cost.h"
 
+#include <math.h>
+
+
 namespace ResOpt
 {
 
@@ -31,8 +34,29 @@ Cost::Cost() :
     m_mult_frac(0),
     m_mult_cap(0),
     m_fraction(0),
-    m_capacity(0)
+    m_capacity(0),
+    m_fraction_exponent(1.0),
+    m_capacity_exponent(1.0),
+    m_linear(true)
 {
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// returns the current value of the cost
+//-----------------------------------------------------------------------------------------------
+double Cost::value() const
+{
+    if(m_linear)
+    {
+        return m_const + m_mult_frac * pow(m_fraction, m_fraction_exponent) + m_mult_cap * pow(m_capacity, m_capacity_exponent);
+    }
+
+    else
+    {
+        return m_const + m_mult_frac * (pow(m_fraction, m_fraction_exponent) * pow(m_capacity, m_capacity_exponent));
+    }
+
 }
 
 

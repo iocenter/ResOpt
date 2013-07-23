@@ -50,12 +50,15 @@ private:
 
     bool generateControlInputFile(Model *m);
     bool generateEclIncludeFile(Model *m);
-    bool generateMRSTScript(Model *m);
+    bool generateMRSTScript(Model *m, bool adjoints = false);
     bool readAdjoints(AdjointsCoupledModel *m);
     bool readStandardOutput(Model *m);
 
+    bool generateMRSTScriptAdjoints(QTextStream *out_mrst);
+
 
     QStringList processLine(const QString &line);
+    bool isEmpty(const QStringList &list);
 
 public:
     MrstBatchSimulator();

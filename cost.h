@@ -22,6 +22,7 @@
 #ifndef COST_H
 #define COST_H
 
+
 namespace ResOpt
 {
 
@@ -42,6 +43,9 @@ private:
 
     double m_fraction;
     double m_capacity;
+    double m_fraction_exponent;
+    double m_capacity_exponent;
+    bool m_linear;
 
 public:
     Cost();
@@ -52,12 +56,16 @@ public:
     void setFractionMultiplier(double v) {m_mult_frac = v;}
     void setCapacityMultiplier(double v) {m_mult_cap = v;}
 
+    void setFractionExponent(double e) {m_fraction_exponent = e;}
+    void setCapacityExponent(double e) {m_capacity_exponent = e;}
+
     void setFraction(double f) {m_fraction = f;}
     void setCapacity(double c) {m_capacity = c;}
+    void setLinear(bool b) {m_linear = b;}
 
     // get functions
     double time() const {return m_time;}
-    double value() const {return m_const + m_mult_frac*m_fraction + m_mult_cap*m_capacity;}
+    double value() const;
     double constantCost() const {return m_const;}
     double fractionCost() const {return m_mult_frac;}
     double capacityCost() const {return m_mult_cap;}

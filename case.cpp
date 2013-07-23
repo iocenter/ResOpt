@@ -174,8 +174,8 @@ Case& Case::operator =(const Case &rhs)
 //-----------------------------------------------------------------------------------------------
 void Case::printToCout()
 {
-    cout << "CASE DATA:" << endl;
-    cout << "obj =" << objectiveValue() << endl;
+    cout << "---------- CASE DATA -----------" << endl;
+    cout << "OBJ =" << objectiveValue() << endl;
 
     for(int i = 0; i < numberOfRealVariables(); ++i)
     {
@@ -198,6 +198,12 @@ void Case::printToCout()
     }
 
     cout << endl;
+
+    cout << "OBJ DERIVATIVES:" << endl;
+    for(int i = 0; i < objectiveDerivative()->numberOfPartials(); ++i)
+    {
+        cout << i << " = " << objectiveDerivative()->value(i) << endl;
+    }
 }
 
 

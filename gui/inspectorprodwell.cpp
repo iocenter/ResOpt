@@ -222,6 +222,22 @@ void InspectorProdWell::saveAndClose()
         p_well->control(i)->setType(m_controls.at(i)->type());
     }
 
+    // saving the connection variables
+    for(int i = 0; i < p_well->numberOfVariableConnections(); ++i)
+    {
+        p_well->variableConnection(i)->iVariable()->setValue(m_varcons.at(i)->i());
+        p_well->variableConnection(i)->iVariable()->setMax(m_varcons.at(i)->iMax());
+        p_well->variableConnection(i)->iVariable()->setMin(m_varcons.at(i)->iMin());
+
+        p_well->variableConnection(i)->jVariable()->setValue(m_varcons.at(i)->j());
+        p_well->variableConnection(i)->jVariable()->setMax(m_varcons.at(i)->jMax());
+        p_well->variableConnection(i)->jVariable()->setMin(m_varcons.at(i)->jMin());
+
+        p_well->variableConnection(i)->setK1(m_varcons.at(i)->k1());
+        p_well->variableConnection(i)->setK2(m_varcons.at(i)->k2());
+        p_well->variableConnection(i)->setWellIndex(m_varcons.at(i)->wi());
+    }
+
     close();
 }
 

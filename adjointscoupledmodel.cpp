@@ -27,19 +27,65 @@
 #include "derivative.h"
 #include "constraint.h"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 namespace ResOpt
 {
 
 AdjointsCoupledModel::AdjointsCoupledModel() :
-    m_adjoint_level(1),
-    m_perturbation(0.01),
+    m_perturbation(0.001),
     p_results(0)
 {
 }
 
+AdjointsCoupledModel::AdjointsCoupledModel(const AdjointsCoupledModel &m)
+    : CoupledModel(m)
+{
+    //int m_perturbation;
+    //Case *p_results;
+
+    //QVector<AdjointCollection*> m_adjoint_collections;
+
+    m_perturbation = m.m_perturbation;
+
+    p_results = 0;
+
+
+    // doing adjoints specific initialization
+
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        for(int j = 0; j < well(i)->numberOfControls(); ++j)
+        {
+            AdjointCollection *ac = new AdjointCollection();
+            ac->setVariable(well(i)->control(j)->controlVar());
+
+            for(int k = 0; k < numberOfMasterScheduleTimes(); ++k)
+            {
+                // looping through each well
+                for(int l = 0; l < numberOfWells(); ++l)
+                {
+                    ac->addAdjoint(new Adjoint(well(l), k));
+                }
+            }
+
+            m_adjoint_collections.push_back(ac);
+        }
+    }
+
+
+
+}
+
+
 AdjointsCoupledModel::~AdjointsCoupledModel()
 {
     if(p_results != 0) delete p_results;
+
+    for(int i = 0; i < m_adjoint_collections.size(); ++i) delete m_adjoint_collections.at(i);
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -52,67 +98,26 @@ void AdjointsCoupledModel::initialize()
 
     // doing adjoints specific initialization
 
-    if(m_adjoint_level == 1)    // adjoints only for the same timestep and well
+    for(int i = 0; i < numberOfWells(); ++i)
     {
-        for(int i = 0; i < numberOfWells(); ++i)
+        for(int j = 0; j < well(i)->numberOfControls(); ++j)
         {
+            AdjointCollection *ac = new AdjointCollection();
+            ac->setVariable(well(i)->control(j)->controlVar());
 
-            for(int j = 0; j < well(i)->numberOfControls(); ++j)
+            for(int k = 0; k < numberOfMasterScheduleTimes(); ++k)
             {
-
-                AdjointCollection *ac = new AdjointCollection();
-                ac->setVariable(well(i)->control(j)->controlVar());
-
-                ac->addAdjoint(new Adjoint(well(i), well(i)->stream(j)));
-
-                m_adjoint_collections.push_back(ac);
-            }
-
-        }
-    }
-
-    else if(m_adjoint_level == 2) // adjoints for all streams in a given well
-    {
-        for(int i = 0; i < numberOfWells(); ++i)
-        {
-            for(int j = 0; j < well(i)->numberOfControls(); ++j)
-            {
-                AdjointCollection *ac = new AdjointCollection();
-                ac->setVariable(well(i)->control(j)->controlVar());
-
-                for(int k = j; k < well(i)->numberOfStreams(); ++k)
+                // looping through each well
+                for(int l = 0; l < numberOfWells(); ++l)
                 {
-                    ac->addAdjoint(new Adjoint(well(i), well(i)->stream(k)));
+                    ac->addAdjoint(new Adjoint(well(l), k));
                 }
-
-                m_adjoint_collections.push_back(ac);
-
-
             }
+
+            m_adjoint_collections.push_back(ac);
         }
     }
 
-    else    // adjoints for all wells, all streams
-    {
-        for(int i = 0; i < numberOfWells(); ++i)
-        {
-            for(int j = 0; j < well(i)->numberOfControls(); ++j)
-            {
-                AdjointCollection *ac = new AdjointCollection();
-                ac->setVariable(well(i)->control(j)->controlVar());
-
-                for(int k = j; k < numberOfMasterScheduleTimes(); ++k)
-                {
-                    // looping through each well
-                    for(int l = 0; l < numberOfWells(); ++l)
-                    {
-                        ac->addAdjoint(new Adjoint(well(l), well(l)->stream(k)));
-                    }
-                }
-
-            }
-        }
-    }
 
 
 }
@@ -122,6 +127,35 @@ void AdjointsCoupledModel::initialize()
 //-----------------------------------------------------------------------------------------------
 void AdjointsCoupledModel::process()
 {
+    /*
+    // test printing adjoints
+    for(int i = 0; i < m_adjoint_collections.size(); ++i)
+    {
+        AdjointCollection *ac = m_adjoint_collections.at(i);
+        cout << "------------------------------------------------------" << endl;
+        cout << "Adjoints for variable: " << ac->variable()->name().toLatin1().constData() << endl;
+        cout << "------------------------------------------------------" << endl;
+        cout << "number of adjoints = " << ac->numberOfAdjoints() << endl;
+
+        for(int j = 0; j < ac->numberOfAdjoints(); ++j)
+        {
+            //cout << "adjoint # " << j+1 << endl;
+            Adjoint *a = ac->adjoint(j);
+            cout << "well: " << a->well()->name().toLatin1().constData() << ", time = " << masterScheduleTime(a->time()) << endl;
+            cout << "  dp/dx = " << a->dpDx();
+            cout << ", dqo/dx = " << a->dqoDx();
+            cout << ", dqg/dx = " << a->dqgDx();
+            cout << ", dqw/dx = " << a->dqwDx() << endl;
+
+        }
+
+        cout << endl;
+
+    }
+
+    */
+
+
     // running perturbations
     QVector<Case*> cases;
     for(int i = 0; i < realVariables().size(); ++i)
@@ -163,6 +197,7 @@ void AdjointsCoupledModel::process()
         base_case->objectiveDerivative()->addPartial(var_id, dfdx);
     }
 
+    base_case->printToCout();
 
     // setting the results
     p_results = base_case;
@@ -172,6 +207,8 @@ void AdjointsCoupledModel::process()
 
     // updating the status of the model
     setUpToDate(true);
+
+    cout << "done processing adjoints coupled model..." << endl;
 
 }
 
@@ -189,25 +226,6 @@ AdjointCollection* AdjointsCoupledModel::adjointCollection(shared_ptr<RealVariab
     return 0;
 }
 
-//-----------------------------------------------------------------------------------------------
-// returns the Adjoint for Stream s wrt. variable v
-//-----------------------------------------------------------------------------------------------
-Adjoint* AdjointsCoupledModel::adjoint(shared_ptr<RealVariable> v, Stream *s)
-{
-    // first finding the correct collection
-    AdjointCollection *ac = adjointCollection(v);
-
-    // then finding the correct adjoint
-    if(ac != 0)
-    {
-        for(int i = 0; i < ac->numberOfAdjoints(); ++i)
-        {
-            if(ac->adjoint(i)->stream() == s) return ac->adjoint(i);
-        }
-    }
-
-    return 0;
-}
 
 
 //-----------------------------------------------------------------------------------------------
@@ -215,8 +233,14 @@ Adjoint* AdjointsCoupledModel::adjoint(shared_ptr<RealVariable> v, Stream *s)
 //-----------------------------------------------------------------------------------------------
 Case* AdjointsCoupledModel::processPerturbation(shared_ptr<RealVariable> v)
 {
+    cout << "-------- processing perturbation -----------" << endl;
+
     // calculating the perturbation size of the variable
-    double eps_x = (v->max() -v->min()) * m_perturbation;
+    double eps_x = (v->max() - v->min()) * m_perturbation;
+
+    cout << "variable: " << v->name().toLatin1().constData() << endl;
+    cout << "eps_x        = " << eps_x << endl;
+
 
     // checking if there is an adjoints collection for the variable
     AdjointCollection *ac = adjointCollection(v);
@@ -253,8 +277,9 @@ Case* AdjointsCoupledModel::processPerturbation(shared_ptr<RealVariable> v)
     Case *c = new Case(this, true);
 
 
-    // resetting the variable value if changed
-    if(v != 0) v->setValue(v->value() - eps_x);
+    // resetting the variable value
+    v->setValue(v->value() - eps_x);
+
 
     // resetting streams if changed
     if(ac != 0) ac->perturbStreams(-eps_x);
@@ -270,6 +295,9 @@ Case* AdjointsCoupledModel::processPerturbation(shared_ptr<RealVariable> v)
 //-----------------------------------------------------------------------------------------------
 Case* AdjointsCoupledModel::processBaseCase()
 {
+    cout << "-------- processing base case -----------" << endl;
+
+
     // update the streams in the pipe network
     updateStreams();
 

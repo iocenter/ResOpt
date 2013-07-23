@@ -135,29 +135,7 @@ Model* ModelReader::readDriverFile(Runner *r)
         {
             cout << "Generating a COUPLED model with ADJOINTS..." << endl;
             AdjointsCoupledModel *am = new AdjointsCoupledModel();
-
-            // setting the adjoint level
-            bool ok_adjoints = true;
-            int adjoints_level = list.at(1).toInt(&ok_adjoints);
-            if(ok_adjoints && adjoints_level >= 1 && adjoints_level <= 3)
-            {
-                cout << "setting the adjoints level to " << adjoints_level << endl;
-                am->setAdjointLevel(adjoints_level);
-            }
-            else
-            {
-                cout << endl << "### Error detected in input file! ###" << endl
-                     << "ADJOINTS level not input correctly..." << endl
-                     << "The adjoints level should be either 1, 2, or 3" << endl
-                     << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
-
-                exit(1);
-
-            }
-
-
             p_model = am;
-
             found_model_def = true;
         }
         else
@@ -1923,6 +1901,8 @@ Pipe* ModelReader::readSeparator()
     double l_cost_constant = -1.0;
     double l_cost_fraction = -1.0;
     double l_cost_capacity = -1.0;
+    double l_cost_frac_exp = 1.0;
+    double l_cost_cap_exp = 1.0;
 
 
     list = processLine(m_driver_file.readLine());
@@ -1960,6 +1940,22 @@ Pipe* ModelReader::readSeparator()
 
                 if(!ok1 || !ok2 || !ok3) ok = false;
 
+            }
+            else if(list.size() == 7) // including exponents
+            {
+                if(list.at(4).startsWith("EXP"))
+                {
+                    bool ok1, ok2, ok3, ok4, ok5 = true;
+                    l_cost_constant = list.at(1).toDouble(&ok1);
+                    l_cost_fraction = list.at(2).toDouble(&ok2);
+                    l_cost_capacity = list.at(3).toDouble(&ok3);
+                    l_cost_frac_exp = list.at(5).toDouble(&ok4);
+                    l_cost_cap_exp = list.at(6).toDouble(&ok5);
+
+                    if(!ok1 || !ok2 || !ok3 || !ok4 || !ok5) ok = false;
+
+                }
+                else ok = false;
             }
             else
             {
@@ -2150,6 +2146,9 @@ Pipe* ModelReader::readSeparator()
     c->setFraction(p_sep->removeFraction()->value());
     c->setCapacity(p_sep->removeCapacity()->value());
 
+    c->setCapacityExponent(l_cost_cap_exp);
+    c->setFractionExponent(l_cost_frac_exp);
+
     p_sep->setCost(c);
 
     // the outlet connection
@@ -2192,6 +2191,8 @@ Pipe* ModelReader::readPressureBooster()
     int l_outlet_pipe = -1;
     double l_cost_constant = -1.0;
     double l_cost_fraction = -1.0;
+    double l_cost_cap_exp = 1.0;
+    double l_cost_frac_exp = 1.0;
 
 
     list = processLine(m_driver_file.readLine());
@@ -2215,11 +2216,27 @@ Pipe* ModelReader::readPressureBooster()
                 if(!ok1 || !ok2) ok = false;
 
             }
+            else if(list.size() == 6) // including exponents
+            {
+                if(list.at(3).startsWith("EXP"))
+                {
+                    bool ok1, ok2, ok3, ok4 = true;
+                    l_cost_constant = list.at(1).toDouble(&ok1);
+                    l_cost_fraction = list.at(2).toDouble(&ok2);
+                    l_cost_frac_exp = list.at(4).toDouble(&ok3);
+                    l_cost_cap_exp = list.at(5).toDouble(&ok4);
+
+                    if(!ok1 || !ok2 || !ok3 || !ok4) ok = false;
+
+                }
+                else ok = false;
+            }
             else
             {
                 cout << endl << "### Error detected in input file! ###" << endl
                      << "COST for BOOSTER not in correct format..." << endl
                      << "The COST keyword must be followed by two numbers: constant term, multiplier" << endl
+                     << "or it can include exponents: cost term, multiplier, EXP, pressure exponent, capacity exponent" << endl
                      << "Last line: " << list.join(" ").toLatin1().constData() << endl << endl;
 
 
@@ -2401,8 +2418,13 @@ Pipe* ModelReader::readPressureBooster()
     c->setFractionMultiplier(l_cost_fraction);
     c->setCapacityMultiplier(0.0);
 
+    c->setFractionExponent(l_cost_frac_exp);
+    c->setCapacityExponent(l_cost_cap_exp);
+
     c->setFraction(p_boost->pressureVariable()->value());
     c->setCapacity(p_boost->capacityVariable()->value());
+
+    c->setLinear(false);
 
     p_boost->setCost(c);
 

@@ -36,6 +36,7 @@ namespace ResOptGui
 {
 
 class InspectorVariable;
+class InspectorVariableInstall;
 
 class InspectorSeparator : public QWidget
 {
@@ -43,7 +44,7 @@ class InspectorSeparator : public QWidget
 private:
     Separator *p_separator;
 
-    InspectorVariable *p_var_install;
+    InspectorVariableInstall *p_var_install;
     InspectorVariable *p_var_capacity;
     InspectorVariable *p_var_removefrac;
 

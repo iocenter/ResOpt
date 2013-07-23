@@ -20,6 +20,13 @@
 
 #include "adjointcollection.h"
 #include "adjoint.h"
+#include "well.h"
+#include "stream.h"
+
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 
 namespace ResOpt
@@ -28,6 +35,29 @@ namespace ResOpt
 
 AdjointCollection::AdjointCollection()
 {
+}
+
+AdjointCollection::AdjointCollection(const AdjointCollection &ac)
+{
+    p_var = ac.p_var;
+
+    for(int i = 0; i < ac.m_adjoints.size(); ++i) m_adjoints.push_back(new Adjoint(*ac.m_adjoints.at(i)));
+}
+
+//-----------------------------------------------------------------------------------------------
+// returns the adjoint for well w and stream s
+//-----------------------------------------------------------------------------------------------
+Adjoint* AdjointCollection::adjoint(Well *w, int time)
+{
+    for(int i = 0; i < m_adjoints.size(); ++i)
+    {
+        if((w->id() == m_adjoints.at(i)->well()->id()) && (time == m_adjoints.at(i)->time()))
+        {
+            return m_adjoints.at(i);
+        }
+    }
+
+    return 0;
 }
 
 //-----------------------------------------------------------------------------------------------

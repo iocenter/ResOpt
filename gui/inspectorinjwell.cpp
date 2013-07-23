@@ -55,6 +55,8 @@ namespace ResOptGui
 InspectorInjWell::InspectorInjWell(InjectionWell *well, QWidget *parent) :
     QWidget(parent),
     p_well(well),
+    box_control(0),
+    box_varcon(0),
     m_btn_close("Close", this),
     m_btn_ok("Ok", this),
     m_btn_plot("Plot", this)
@@ -84,9 +86,9 @@ void InspectorInjWell::construct()
     // ---- setting up the control variables -----
     box_control = new QGroupBox("Control Variables", this);
     box_control->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
-
+    box_control->setFixedWidth(500);
     QVBoxLayout *layout_control = new QVBoxLayout(box_control);
-    layout_control->setSizeConstraint(QLayout::SetFixedSize);
+
     box_control->setLayout(layout_control);
 
 
@@ -99,10 +101,12 @@ void InspectorInjWell::construct()
     }
 
     // show/hide
-    QRadioButton *p_rdo_controls = new QRadioButton("Hide control variables", this);
-    p_rdo_controls->setChecked(false);
-    layout_control->addWidget(p_rdo_controls);
-    connect(p_rdo_controls, SIGNAL(clicked(bool)), this, SLOT(hideControls(bool)));
+    p_btn_control = new QPushButton("-", this);
+    p_btn_control->setFixedSize(25, 25);
+    p_btn_control->setCheckable(true);
+    p_btn_control->setChecked(false);
+    connect(p_btn_control, SIGNAL(toggled(bool)), this, SLOT(hideControls(bool)));
+    layout_control->addWidget(p_btn_control);
 
 
     layout->addWidget(box_control, row, 0, 1, 3, Qt::AlignCenter);
@@ -112,11 +116,11 @@ void InspectorInjWell::construct()
     // ---- setting up the variable well connections
     if(p_well->hasVariableConnections())
     {
-        QGroupBox *box_varcon = new QGroupBox("Connection Variables", this);
+        box_varcon = new QGroupBox("Connection Variables", this);
         box_varcon->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
-
+        box_varcon->setFixedWidth(500);
         QVBoxLayout *layout_varcon = new QVBoxLayout(box_varcon);
-        layout_varcon->setSizeConstraint(QLayout::SetFixedSize);
+        //layout_varcon->setSizeConstraint(QLayout::SetFixedSize);
         box_varcon->setLayout(layout_varcon);
 
         for(int i = 0; i < p_well->numberOfVariableConnections(); ++i)
@@ -132,9 +136,20 @@ void InspectorInjWell::construct()
                                                                                         wcv->wellConnection()->k2(),
                                                                                         wcv->wellConnection()->wellIndex(),
                                                                                         this);
+            m_varcons.push_back(iwcv);
             layout_varcon->addWidget(iwcv);
 
         }
+
+        // show/hide
+        p_btn_varcon = new QPushButton("-", this);
+        p_btn_varcon->setFixedSize(25, 25);
+        p_btn_varcon->setCheckable(true);
+        p_btn_varcon->setChecked(false);
+        connect(p_btn_varcon, SIGNAL(toggled(bool)), this, SLOT(hideConnectionVariables(bool)));
+        layout_varcon->addWidget(p_btn_varcon);
+
+
         layout->addWidget(box_varcon, row, 0, 1, 3, Qt::AlignCenter);
         ++row;
 
@@ -200,7 +215,26 @@ void InspectorInjWell::hideControls(bool b)
         m_controls.at(i)->setHidden(b);
     }
 
+    p_btn_control->setText(b ? "+" : "-");
+
     box_control->adjustSize();
+    this->adjustSize();
+}
+
+//-----------------------------------------------------------------------------------------------
+// hides or shows the connection variables
+//-----------------------------------------------------------------------------------------------
+void InspectorInjWell::hideConnectionVariables(bool b)
+{
+    for(int i = 0; i < m_varcons.size(); ++i)
+    {
+        m_varcons.at(i)->setHidden(b);
+    }
+
+    p_btn_varcon->setText(b ? "+" : "-");
+
+    if(box_varcon != 0) box_varcon->adjustSize();
+    this->adjustSize();
 }
 
 

@@ -32,6 +32,8 @@ namespace ResOpt
 
 class Adjoint;
 class RealVariable;
+class Well;
+class Stream;
 
 class AdjointCollection
 {
@@ -41,6 +43,7 @@ private:
 
 public:
     AdjointCollection();
+    AdjointCollection(const AdjointCollection &ac);
 
     // misc functions
     bool perturbStreams(double eps_x);
@@ -55,7 +58,10 @@ public:
     // get functions
     shared_ptr<RealVariable> variable() {return p_var;}
     Adjoint* adjoint(int i) {return m_adjoints.at(i);}
+    Adjoint* adjoint(Well *w, int time);
     int numberOfAdjoints() {return m_adjoints.size();}
+
+
 };
 
 

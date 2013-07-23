@@ -576,6 +576,19 @@ Well* Model::wellById(int comp_id)
 }
 
 //-----------------------------------------------------------------------------------------------
+// returns the well with the given name
+//-----------------------------------------------------------------------------------------------
+Well* Model::wellByName(const QString &name)
+{
+    for(int i = 0; i < numberOfWells(); ++i)
+    {
+        if(well(i)->name().compare(name) == 0) return well(i);
+    }
+
+    return 0;
+}
+
+//-----------------------------------------------------------------------------------------------
 // Updates the capacity constraints
 //-----------------------------------------------------------------------------------------------
 bool Model::updateCapacityConstraints()
@@ -780,8 +793,8 @@ void Model::updateObjectiveValue()
             // updating the pressure and capacity in the cost according to the variable values in the booster
             //p_boost->cost()->setFraction(p_boost->pressureVariable()->value());
             //p_boost->cost()->setCapacity(p_boost->capacityVariable()->value());
-            p_boost->cost()->setFraction(p_boost->pressureVariable()->value() * p_boost->capacityVariable()->value());
-            p_boost->cost()->setCapacity(0.0);
+            p_boost->cost()->setFraction(p_boost->pressureVariable()->value());
+            p_boost->cost()->setCapacity(p_boost->capacityVariable()->value());
 
             // updating the time of the cost according to the variable
             int time_cost = p_boost->installTime()->value();

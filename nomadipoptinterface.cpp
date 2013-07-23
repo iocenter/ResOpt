@@ -29,12 +29,14 @@
 #include "nomadipoptevaluator.h"
 #include "runner.h"
 #include "model.h"
+#include "adjointscoupledmodel.h"
 #include "realvariable.h"
 #include "binaryvariable.h"
 #include "intvariable.h"
 #include "constraint.h"
 #include "objective.h"
 #include "case.h"
+#include "derivative.h"
 #include "casequeue.h"
 #include "reservoirsimulator.h"
 
@@ -50,7 +52,8 @@ NomadIpoptInterface::NomadIpoptInterface(NomadIpoptOptimizer *o, Case *discrete_
       p_discrete_vars(discrete_vars),
       p_case_last(0),
       p_case_gradients(0),
-      p_best_case(0)
+      p_best_case(0),
+      m_adjoints(false)
 {
     m_vars = p_optimizer->runner()->model()->realVariables();
     m_cons = p_optimizer->runner()->model()->constraints();
@@ -74,6 +77,11 @@ NomadIpoptInterface::NomadIpoptInterface(NomadIpoptOptimizer *o, Case *discrete_
         p_grad_file->resize(0);
 
     }
+
+    // checking if adjoints are used
+    AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(p_optimizer->runner()->model());
+    if(am != 0) m_adjoints = true;
+
 
 }
 
@@ -199,16 +207,18 @@ bool NomadIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& o
 
 bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
-    //cout << "Evaluating the objective function gradients for Ipopt..." << endl;
+    cout << "Evaluating the objective function gradients for Ipopt..." << endl;
+    bool ok = true;
 
     // first checking if gradients are allready calculated
     if(!gradientsAreUpdated(n,x))
     {
-        //cout << "need to calculate new gradients..." << endl;
-        calculateGradients(n,x);
-        //cout << "done calculating new gradients..." << endl;
+        cout << "need to calculate new gradients..." << endl;
+        if(m_adjoints) ok = copyCaseGradients(n,x);
+        else calculateGradients(n,x);
+        cout << "done calculating new gradients..." << endl;
     }
-    //else cout << "gradients are already calculated for this point..." << endl;
+    else cout << "gradients are already calculated for this point..." << endl;
 
     // copying the calculated gradients to Ipopt
     for(int i = 0; i < n; i++)
@@ -218,7 +228,7 @@ bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Numb
         // cout << "grad_f[" << i << "] = " << grad_f[i] << endl;
     }
 
-    return true;
+    return ok;
 
 }
 
@@ -290,7 +300,8 @@ bool NomadIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
         // checking if gradients are calculated
         if(!gradientsAreUpdated(n,x))
         {
-            calculateGradients(n,x);
+            if(m_adjoints) copyCaseGradients(n,x);
+            else calculateGradients(n,x);
         }
 
         // copying gradients to Ipopt
@@ -558,12 +569,118 @@ void NomadIpoptInterface::calculateGradients(Index n, const Number *x)
 }
 
 //-----------------------------------------------------------------------------------------------
+// Copy gradients from case if adjoints are used
+//-----------------------------------------------------------------------------------------------
+bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
+{
+    cout << "copyCaseGradients() start" << endl;
+
+    // checking if the gradient vectors have the correct size
+    int n_grad = m_vars.size();
+    if(m_grad_f.size() != n_grad) m_grad_f = QVector<double>(n_grad);
+
+    int n_jac = m_vars.size()*m_cons.size();
+    if(m_jac_g.size() != n_jac) m_jac_g = QVector<double>(n_jac);
+
+
+    // checking if the case must be run
+    if(newVariableValues(n,x))
+    {
+        cout << "need to run case..." << endl;
+
+        if(p_case_last != 0) delete p_case_last;
+        p_case_last = 0;
+
+
+        Case *case_new = generateCase(n,x);
+
+
+        // adding the case to a queue
+        CaseQueue *case_queue = new CaseQueue();
+        case_queue->push_back(case_new);
+
+        // sending the new case to the runner
+        p_optimizer->runCases(case_queue);
+
+        // setting the case as the last case
+        p_case_last  = case_new;
+
+        // deleting the case queue
+        delete case_queue;
+
+        cout << "done running case" << endl;
+
+
+    }
+
+    if(p_case_last->numberOfConstraintDerivatives() != m_cons.size())
+    {
+        cout << "ERROR  --- number of constraint derivatives is wrong..." << endl;
+        return false;
+    }
+
+
+    // setting up the text stream for gradients info
+    QTextStream out(p_grad_file);
+
+    // printing header
+
+    out << "\n ------ GRADIENTS FOR IPOPT -----------\n";
+    out << "VAR #\t OBJ \t";
+
+    for(int i = 0; i < m_cons.size(); ++i)
+    {
+        out << "CON" << i+1 << "\t";
+    }
+
+    out << "\n";
+
+
+
+    cout << "copying derivatives" << endl;
+    // starting to copy gradients
+    for(int i = 0; i < p_case_last->numberOfRealVariables(); ++i)
+    {
+        cout << "variable " << i << endl;
+        // copying objective derivative
+        double dfdx = -p_case_last->objectiveDerivative()->value(i);
+        m_grad_f.replace(i, dfdx);
+
+        //printing var # and obj
+        out << i+1 << "\t" << dfdx << "\t";
+
+        // copying the gradients of the constraints
+        int entry = i*p_case_last->numberOfConstraints();
+
+        for(int j = 0; j < p_case_last->numberOfConstraints(); ++j)
+        {
+            cout << "constraint " << j << endl;
+            double dcdx = p_case_last->constraintDerivative(j)->value(i);
+            m_jac_g.replace(entry, dcdx);
+            ++entry;
+
+            // printing con deriv
+            out << dcdx << "\t";
+        }
+
+        out << "\n";
+    }
+
+    cout << "deleting last gradient case" << endl;
+
+    if(p_case_gradients != 0) delete p_case_gradients;
+    p_case_gradients = new Case(*p_case_last, true);
+
+    cout << "copyCaseGradients() end" << endl;
+}
+
+//-----------------------------------------------------------------------------------------------
 // Checks if the gradients are up to date
 //-----------------------------------------------------------------------------------------------
 bool NomadIpoptInterface::gradientsAreUpdated(Index n, const Number *x)
 {
 
-    // fist checking if the gradients case has been initialized
+    // checking if the gradients case has been initialized
     if(p_case_gradients == 0) return false;
 
     bool updated = false;
@@ -590,6 +707,7 @@ bool NomadIpoptInterface::gradientsAreUpdated(Index n, const Number *x)
     }
 
     return updated;
+
 }
 
 //-----------------------------------------------------------------------------------------------

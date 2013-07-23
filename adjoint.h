@@ -22,13 +22,14 @@
 #ifndef ADJOINT_H
 #define ADJOINT_H
 
+#include "well.h"
 
 namespace ResOpt
 {
 
 class Stream;
 class RealVariable;
-class Well;
+
 
 class Adjoint
 {
@@ -38,12 +39,12 @@ private:
     double m_dqg_dx;
     double m_dqw_dx;
 
-    Stream *p_stream;
+    int m_time;
     Well *p_well;
 
 public:
     Adjoint();
-    Adjoint(Well *w, Stream *s);
+    Adjoint(Well *w, int time);
 
     // misc functions
     bool perturbStream(double eps_x);
@@ -54,7 +55,7 @@ public:
     void setDqgDx(double d) {m_dqg_dx = d;}
     void setDqwDx(double d) {m_dqw_dx = d;}
 
-    void setStream(Stream *s) {p_stream = s;}
+    //void setStream(Stream *s) {p_stream = s;}
     void setWell(Well *w) {p_well = w;}
 
 
@@ -64,7 +65,8 @@ public:
     double dqgDx() const {return m_dqg_dx;}
     double dqwDx() const {return m_dqw_dx;}
 
-    Stream* stream() {return p_stream;}
+    Stream* stream() {return p_well->stream(m_time);}
+    int time() {return m_time;}
     Well* well() {return p_well;}
 
 

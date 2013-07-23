@@ -207,7 +207,11 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
     // Change some options
     app->Options()->SetStringValue("output_file", p_optimizer->runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
     app->Options()->SetIntegerValue("max_iter", 30);
-    app->Options()->SetNumericValue("tol", 0.1);
+    app->Options()->SetNumericValue("tol", 0.001);
+    //app->Options()->SetStringValue("derivative_test", "first-order");
+   // app->Options()->SetStringValue("derivative_test_print_all", "yes");
+    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.001);
+
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
 
     // Initialize the IpoptApplication and process the options

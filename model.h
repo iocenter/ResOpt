@@ -390,6 +390,7 @@ public:
      * @return Well
      */
     Well* wellById(int comp_id);
+    Well* wellByName(const QString &name);
 
     /**
      * @brief Returns Pipe number i

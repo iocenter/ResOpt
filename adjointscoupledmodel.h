@@ -38,12 +38,7 @@ class AdjointsCoupledModel : public CoupledModel
 {
 private:
 
-    // indicating the level of adjoints that should be calculated
-    // 1 = one well one timestep
-    // 2 = one well every timestep
-    // 3 = every well every timestep
-    int m_adjoint_level;
-    int m_perturbation;
+    double m_perturbation;
     Case *p_results;
 
     QVector<AdjointCollection*> m_adjoint_collections;
@@ -55,9 +50,11 @@ private:
 
 public:
     AdjointsCoupledModel();
+    AdjointsCoupledModel(const AdjointsCoupledModel &m);
     ~AdjointsCoupledModel();
 
     // virtual functions
+    virtual Model* clone() const {return new AdjointsCoupledModel(*this);}
     virtual void initialize();
     virtual void process();
 
@@ -72,22 +69,11 @@ public:
     AdjointCollection* adjointCollection(shared_ptr<RealVariable> v);
 
 
-    /**
-     * @brief Returns the adjoint for Stream s wrt. variable v.
-     *
-     * @param v
-     * @param s
-     * @return Adjoint
-     */
-    Adjoint* adjoint(shared_ptr<RealVariable> v, Stream *s);
-
 
     // set functions
-    void setAdjointLevel(int i) {m_adjoint_level = i;}
     void setPerturbationSize(double eps) {m_perturbation = eps;}
 
     // get functions
-    int adjointLevel() {return m_adjoint_level;}
     double perturbationSize() {return m_perturbation;}
     Case* results() {return p_results;}
 

@@ -58,6 +58,7 @@ private:
     Case *p_case_gradients;     // case containing variable values where the gradient and jacobian was calculated
     Case *p_best_case;          // the final optimized solution
     QFile *p_grad_file;
+    bool m_adjoints;            // indicates if adjoints are used
 
     /**
      * @brief Generates a Case based on the values in x.
@@ -79,6 +80,7 @@ private:
     double perturbedVariableValue(double value, double max, double min);
 
     void calculateGradients(Index n, const Number *x);
+    bool copyCaseGradients(Index n, const Number *x);
 
     bool gradientsAreUpdated(Index n, const Number *x);
 

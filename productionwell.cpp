@@ -210,17 +210,8 @@ void ProductionWell::updateBhpConstraint()
 
             c_ts = (p_wf - p_in) / p_wf;
 
-            //cout << "p_wf  = " << p_wf << endl;
-            //cout << "p_in  = " << p_in << endl;
 
-            if(c_ts == 1)
-            {
-                cout << endl << "#### Debug ####" << endl;
-                cout << "BHP constraint for well " << name().toLatin1().constData() << " = 1" << endl;
-                cout << "p_in     = " << p_in << endl;
-                cout << "p_wf     = " << p_wf << endl;
 
-            }
 
 
         }

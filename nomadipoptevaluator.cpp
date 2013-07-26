@@ -97,8 +97,8 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
         else if(val < min) val_input = min - val;
         else
         {
-            double u_slack = max - val;
-            double l_slack = val - min;
+            double u_slack = max - val + 0.0001;
+            double l_slack = val - min - 0.0001;
 
             val_input = (u_slack > l_slack) ? -u_slack : -l_slack;
         }
@@ -209,8 +209,8 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
     app->Options()->SetIntegerValue("max_iter", 30);
     app->Options()->SetNumericValue("tol", 0.001);
     //app->Options()->SetStringValue("derivative_test", "first-order");
-   // app->Options()->SetStringValue("derivative_test_print_all", "yes");
-    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.001);
+    //app->Options()->SetStringValue("derivative_test_print_all", "yes");
+    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.01);
 
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
 

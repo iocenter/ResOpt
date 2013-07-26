@@ -184,16 +184,16 @@ void InspectorCapacity::saveAndClose()
     emit sendMsg("Saving variable values for Capacity " + p_capacity->name() + " to model...");
 
     // saving
-    if(m_chk_oil.isChecked()) p_capacity->setMaxOil(m_led_oil.text().toDouble());
+    if(m_chk_oil.isChecked()) p_capacity->setMaxOil(m_led_oil.text().replace(",",".").toDouble());
     else p_capacity->setMaxOil(-1);
 
-    if(m_chk_gas.isChecked()) p_capacity->setMaxGas(m_led_gas.text().toDouble());
+    if(m_chk_gas.isChecked()) p_capacity->setMaxGas(m_led_gas.text().replace(",",".").toDouble());
     else p_capacity->setMaxGas(-1);
 
-    if(m_chk_water.isChecked()) p_capacity->setMaxWater(m_led_water.text().toDouble());
+    if(m_chk_water.isChecked()) p_capacity->setMaxWater(m_led_water.text().replace(",",".").toDouble());
     else p_capacity->setMaxWater(-1);
 
-    if(m_chk_liquid.isChecked()) p_capacity->setMaxLiquid(m_led_liquid.text().toDouble());
+    if(m_chk_liquid.isChecked()) p_capacity->setMaxLiquid(m_led_liquid.text().replace(",",".").toDouble());
     else p_capacity->setMaxLiquid(-1);
 
     // updating the constraints in the capacity

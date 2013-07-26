@@ -76,7 +76,7 @@ InspectorVariable::InspectorVariable(const QString &name, double value, double m
 //-----------------------------------------------------------------------------------------------
 double InspectorVariable::value()
 {
-    return p_value->text().toDouble();
+    return p_value->text().replace(",",".").toDouble();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -84,7 +84,7 @@ double InspectorVariable::value()
 //-----------------------------------------------------------------------------------------------
 double InspectorVariable::max()
 {
-    return p_max->text().toDouble();
+    return p_max->text().replace(",",".").toDouble();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -92,7 +92,7 @@ double InspectorVariable::max()
 //-----------------------------------------------------------------------------------------------
 double InspectorVariable::min()
 {
-    return p_min->text().toDouble();
+    return p_min->text().replace(",",".").toDouble();
 }
 
 

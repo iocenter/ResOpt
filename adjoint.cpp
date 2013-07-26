@@ -22,6 +22,11 @@
 #include "adjoint.h"
 #include "stream.h"
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
+
 
 namespace ResOpt
 {
@@ -61,10 +66,19 @@ bool Adjoint::perturbStream(double eps_x)
         double q_w = p_stream->waterRate(true) + m_dqw_dx*eps_x;
         double p = p_stream->pressure(true) + m_dp_dx*eps_x;
 
+        cout << "---- dqo_dx = " << m_dqo_dx << endl;
+
+        cout << "Stream before perturbation:" << endl;
+        p_stream->printToCout();
+
         p_stream->setOilRate(q_o);
         p_stream->setGasRate(q_g);
         p_stream->setWaterRate(q_w);
         p_stream->setPressure(p);
+
+        cout << "Stream after perturbation:" << endl;
+        p_stream->printToCout();
+
 
         return true;
     }

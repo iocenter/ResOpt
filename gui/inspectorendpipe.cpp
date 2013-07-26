@@ -113,7 +113,7 @@ void InspectorEndPipe::saveAndClose()
     emit sendMsg("Saving variable values for End Pipe #" + QString::number(p_pipe->number()) + " to model...");
 
     // saving outlet pressure
-    p_pipe->setOutletPressure(m_led_pout.text().toDouble());
+    p_pipe->setOutletPressure(m_led_pout.text().replace(",",".").toDouble());
 
     if(m_cbx_pout.itemData(m_cbx_pout.currentIndex()) == Stream::METRIC) p_pipe->setOutletUnit(Stream::METRIC);
     else p_pipe->setOutletUnit(Stream::FIELD);

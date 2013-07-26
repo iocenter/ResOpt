@@ -54,7 +54,7 @@ public:
     int k1() {return p_led_k1->text().toInt();}
     int k2() {return p_led_k2->text().toInt();}
 
-    double wi() {return p_led_wi->text().toDouble();}
+    double wi() {return p_led_wi->text().replace(",",".").toDouble();}
 
 
 signals:

@@ -36,7 +36,7 @@ namespace ResOpt
 {
 
 AdjointsCoupledModel::AdjointsCoupledModel() :
-    m_perturbation(0.001),
+    m_perturbation(0.0001),
     p_results(0)
 {
 }
@@ -193,7 +193,9 @@ void AdjointsCoupledModel::process()
         }
 
         // calculating partial derivative for objective
-        double dfdx = (case_perturb->objectiveValue() - base_case->objectiveValue()) / (case_perturb->realVariableValue(i) - base_case->realVariableValue(i));
+        double eps_x = (realVariables().at(i)->max() - realVariables().at(i)->min()) * m_perturbation;
+        double dfdx = (case_perturb->objectiveValue() - base_case->objectiveValue()) / eps_x;
+        //double dfdx = (case_perturb->objectiveValue() - base_case->objectiveValue()) / (case_perturb->realVariableValue(i) - base_case->realVariableValue(i));
         base_case->objectiveDerivative()->addPartial(var_id, dfdx);
     }
 

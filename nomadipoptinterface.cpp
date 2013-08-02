@@ -47,8 +47,9 @@ namespace ResOpt
 {
 
 /* Constructor. */
-NomadIpoptInterface::NomadIpoptInterface(NomadIpoptOptimizer *o, Case *discrete_vars)
+NomadIpoptInterface::NomadIpoptInterface(NomadIpoptOptimizer *o, NomadIpoptEvaluator *e, Case *discrete_vars)
     : p_optimizer(o),
+      p_evaluator(e),
       p_discrete_vars(discrete_vars),
       p_case_last(0),
       p_case_gradients(0),
@@ -361,6 +362,26 @@ void NomadIpoptInterface::finalize_solution(SolverReturn status,
     //c->setObjectiveValue(-obj_value);
 
     p_best_case = c;
+}
+
+bool NomadIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
+                                                Number obj_value, Number inf_pr,
+                                                Number inf_du, Number mu, Number d_norm,
+                                                Number regularization_size, Number alpha_du,
+                                                Number alpha_pr, Index ls_trials, const IpoptData *ip_data,
+                                                IpoptCalculatedQuantities *ip_cq)
+{
+
+    // adding the current objective value to the local vector
+    m_objs.push_back(obj_value);
+
+    // checking if the optimization should continue
+    bool cont = p_evaluator->shouldContinue(m_objs.size()-1, obj_value);
+
+    if(!cont) cout << "Terminating IPOPT run due to slow progress..." << endl;
+
+    return cont;
+
 }
 
 

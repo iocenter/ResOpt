@@ -194,23 +194,25 @@ Case* NomadIpoptEvaluator::findResult(Case *c)
 //-----------------------------------------------------------------------------------------------
 // solves the contineous sub-problem using IPOPT
 //-----------------------------------------------------------------------------------------------
-Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
+Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars)
 {
     // ----- Initializing IPOPT ------- //
 
     // setting up the TNLP
-    SmartPtr<NomadIpoptInterface> p_tnlp = new NomadIpoptInterface(p_optimizer, discrete_vars);
+    SmartPtr<NomadIpoptInterface> p_tnlp = new NomadIpoptInterface(p_optimizer, this, discrete_vars);
 
     // Create an instance of the IpoptApplication
     SmartPtr<IpoptApplication> app = IpoptApplicationFactory();
 
     // Change some options
     app->Options()->SetStringValue("output_file", p_optimizer->runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
-    app->Options()->SetIntegerValue("max_iter", 30);
+    app->Options()->SetIntegerValue("max_iter", 100);
     app->Options()->SetNumericValue("tol", 0.001);
+
     //app->Options()->SetStringValue("derivative_test", "first-order");
     //app->Options()->SetStringValue("derivative_test_print_all", "yes");
     //app->Options()->SetNumericValue("derivative_test_perturbation", 0.01);
+
 
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
 
@@ -240,9 +242,34 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars) const
 
 
     // extracting the final solution from IPOPT
-
     return p_tnlp->bestCase();
 
+    // checking if this is the best solution so far
+    QVector<double> objs_current = p_tnlp->objectives();
+
+    if(m_best_objs.size() == 0) m_best_objs = objs_current;
+
+    else if(m_best_objs.last() > objs_current.last())
+    {
+        m_best_objs = objs_current;
+    }
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// checks if the current contineous optimization should continue
+//-----------------------------------------------------------------------------------------------
+bool NomadIpoptEvaluator::shouldContinue(int i, double obj)
+{
+    if(m_best_objs.size() == 0) return true;
+
+    // if the current ipopt has gotten further than the current best
+    if(i >= m_best_objs.size())
+    {
+        return (m_best_objs.last()*0.85) > obj;
+    }
+
+    else return (m_best_objs.at(i)*0.85) > obj;
 }
 
 } // namespace ResOpt

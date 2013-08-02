@@ -1086,7 +1086,7 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
                                 {
 
                                 }
-                                c_q = -1e5 * 86400;
+                                c_q = -1e5 * 86400/2; // OBS OBS!!!!
 
                             }
                             else
@@ -1104,6 +1104,11 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
                             }
 
                             // if one is prod and the other is injector, switch sign
+                            if(wells.at(i)->type() == Well::INJ)
+                            {
+                                c_p = -c_p;
+                                c_q = -c_q;
+                            }
 
 
                             a->setDqoDx(list.at(col++).toDouble() * c_q);

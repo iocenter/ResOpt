@@ -24,6 +24,7 @@
 
 #include "nomad.hpp"
 #include <QList>
+#include <QVector>
 
 namespace ResOpt
 {
@@ -36,7 +37,9 @@ private:
     NomadIpoptOptimizer *p_optimizer;
     QList<Case*> m_results;
 
-    Case* solveContineousProblem(Case *discrete_vars) const;
+    QVector<double> m_best_objs;
+
+    Case* solveContineousProblem(Case *discrete_vars);
 
 
 
@@ -48,6 +51,8 @@ public:
 
     Case* generateCase(const NOMAD::Eval_Point &x) const;
     Case* findResult(Case *c);
+
+    bool shouldContinue(int i, double obj);
 };
 
 } // namespace ResOpt

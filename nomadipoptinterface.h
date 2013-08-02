@@ -46,7 +46,7 @@ class NomadIpoptInterface : public TNLP
 private:
 
     NomadIpoptOptimizer *p_optimizer;
-    //NomadIpoptEvaluator *p_evaluator;
+    NomadIpoptEvaluator *p_evaluator;
     Case *p_discrete_vars;              // variable values for integer and binary variables that should be used
 
     QVector<shared_ptr<RealVariable> > m_vars;
@@ -59,6 +59,7 @@ private:
     Case *p_best_case;          // the final optimized solution
     QFile *p_grad_file;
     bool m_adjoints;            // indicates if adjoints are used
+    QVector<double> m_objs;     // objective values for each IPOPT iteration
 
     /**
      * @brief Generates a Case based on the values in x.
@@ -91,7 +92,7 @@ private:
 public:
 
     /** default constructor */
-    NomadIpoptInterface(NomadIpoptOptimizer *o, Case *discrete_vars);
+    NomadIpoptInterface(NomadIpoptOptimizer *o, NomadIpoptEvaluator *e, Case *discrete_vars);
 
     /** default destructor */
     virtual ~NomadIpoptInterface();
@@ -149,7 +150,23 @@ public:
                                    const IpoptData* ip_data,
                                    IpoptCalculatedQuantities* ip_cq);
 
+    virtual bool intermediate_callback(AlgorithmMode mode,
+                                       Index iter,
+                                       Number obj_value,
+                                       Number inf_pr,
+                                       Number inf_du,
+                                       Number mu,
+                                       Number d_norm,
+                                       Number regularization_size,
+                                       Number alpha_du,
+                                       Number alpha_pr,
+                                       Index ls_trials,
+                                       const IpoptData *ip_data,
+                                       IpoptCalculatedQuantities *ip_cq);
+
     Case* bestCase() {return p_best_case;}
+    QVector<double> objectives() {return m_objs;}
+
 
 };
 

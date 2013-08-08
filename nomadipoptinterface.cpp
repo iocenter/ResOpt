@@ -208,18 +208,18 @@ bool NomadIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& o
 
 bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
-    cout << "Evaluating the objective function gradients for Ipopt..." << endl;
+    //cout << "Evaluating the objective function gradients for Ipopt..." << endl;
     bool ok = true;
 
     // first checking if gradients are allready calculated
     if(!gradientsAreUpdated(n,x))
     {
-        cout << "need to calculate new gradients..." << endl;
+       // cout << "need to calculate new gradients..." << endl;
         if(m_adjoints) ok = copyCaseGradients(n,x);
         else calculateGradients(n,x);
-        cout << "done calculating new gradients..." << endl;
+       // cout << "done calculating new gradients..." << endl;
     }
-    else cout << "gradients are already calculated for this point..." << endl;
+    //else cout << "gradients are already calculated for this point..." << endl;
 
     // copying the calculated gradients to Ipopt
     for(int i = 0; i < n; i++)
@@ -372,13 +372,34 @@ bool NomadIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
                                                 IpoptCalculatedQuantities *ip_cq)
 {
 
+     cout << "%%%%%%%%%%%%%%%%%%%%%% intermediate callback start %%%%%%%%%%%%%%%%%%%%%%" << endl;
+
+
     // adding the current objective value to the local vector
     m_objs.push_back(obj_value);
+    m_infeas.push_back(inf_pr);
+
+    cout << "iter      = " << iter << endl;
+    cout << "obj_value = " << obj_value << endl;
+    cout << "inf_pr    = " << inf_pr << endl;
+    cout << "inf_du    = " << inf_du << endl;
+    cout << "mu        = " << mu << endl;
 
     // checking if the optimization should continue
-    bool cont = p_evaluator->shouldContinue(m_objs.size()-1, obj_value);
+    bool cont = p_evaluator->shouldContinue(m_objs.size()-1, obj_value, inf_pr);
 
-    if(!cont) cout << "Terminating IPOPT run due to slow progress..." << endl;
+
+
+    if(!cont)
+    {
+        cout << "---------------------------------------------" << endl;
+        cout << "---------------------------------------------" << endl;
+        cout << "Terminating IPOPT run due to slow progress..." << endl;
+        cout << "---------------------------------------------" << endl;
+        cout << "---------------------------------------------" << endl;
+    }
+
+    cout << "%%%%%%%%%%%%%%%%%%%%%%  intermediate callback end  %%%%%%%%%%%%%%%%%%%%%%" << endl;
 
     return cont;
 
@@ -449,7 +470,7 @@ double NomadIpoptInterface::perturbedVariableValue(double value, double max, dou
 //-----------------------------------------------------------------------------------------------
 void NomadIpoptInterface::calculateGradients(Index n, const Number *x)
 {
-    cout << "Starting perturbations to calculate gradients for IPOPT" << endl;
+    //cout << "Starting perturbations to calculate gradients for IPOPT" << endl;
     // checking if the gradient vectors have the correct size
     int n_grad = m_vars.size();
     if(m_grad_f.size() != n_grad) m_grad_f = QVector<double>(n_grad);
@@ -594,7 +615,7 @@ void NomadIpoptInterface::calculateGradients(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
 {
-    cout << "copyCaseGradients() start" << endl;
+    //cout << "copyCaseGradients() start" << endl;
 
     // checking if the gradient vectors have the correct size
     int n_grad = m_vars.size();
@@ -607,7 +628,7 @@ bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
     // checking if the case must be run
     if(newVariableValues(n,x))
     {
-        cout << "need to run case..." << endl;
+       // cout << "need to run case..." << endl;
 
         if(p_case_last != 0) delete p_case_last;
         p_case_last = 0;
@@ -629,7 +650,7 @@ bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
         // deleting the case queue
         delete case_queue;
 
-        cout << "done running case" << endl;
+      //  cout << "done running case" << endl;
 
 
     }
@@ -658,11 +679,11 @@ bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
 
 
 
-    cout << "copying derivatives" << endl;
+    //cout << "copying derivatives" << endl;
     // starting to copy gradients
     for(int i = 0; i < p_case_last->numberOfRealVariables(); ++i)
     {
-        cout << "variable " << i << endl;
+        //cout << "variable " << i << endl;
         // copying objective derivative
         double dfdx = -p_case_last->objectiveDerivative()->value(i);
         m_grad_f.replace(i, dfdx);
@@ -675,7 +696,7 @@ bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
 
         for(int j = 0; j < p_case_last->numberOfConstraints(); ++j)
         {
-            cout << "constraint " << j << endl;
+            //cout << "constraint " << j << endl;
             double dcdx = p_case_last->constraintDerivative(j)->value(i);
             m_jac_g.replace(entry, dcdx);
             ++entry;
@@ -687,12 +708,12 @@ bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
         out << "\n";
     }
 
-    cout << "deleting last gradient case" << endl;
+//    cout << "deleting last gradient case" << endl;
 
     if(p_case_gradients != 0) delete p_case_gradients;
     p_case_gradients = new Case(*p_case_last, true);
 
-    cout << "copyCaseGradients() end" << endl;
+  //  cout << "copyCaseGradients() end" << endl;
 }
 
 //-----------------------------------------------------------------------------------------------

@@ -88,7 +88,7 @@ InspectorWellConnectionVariable::InspectorWellConnectionVariable(int i, int i_ma
 
 
 
-    setDisabled(true);
+    //setDisabled(true);
 
 
 }

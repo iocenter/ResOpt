@@ -585,6 +585,8 @@ void Runner::writeCasesToSummary()
 //-----------------------------------------------------------------------------------------------
 bool Runner::isFeasible(Case *c)
 {
+    double l_tol = 0.0001;
+
     bool ok = true;
     // first checking that the number of constraints match
     if(c->numberOfConstraints() != model()->constraints().size()) return false;
@@ -592,8 +594,8 @@ bool Runner::isFeasible(Case *c)
     {
         for(int i = 0; i < c->numberOfConstraints(); ++i)
         {
-            double max = model()->constraints().at(i)->max();
-            double min = model()->constraints().at(i)->min();
+            double max = model()->constraints().at(i)->max() + l_tol;
+            double min = model()->constraints().at(i)->min() - l_tol;
 
             if(c->constraintValue(i) > max || c->constraintValue(i) < min)
             {

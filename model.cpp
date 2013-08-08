@@ -595,7 +595,7 @@ bool Model::updateCapacityConstraints()
 {
     bool ok = true;
 
-    cout << "Updating the capacity constraints..." << endl;
+   // cout << "Updating the capacity constraints..." << endl;
 
     for(int i = 0; i < numberOfCapacities(); i++)
     {
@@ -612,7 +612,7 @@ bool Model::updateWellConstaints()
 {
     bool ok = true;
 
-    cout << "Updating the well BHP and connection constraints" << endl;
+   // cout << "Updating the well BHP and connection constraints" << endl;
 
     for(int i = 0; i < numberOfWells(); i++)
     {
@@ -855,7 +855,7 @@ void Model::updateObjectiveValue()
     // calculating the new objective value
     objective()->calculateValue(field_rates, costs_sorted);
 
-    cout << "Objective value = " << objective()->value() << endl;
+   // cout << "Objective value = " << objective()->value() << endl;
 
     // deleting the generated streams
     for(int i = 0; i < field_rates.size(); i++) delete field_rates.at(i);

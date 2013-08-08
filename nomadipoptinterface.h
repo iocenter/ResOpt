@@ -60,6 +60,7 @@ private:
     QFile *p_grad_file;
     bool m_adjoints;            // indicates if adjoints are used
     QVector<double> m_objs;     // objective values for each IPOPT iteration
+    QVector<double> m_infeas;      // infeasibility values for each IPOPT iteration
 
     /**
      * @brief Generates a Case based on the values in x.
@@ -166,6 +167,7 @@ public:
 
     Case* bestCase() {return p_best_case;}
     QVector<double> objectives() {return m_objs;}
+    QVector<double> infeasibilities() {return m_infeas;}
 
 
 };

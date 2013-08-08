@@ -656,10 +656,9 @@ bool MrstBatchSimulator::generateEclIncludeFile(Model *m)
         *out_ecl << "/ \n\n";
 
 
-        // WCONINJE (injection wells)
-        *out_ecl << "WCONINJE\n";
-        *out_ecl << "--      WELL     INJ   OPEN/   CNTL    FLOW   RES    BHP\n";
-        *out_ecl << "--      NAME    TYPE   SHUT    MODE    RATE   RATE  TARGET\n";
+
+        bool print_header = true;
+
 
         for(int j = 0; j < m->numberOfWells(); ++j)
         {
@@ -667,6 +666,18 @@ bool MrstBatchSimulator::generateEclIncludeFile(Model *m)
             InjectionWell *inj = dynamic_cast<InjectionWell*>(m->well(j));
             if(inj != 0)
             {
+
+                if(print_header)
+                {
+                    // WCONINJE (injection wells)
+                    *out_ecl << "WCONINJE\n";
+                    *out_ecl << "--      WELL     INJ   OPEN/   CNTL    FLOW   RES    BHP\n";
+                    *out_ecl << "--      NAME    TYPE   SHUT    MODE    RATE   RATE  TARGET\n";
+
+                    print_header = false;
+
+                }
+
                 WellControl *c = inj->control(i);
 
                 *out_ecl << "        '" << inj->name() << "'   '";
@@ -713,7 +724,7 @@ bool MrstBatchSimulator::generateEclIncludeFile(Model *m)
 
         // printing the time steps
 
-        double current_step = 1;
+        double current_step = 0.5;
         *out_ecl << current_step << " ";
 
         while(time > 0)
@@ -817,6 +828,7 @@ bool MrstBatchSimulator::launchSimulator()
     //QString program = "/Applications/MATLAB_R2013a.app/bin/matlab";     // eirik mac
 
     QStringList args;
+    args.push_back("-nojvm");   // beehive
     args.push_back("-nosplash");
     args.push_back("-nodesktop");
     args.push_back("-r");
@@ -825,7 +837,7 @@ bool MrstBatchSimulator::launchSimulator()
     // setting up the process
     mrst.setProcessChannelMode(QProcess::MergedChannels);
 
-    cout << "launching mrst from: " << folder().toLatin1().constData() << endl;
+   // cout << "launching mrst from: " << folder().toLatin1().constData() << endl;
     // setting the working directory
     mrst.setWorkingDirectory(folder());
 
@@ -836,7 +848,7 @@ bool MrstBatchSimulator::launchSimulator()
 
     mrst.waitForStarted(-1);
 
-    cout << "MRST is running..." << endl;
+  //  cout << "MRST is running..." << endl;
 
 
     mrst.waitForFinished(-1);
@@ -877,7 +889,7 @@ bool MrstBatchSimulator::readOutput(Model *m)
     {
         if(!readAdjoints(am)) ok = false;
     }
-    else cout << "No adjoints model!" << endl;
+  //  else cout << "No adjoints model!" << endl;
 
 
     return ok;
@@ -983,7 +995,7 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
 //-----------------------------------------------------------------------------------------------
 bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
 {
-    cout << "Reading adjoints file..." << endl;
+   // cout << "Reading adjoints file..." << endl;
 
     QString base_name = m->reservoir()->file().split(".").at(0);
 
@@ -999,7 +1011,7 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
         exit(1);
     }
 
-    cout << "starting to read" << endl;
+   // cout << "starting to read" << endl;
 
 
     // ---- starting to read the adjoints -----
@@ -1086,7 +1098,7 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
                                 {
 
                                 }
-                                c_q = -1e5 * 86400/2; // OBS OBS!!!!
+                                c_q = -1e5 * 86400; // OBS OBS!!!!
 
                             }
                             else
@@ -1101,6 +1113,7 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
 
                                 }
                                 c_p = -1e-5 / 86400;
+                                //c_q = 13; // OBS!!!!
                             }
 
                             // if one is prod and the other is injector, switch sign

@@ -48,6 +48,8 @@ private:
     int m_max_iter;
     int m_parallel_runs;
     double m_perturbation_size;
+    double m_termination;
+    int m_term_start;
 
 
 
@@ -72,12 +74,16 @@ public:
     void setMaxIterations(int i) {m_max_iter = i;} 
     void setParallelRuns(int i) {m_parallel_runs = i;}
     void setPerturbationSize(double p) {m_perturbation_size = p;}
+    void setTermination(double t) {m_termination = t;}
+    void setTerminationStart(int i) {m_term_start = i;}
     void setInitialized(bool i) {m_initialized = i;}
 
     // get functions
     int maxIterations() const {return m_max_iter;}
     int parallelRuns() const {return m_parallel_runs;}
     double pertrurbationSize() const {return m_perturbation_size;}
+    double termination() const {return m_termination;}
+    int terminationStart() const {return m_term_start;}
     bool isInitialized() const {return m_initialized;}
 
 signals:

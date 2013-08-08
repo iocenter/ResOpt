@@ -39,6 +39,8 @@ Optimizer::Optimizer(Runner *r)
       m_max_iter(1),
       m_parallel_runs(1),
       m_perturbation_size(0.0001),
+      m_termination(0.0),
+      m_term_start(5),
       m_initialized(false)
 {
     // the finished() signal should be emitted when the optimizer has converged

@@ -2467,6 +2467,8 @@ void ModelReader::readOptimizer(Runner *r)
     double l_perturb = 0.0001;
     int l_max_iter = 1;
     int l_parallel_runs = 1;
+    double l_term = 0.0;
+    int l_term_start = 5;
 
     bool ok = true;
 
@@ -2489,6 +2491,15 @@ void ModelReader::readOptimizer(Runner *r)
         }
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations
         else if(list.at(0).startsWith("PERTURB")) l_perturb = list.at(1).toDouble(&ok);     // getting the perturbation size
+        else if(list.at(0).startsWith("TERMINATION"))                                       // getting the termination options
+        {
+            l_term = list.at(1).toDouble(&ok);
+            if(list.size() == 3)
+            {
+                l_term_start = list.at(2).toInt(&ok);
+            }
+        }
+
         else if(list.at(0).startsWith("PARALLEL"))                                           // getting the number of parallel runs
         {
             if(list.at(1).startsWith("IDEAL"))              // find the ideal number of parallel runs
@@ -2504,7 +2515,6 @@ void ModelReader::readOptimizer(Runner *r)
             // checking that the number of parallel runs is at least 1
             if(l_parallel_runs < 1) l_parallel_runs = 1;
         }
-
         else
         {
             if(!isEmpty(list))
@@ -2537,6 +2547,8 @@ void ModelReader::readOptimizer(Runner *r)
     o->setMaxIterations(l_max_iter);
     o->setParallelRuns(l_parallel_runs);
     o->setPerturbationSize(l_perturb);
+    o->setTermination(l_term);
+    o->setTerminationStart(l_term_start);
 
     // setting optimizer to runner
     r->setOptimizer(o);

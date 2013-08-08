@@ -36,7 +36,7 @@ namespace ResOpt
 {
 
 AdjointsCoupledModel::AdjointsCoupledModel() :
-    m_perturbation(0.0001),
+    m_perturbation(0.001),
     p_results(0)
 {
 }
@@ -199,7 +199,7 @@ void AdjointsCoupledModel::process()
         base_case->objectiveDerivative()->addPartial(var_id, dfdx);
     }
 
-    base_case->printToCout();
+    //base_case->printToCout();
 
     // setting the results
     p_results = base_case;
@@ -210,7 +210,7 @@ void AdjointsCoupledModel::process()
     // updating the status of the model
     setUpToDate(true);
 
-    cout << "done processing adjoints coupled model..." << endl;
+    //cout << "done processing adjoints coupled model..." << endl;
 
 }
 
@@ -235,13 +235,13 @@ AdjointCollection* AdjointsCoupledModel::adjointCollection(shared_ptr<RealVariab
 //-----------------------------------------------------------------------------------------------
 Case* AdjointsCoupledModel::processPerturbation(shared_ptr<RealVariable> v)
 {
-    cout << "-------- processing perturbation -----------" << endl;
+    //cout << "-------- processing perturbation -----------" << endl;
 
     // calculating the perturbation size of the variable
     double eps_x = (v->max() - v->min()) * m_perturbation;
 
-    cout << "variable: " << v->name().toLatin1().constData() << endl;
-    cout << "eps_x        = " << eps_x << endl;
+    //cout << "variable: " << v->name().toLatin1().constData() << endl;
+    //cout << "eps_x        = " << eps_x << endl;
 
 
     // checking if there is an adjoints collection for the variable

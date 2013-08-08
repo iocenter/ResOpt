@@ -88,8 +88,8 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
     {
         double val_input;
         double val = result->constraintValue(i);
-        double max = p_optimizer->runner()->model()->constraints().at(i)->max();
-        double min = p_optimizer->runner()->model()->constraints().at(i)->min();
+        double max = p_optimizer->runner()->model()->constraints().at(i)->max() + 0.001;
+        double min = p_optimizer->runner()->model()->constraints().at(i)->min() - 0.001;
 
 
         if(val > max) val_input = val - max;
@@ -97,8 +97,8 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
         else if(val < min) val_input = min - val;
         else
         {
-            double u_slack = max - val + 0.0001;
-            double l_slack = val - min - 0.0001;
+            double u_slack = max - val;
+            double l_slack = val - min;
 
             val_input = (u_slack > l_slack) ? -u_slack : -l_slack;
         }
@@ -207,11 +207,14 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars)
     // Change some options
     app->Options()->SetStringValue("output_file", p_optimizer->runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
     app->Options()->SetIntegerValue("max_iter", 100);
-    app->Options()->SetNumericValue("tol", 0.001);
+    app->Options()->SetNumericValue("tol", 0.01);
+    app->Options()->SetNumericValue("dual_inf_tol", 5);
+    app->Options()->SetNumericValue("constr_viol_tol", 0.001);
+    app->Options()->SetNumericValue("compl_inf_tol", 0.01);
 
     //app->Options()->SetStringValue("derivative_test", "first-order");
     //app->Options()->SetStringValue("derivative_test_print_all", "yes");
-    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.01);
+    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.002);
 
 
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
@@ -240,36 +243,93 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars)
         std::cout << std::endl << std::endl << "*** The contineous IPOPT sub-problem problem FAILED!" << std::endl;
     }
 
+    // checking if this is the best solution so far
+    QVector<double> objs_current = p_tnlp->objectives();
+    QVector<double> infeas_current = p_tnlp->infeasibilities();
+
+    if(m_best_objs.size() == 0)
+    {
+        m_best_objs = objs_current;
+        m_best_infeas = infeas_current;
+    }
+
+    else if(m_best_objs.last() > objs_current.last() && m_best_infeas.last() >= (infeas_current.last()-0.01))
+    {
+        cout << "---- current sub-problem has the highest obj ----" << endl;
+        m_best_objs = objs_current;
+        m_best_infeas = infeas_current;
+    }
 
     // extracting the final solution from IPOPT
     return p_tnlp->bestCase();
 
-    // checking if this is the best solution so far
-    QVector<double> objs_current = p_tnlp->objectives();
-
-    if(m_best_objs.size() == 0) m_best_objs = objs_current;
-
-    else if(m_best_objs.last() > objs_current.last())
-    {
-        m_best_objs = objs_current;
-    }
 
 }
 
 //-----------------------------------------------------------------------------------------------
 // checks if the current contineous optimization should continue
 //-----------------------------------------------------------------------------------------------
-bool NomadIpoptEvaluator::shouldContinue(int i, double obj)
+bool NomadIpoptEvaluator::shouldContinue(int i, double obj, double infeas)
 {
+    cout << "checking objective for iteration #" << i << " against obj = " << obj << endl;
+    cout << "number of best objs = " << m_best_objs.size() << endl;
+
+    if(i < p_optimizer->terminationStart())
+    {
+        cout << "------------------------------------" << endl;
+        cout << "dont check yet" << endl;
+        cout << "------------------------------------" << endl;
+        return true;
+    }
+
     if(m_best_objs.size() == 0) return true;
 
     // if the current ipopt has gotten further than the current best
     if(i >= m_best_objs.size())
     {
-        return (m_best_objs.last()*0.85) > obj;
+
+        double obj_best;
+        if(m_best_objs.last() > 0) obj_best = m_best_objs.last() / (p_optimizer->termination() + 0.0001);
+        else obj_best = m_best_objs.last() * p_optimizer->termination();
+
+        cout << "------------------------------------" << endl;
+        cout << "current is further" << endl;
+        cout << "obj    = " << obj << " cur = " << obj_best << endl;
+        cout << "infeas = " << infeas << " cur = " << m_best_infeas.last() << endl;
+        cout << "------------------------------------" << endl;
+
+
+        bool ok_obj = obj_best > obj;
+        bool ok_infeas = m_best_infeas.last() >= infeas;
+
+        if(!ok_obj && !ok_infeas) return false;
+        else return true;
+
     }
 
-    else return (m_best_objs.at(i)*0.85) > obj;
+    else
+    {
+
+
+        double obj_best;
+        if(m_best_objs.at(i) > 0) obj_best = m_best_objs.at(i) / (p_optimizer->termination() + 0.0001);
+        else obj_best = m_best_objs.at(i) * p_optimizer->termination();
+
+        cout << "------------------------------------" << endl;
+        cout << "on same path" << endl;
+        cout << "obj    = " << obj << " cur = " << obj_best << endl;
+        cout << "infeas = " << infeas << " cur = " << m_best_infeas.at(i) << endl;
+        cout << "------------------------------------" << endl;
+
+
+        bool ok_obj = obj_best > obj;
+        bool ok_infeas = m_best_infeas.at(i) >= infeas;
+
+        if(!ok_obj && !ok_infeas) return false;
+        else return true;
+
+
+    }
 }
 
 } // namespace ResOpt

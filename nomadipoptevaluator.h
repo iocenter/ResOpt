@@ -38,6 +38,7 @@ private:
     QList<Case*> m_results;
 
     QVector<double> m_best_objs;
+    QVector<double> m_best_infeas;
 
     Case* solveContineousProblem(Case *discrete_vars);
 
@@ -52,7 +53,7 @@ public:
     Case* generateCase(const NOMAD::Eval_Point &x) const;
     Case* findResult(Case *c);
 
-    bool shouldContinue(int i, double obj);
+    bool shouldContinue(int i, double obj, double infeas);
 };
 
 } // namespace ResOpt

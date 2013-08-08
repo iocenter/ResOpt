@@ -136,8 +136,16 @@ void Plot::addCase(Case *c)
     if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
 
     // y axis range
-    if(c->objectiveValue() < m_min) m_min = c->objectiveValue();
-    if(c->objectiveValue() > m_max) m_max = c->objectiveValue();
+    if(m_cases.size() == 1)
+    {
+        m_min = c->objectiveValue()*0.9;
+        m_max = c->objectiveValue()*1.1;
+    }
+    else
+    {
+        if(c->objectiveValue() < m_min) m_min = c->objectiveValue();
+        if(c->objectiveValue() > m_max) m_max = c->objectiveValue();
+    }
 
     double padding = (m_max - m_min)*0.1;
 

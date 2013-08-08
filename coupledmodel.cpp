@@ -126,7 +126,7 @@ void CoupledModel::process()
 //-----------------------------------------------------------------------------------------------
 void CoupledModel::updateStreams()
 {
-    cout << "Updating the streams for the pipe system..." << endl;
+    //cout << "Updating the streams for the pipe system..." << endl;
 
     // first need to empty all the streams in all pipes
     for(int i = 0; i < numberOfPipes(); ++i) pipe(i)->emptyStreams();

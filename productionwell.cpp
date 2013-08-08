@@ -225,7 +225,7 @@ void ProductionWell::updateBhpConstraint()
 
 
         // printing if violating
-        if(c_ts < 0)
+        if(c_ts < -0.0001)
         {
             cout << "BHP constraint for Well " << name().toLatin1().constData() << " is violated at time = " << stream(i)->time() << ", c = " << c_ts << endl;
 

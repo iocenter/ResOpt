@@ -214,7 +214,7 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars)
 
     //app->Options()->SetStringValue("derivative_test", "first-order");
     //app->Options()->SetStringValue("derivative_test_print_all", "yes");
-    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.002);
+    //app->Options()->SetNumericValue("derivative_test_perturbation", 0.001);
 
 
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)

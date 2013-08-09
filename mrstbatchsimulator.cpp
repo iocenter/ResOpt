@@ -89,8 +89,8 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
     // starting to generate the file
 
-    //*out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2013a';" << "\n"; // beehive
-    *out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2013a';" << "\n"; // linux virtual
+    *out_ctrl << "mrstPath = '/usr/local/MRST/mrst-2013a';" << "\n"; // beehive
+    //*out_ctrl << "mrstPath = '/home/aleksaju/Work/postdoc/MRST/mrst-2013a';" << "\n"; // linux virtual
     //*out_ctrl << "mrstPath = '/Users/aleksaju/Skole/Postdoc/MRST/versions/2012b';" << "\n"; // mac
     //*out_ctrl << "mrstPath = '/Volumes/Macintosh HD/MATS/Dropbox/Skole/_Masteroppgave/Matlab/mrst-2012b';" << "\n"; // mats mac
     //*out_ctrl << "mrstPath = '/Users/eirikhaug/Desktop/mrst-2013a';" << "\n"; // eirik mac
@@ -453,14 +453,16 @@ bool MrstBatchSimulator::generateMRSTScriptAdjoints(QTextStream *out_mrst)
     *out_mrst << "   end\n\n";
 
     *out_mrst << "   grad = cell(1, numel(schedule.control));\n";
+
     *out_mrst << "   %take gradient for controll-step as average of time-steps\n";
     *out_mrst << "   for k = 1:numel(schedule.control)\n";
     *out_mrst << "       ck = find((schedule.step.control == k));\n";
     *out_mrst << "       for m = 1:numel(ck)\n";
+    *out_mrst << "       subdts = dts(ck);\n";
     *out_mrst << "           if m == 1\n";
-    *out_mrst << "               grad{k} = gradFull{ck(1)}/numel(ck);\n";
+    *out_mrst << "               grad{k} = (subdts(m)/sum(subdts))*gradFull{ck(1)};\n";
     *out_mrst << "           else\n";
-    *out_mrst << "               grad{k} = grad{k} + gradFull{ck(1)}/numel(ck);\n";
+    *out_mrst << "               grad{k} = grad{k} + (subdts(m)/sum(subdts))*gradFull{ck(m)};\n";
     *out_mrst << "           end\n";
     *out_mrst << "       end\n";
     *out_mrst << "   end\n\n";
@@ -821,8 +823,8 @@ bool MrstBatchSimulator::launchSimulator()
     cout << "Launching MRST in batch mode..." << endl;
 
 
-    QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
-    //QString program = "matlab";   // beehive
+    //QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
+    QString program = "matlab";   // beehive
     //QString program = "/Applications/MATLAB_R2011b.app/bin/matlab";     // mac
     //QString program = "/Volumes/SSD\ BOOT/Applications/MATLAB_R2012B.APP/bin/matlab";     // mats mac
     //QString program = "/Applications/MATLAB_R2013a.app/bin/matlab";     // eirik mac

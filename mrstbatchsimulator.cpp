@@ -296,6 +296,7 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m, bool adjoints)
     *out_mrst << "    bhps(wn,:)  = cellfun(@(x)x(wn).pressure, wellSols)';\n";
     *out_mrst << "end\n\n";
 
+
     *out_mrst << "% take average over controlsteps\n";
     *out_mrst << "M = sparse((1:numSteps)', schedule.step.control, schedule.step.val, numSteps, numContrSteps);\n";
     *out_mrst << "wrats = (wrats*M)./(ones(numWells, 1)*sum(M));\n";
@@ -304,7 +305,7 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m, bool adjoints)
 
     *out_mrst << "% write output\n";
     *out_mrst << "fid = fopen(outNm, 'w');\n";
-    *out_mrst << "fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  [wrats(:) orats(:) bhps(:)]');\n";
+    *out_mrst << "fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  full([wrats(:) orats(:) bhps(:)]'));\n";
     *out_mrst << "fclose(fid);\n\n";
 
     if(adjoints)
@@ -425,12 +426,20 @@ bool MrstBatchSimulator::generateMRSTScriptAdjoints(QTextStream *out_mrst)
     *out_mrst << "       cumVars = cumsum(numVars);\n";
     *out_mrst << "       ii = [[1;cumVars(1:end-1)+1], cumVars];\n";
     *out_mrst << "       eqs = cat(eqs{:});\n";
-    *out_mrst << "       rhs = getRHS1(control, [sum(numVars), numRHS], numWells, numWellProps);\n\n";
+    *out_mrst << "       %compute weigth dt/dt_control\n";
+    *out_mrst << "       steps  = schedule.step.control==control;\n";
+    *out_mrst << "       weight = dts(tstep)/sum(dts(steps));\n";
+    *out_mrst << "       rhs = getRHS1(control, [sum(numVars), numRHS], numWells, numWellProps, weight);\n";
+    *out_mrst << "       \n";
+    *out_mrst << "       \n";
+
+
 
     *out_mrst << "       if tstep < nsteps\n";
     *out_mrst << "           eqs_p = system.getEquations(state  , state_p, dts(tstep+1), G, W_p, system.s, fluid, ...\n";
     *out_mrst << "               'reverseMode', true);\n";
     *out_mrst << "           eqs_p = cat(eqs_p{:});\n";
+
     *out_mrst << "           rhs = rhs - eqs_p.jac{1}'*adjVec;\n";
     *out_mrst << "       end\n\n";
 
@@ -454,15 +463,15 @@ bool MrstBatchSimulator::generateMRSTScriptAdjoints(QTextStream *out_mrst)
 
     *out_mrst << "   grad = cell(1, numel(schedule.control));\n";
 
-    *out_mrst << "   %take gradient for controll-step as average of time-steps\n";
+    *out_mrst << "   %take gradient for controll-step as sum of time-steps\n";
     *out_mrst << "   for k = 1:numel(schedule.control)\n";
     *out_mrst << "       ck = find((schedule.step.control == k));\n";
     *out_mrst << "       for m = 1:numel(ck)\n";
-    *out_mrst << "       subdts = dts(ck);\n";
+    *out_mrst << "       %subdts = dts(ck);\n";
     *out_mrst << "           if m == 1\n";
-    *out_mrst << "               grad{k} = (subdts(m)/sum(subdts))*gradFull{ck(1)};\n";
+    *out_mrst << "               grad{k} = gradFull{ck(1)};\n";
     *out_mrst << "           else\n";
-    *out_mrst << "               grad{k} = grad{k} + (subdts(m)/sum(subdts))*gradFull{ck(m)};\n";
+    *out_mrst << "               grad{k} = grad{k} + gradFull{ck(m)};\n";
     *out_mrst << "           end\n";
     *out_mrst << "       end\n";
     *out_mrst << "   end\n\n";
@@ -487,12 +496,12 @@ bool MrstBatchSimulator::generateMRSTScriptAdjoints(QTextStream *out_mrst)
     *out_mrst << "end\n\n";
 
 
-    *out_mrst << "function rhs = getRHS1(cStep, sz, nWells, nWQ)\n";
+    *out_mrst << "function rhs = getRHS1(cStep, sz, nWells, nWQ, weight)\n";
     *out_mrst << "j1 = (cStep-1)*nWells*nWQ +1;\n";
     *out_mrst << "j2 = cStep*nWells*nWQ;\n";
     *out_mrst << "i1 = sz(1)-nWells*nWQ +1;\n";
     *out_mrst << "i2 = sz(1);\n";
-    *out_mrst << "rhs = sparse(i1:i2, j1:j2, -1, sz(1), sz(2));\n";
+    *out_mrst << "rhs = sparse(i1:i2, j1:j2, -weight, sz(1), sz(2));\n";
     *out_mrst << "end\n\n";
 
 

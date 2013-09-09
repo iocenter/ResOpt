@@ -881,7 +881,7 @@ bool MrstBatchSimulator::launchSimulator()
 
 
 
-    return ok;
+    return exit_code == 0;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -930,9 +930,11 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
     // checking if file opened ok...
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
-        cout << "### File Error! ###" << endl;
-        cout << "Could not open MRST output file: " << input.fileName().toLatin1().constData() << endl;
-        exit(1);
+        return false;
+
+        //cout << "### File Error! ###" << endl;
+        //cout << "Could not open MRST output file: " << input.fileName().toLatin1().constData() << endl;
+        //exit(1);
     }
 
 

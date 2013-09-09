@@ -199,9 +199,30 @@ void Launcher::evaluateEntireModel(Case *c)
     {
         emit runningReservoirSimulator();
 
-        p_simulator->generateInputFiles(p_model);   // generating input based on the current Model
-        p_simulator->launchSimulator();             // running the simulator
-        p_simulator->readOutput(p_model);           // reading output from the simulator run, and setting to Model
+        p_simulator->generateInputFiles(p_model);                   // generating input based on the current Model
+        bool ok_launch = p_simulator->launchSimulator();            // running the simulator
+        if(!ok_launch)
+        {
+            cout << "### Runtime error! ###" << endl;
+            cout << "Reservoir simulator did not run successfully..." << endl;
+            cout << "Last case: " << endl;
+            c->printToCout();
+
+            exit(1);
+        }
+
+        bool ok_read = p_simulator->readOutput(p_model);            // reading output from the simulator run, and setting to Model
+        if(!ok_read)
+        {
+            cout << "### Runtime error! ###" << endl;
+            cout << "Could not read simulator output file..." << endl;
+            cout << "Last case: " << endl;
+            c->printToCout();
+
+            exit(1);
+        }
+
+
     }
     else
     {

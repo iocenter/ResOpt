@@ -33,8 +33,8 @@ using std::tr1::shared_ptr;
 namespace ResOpt
 {
 
-class NomadIpoptOptimizer;
-class NomadIpoptEvaluator;
+class Optimizer;
+class MINLPEvaluator;
 class RealVariable;
 class Constraint;
 class Case;
@@ -45,8 +45,8 @@ class NomadIpoptInterface : public TNLP
 
 private:
 
-    NomadIpoptOptimizer *p_optimizer;
-    NomadIpoptEvaluator *p_evaluator;
+    Optimizer *p_optimizer;
+    MINLPEvaluator *p_evaluator;
     Case *p_discrete_vars;              // variable values for integer and binary variables that should be used
 
     QVector<shared_ptr<RealVariable> > m_vars;
@@ -93,7 +93,7 @@ private:
 public:
 
     /** default constructor */
-    NomadIpoptInterface(NomadIpoptOptimizer *o, NomadIpoptEvaluator *e, Case *discrete_vars);
+    NomadIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *discrete_vars);
 
     /** default destructor */
     virtual ~NomadIpoptInterface();

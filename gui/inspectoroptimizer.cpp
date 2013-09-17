@@ -29,6 +29,7 @@
 #include "ipoptoptimizer.h"
 #include "lshoptimizer.h"
 #include "nomadipoptoptimizer.h"
+#include "eroptoptimizer.h"
 
 using ResOpt::Optimizer;
 using ResOpt::BonminOptimizer;
@@ -37,6 +38,7 @@ using ResOpt::RunonceOptimizer;
 using ResOpt::IpoptOptimizer;
 using ResOpt::LshOptimizer;
 using ResOpt::NomadIpoptOptimizer;
+using ResOpt::EroptOptimizer;
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QLabel>
@@ -76,6 +78,7 @@ void InspectorOptimizer::construct()
     p_algorithm->addItem("Run Once");
     p_algorithm->addItem("IPOPT");
     p_algorithm->addItem("NOIP");
+    p_algorithm->addItem("EROPT");
 
 
     // finding out what type of optimizer is currently used
@@ -85,6 +88,7 @@ void InspectorOptimizer::construct()
     RunonceOptimizer *l_runonce = dynamic_cast<RunonceOptimizer*>(p_runner->optimizer());
     IpoptOptimizer *l_ipopt = dynamic_cast<IpoptOptimizer*>(p_runner->optimizer());
     NomadIpoptOptimizer *l_noip = dynamic_cast<NomadIpoptOptimizer*>(p_runner->optimizer());
+    EroptOptimizer *l_eropt = dynamic_cast<EroptOptimizer*>(p_runner->optimizer());
 
     if(l_bonmin != 0)
     {
@@ -111,6 +115,12 @@ void InspectorOptimizer::construct()
         p_algorithm->setCurrentIndex(4);
         m_alg_in_runner = 4;
     }
+    else if(l_eropt != 0)
+    {
+        p_algorithm->setCurrentIndex(5);
+        m_alg_in_runner = 5;
+    }
+
 
 
     layout->addWidget(p_algorithm, 0, 2);
@@ -155,6 +165,7 @@ void InspectorOptimizer::saveAndClose()
         else if(p_algorithm->currentIndex() == 2) o = new RunonceOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 3) o = new IpoptOptimizer(p_runner);
         else if(p_algorithm->currentIndex() == 4) o = new NomadIpoptOptimizer(p_runner);
+        else if(p_algorithm->currentIndex() == 5) o = new EroptOptimizer(p_runner);
 
         // setting values to the new optimizer
         o->setMaxIterations(max_iter);

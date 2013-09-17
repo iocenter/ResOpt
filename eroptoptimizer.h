@@ -19,45 +19,55 @@
  */
 
 
-#ifndef NOMADIPOPTEVALUATOR_H
-#define NOMADIPOPTEVALUATOR_H
+#ifndef EROPTOPTIMIZER_H
+#define EROPTOPTIMIZER_H
 
-#include "nomad.hpp"
+#include "optimizer.h"
+
 #include <QList>
-#include <QVector>
 
 namespace ResOpt
 {
-class NomadIpoptOptimizer;
-class Case;
+
+class Runner;
 class MINLPEvaluator;
 
-class NomadIpoptEvaluator : public NOMAD::Evaluator
+/**
+ * @brief Runs the project once with the starting point values for the variables.
+ *
+ */
+class EroptOptimizer : public Optimizer
 {
 private:
-    NomadIpoptOptimizer *p_optimizer;
-    MINLPEvaluator *p_eval;
-    //QList<Case*> m_results;
+    enum direction{UP, DOWN};
 
-    //QVector<double> m_best_objs;
-    //QVector<double> m_best_infeas;
+    MINLPEvaluator *p_evaluator;
+    QList<direction> m_directions;
 
-    //Case* solveContineousProblem(Case *discrete_vars);
 
+    Case* generateBaseCase();
+    void perturbVariable(Case *c, int i_var, direction move_direction, int step = 1);
+    void setInitialDirections();
+
+    bool isBetter(Case *c, Case *base_case);
+    direction switchDirection(direction d);
+
+    Case* solve(Case *base_case, int start_var, bool *converged);
 
 
 public:
-    NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptOptimizer *o);
-    ~NomadIpoptEvaluator();
+    EroptOptimizer(Runner *r);
+    virtual ~EroptOptimizer();
 
-    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval);
 
-    Case* generateCase(const NOMAD::Eval_Point &x) const;
-    Case* findResult(Case *c);
+    virtual void initialize();
 
-    //bool shouldContinue(int i, double obj, double infeas);
+    virtual void start();
+
+    virtual QString description() const;
+
 };
 
 } // namespace ResOpt
 
-#endif // NOMADIPOPTEVALUATOR_H
+#endif // EROPTOPTIMIZER_H

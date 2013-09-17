@@ -121,7 +121,9 @@ SOURCES += main.cpp \
     nomadipoptevaluator.cpp \
     nomadipoptinterface.cpp \
     wellconnectionvariable.cpp \
-    gui/inspectorwellconnectionvariable.cpp
+    gui/inspectorwellconnectionvariable.cpp \
+    eroptoptimizer.cpp \
+    minlpevaluator.cpp
 
 HEADERS += \
     well.h \
@@ -217,7 +219,9 @@ HEADERS += \
     nomadipoptevaluator.h \
     nomadipoptinterface.h \
     wellconnectionvariable.h \
-    gui/inspectorwellconnectionvariable.h
+    gui/inspectorwellconnectionvariable.h \
+    eroptoptimizer.h \
+    minlpevaluator.h
 
 RESOURCES += \
     gui/images.qrc

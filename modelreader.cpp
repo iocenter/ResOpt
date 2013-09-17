@@ -64,6 +64,7 @@
 #include "ipoptoptimizer.h"
 #include "lshoptimizer.h"
 #include "nomadipoptoptimizer.h"
+#include "eroptoptimizer.h"
 
 #include "gprssimulator.h"
 #include "vlpsimulator.h"
@@ -2487,6 +2488,7 @@ void ModelReader::readOptimizer(Runner *r)
             else if(list.at(1).startsWith("IPOPT")) o = new IpoptOptimizer(r);
             else if(list.at(1).startsWith("LSH")) o = new LshOptimizer(r);
             else if(list.at(1).startsWith("NOIP")) o = new NomadIpoptOptimizer(r);
+            else if(list.at(1).startsWith("EROPT")) o = new EroptOptimizer(r);
 
         }
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations

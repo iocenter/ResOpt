@@ -25,7 +25,7 @@
 #include <iostream>
 
 #include "nomadipoptoptimizer.h"
-#include "nomadipoptinterface.h"
+//#include "nomadipoptinterface.h"
 #include "runner.h"
 #include "model.h"
 #include "reservoirsimulator.h"
@@ -33,11 +33,12 @@
 #include "binaryvariable.h"
 #include "constraint.h"
 #include "case.h"
+#include "minlpevaluator.h"
 
-#include "IpIpoptApplication.hpp"
-#include "IpSolveStatistics.hpp"
+//#include "IpIpoptApplication.hpp"
+//#include "IpSolveStatistics.hpp"
 
-using namespace Ipopt;
+//using namespace Ipopt;
 
 
 using std::tr1::shared_ptr;
@@ -51,11 +52,14 @@ NomadIpoptEvaluator::NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptO
     : NOMAD::Evaluator(p),
       p_optimizer(o)
 {
+    p_eval = new MINLPEvaluator(o);
 }
 
 NomadIpoptEvaluator::~NomadIpoptEvaluator()
 {
-    for(int i = 0; i < m_results.size(); ++i) delete m_results.at(i);
+    //for(int i = 0; i < m_results.size(); ++i) delete m_results.at(i);
+
+    delete p_eval;
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -69,10 +73,10 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
     Case *c = generateCase(x);
 
     // sending the case off for evaluation by IPOPT
-    Case *result = solveContineousProblem(c);
+    Case *result = p_eval->solveContineousProblem(c);
 
-    // need to re-run the case to get constraint values
-    p_optimizer->runCase(result);
+    // need to re-run the case to get constraint values (done in MINLPEValuator now...)
+    //p_optimizer->runCase(result);
 
     // extracting the objective
     x.set_bb_output(0, -result->objectiveValue());
@@ -107,7 +111,7 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
     }
 
     // adding to results vector
-    m_results.push_back(result);
+    //m_results.push_back(result);
 
     // deleting the case from the heap
     delete c;
@@ -152,6 +156,12 @@ Case* NomadIpoptEvaluator::generateCase(const NOMAD::Eval_Point &x) const
 //-----------------------------------------------------------------------------------------------
 Case* NomadIpoptEvaluator::findResult(Case *c)
 {
+    return p_eval->findResult(c);
+}
+
+/*
+Case* NomadIpoptEvaluator::findResult(Case *c)
+{
     for(int i = 0; i < m_results.size(); ++i)
     {
         Case *r = m_results.at(i);
@@ -191,9 +201,11 @@ Case* NomadIpoptEvaluator::findResult(Case *c)
 
 }
 
+*/
 //-----------------------------------------------------------------------------------------------
 // solves the contineous sub-problem using IPOPT
 //-----------------------------------------------------------------------------------------------
+/*
 Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars)
 {
     // ----- Initializing IPOPT ------- //
@@ -266,9 +278,12 @@ Case* NomadIpoptEvaluator::solveContineousProblem(Case *discrete_vars)
 
 }
 
+*/
+
 //-----------------------------------------------------------------------------------------------
 // checks if the current contineous optimization should continue
 //-----------------------------------------------------------------------------------------------
+/*
 bool NomadIpoptEvaluator::shouldContinue(int i, double obj, double infeas)
 {
     cout << "checking objective for iteration #" << i << " against obj = " << obj << endl;
@@ -331,5 +346,7 @@ bool NomadIpoptEvaluator::shouldContinue(int i, double obj, double infeas)
 
     }
 }
+
+*/
 
 } // namespace ResOpt

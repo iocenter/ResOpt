@@ -19,45 +19,45 @@
  */
 
 
-#ifndef NOMADIPOPTEVALUATOR_H
-#define NOMADIPOPTEVALUATOR_H
+#ifndef MINLPEVALUATOR_H
+#define MINLPEVALUATOR_H
 
-#include "nomad.hpp"
 #include <QList>
 #include <QVector>
 
 namespace ResOpt
 {
-class NomadIpoptOptimizer;
-class Case;
-class MINLPEvaluator;
 
-class NomadIpoptEvaluator : public NOMAD::Evaluator
+class Case;
+class Optimizer;
+
+
+class MINLPEvaluator
 {
 private:
-    NomadIpoptOptimizer *p_optimizer;
-    MINLPEvaluator *p_eval;
-    //QList<Case*> m_results;
+    Optimizer *p_optimizer;
 
-    //QVector<double> m_best_objs;
-    //QVector<double> m_best_infeas;
+    QList<Case*> m_results;
 
-    //Case* solveContineousProblem(Case *discrete_vars);
+    QVector<double> m_best_objs;
+    QVector<double> m_best_infeas;
 
-
+    int m_iterations;
 
 public:
-    NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptOptimizer *o);
-    ~NomadIpoptEvaluator();
+    MINLPEvaluator(Optimizer *o);
+    ~MINLPEvaluator();
 
-    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval);
-
-    Case* generateCase(const NOMAD::Eval_Point &x) const;
+    Case* solveContineousProblem(Case *discrete_vars);
+    bool shouldContinue(int i, double obj, double infeas);
     Case* findResult(Case *c);
 
-    //bool shouldContinue(int i, double obj, double infeas);
+    int iterations() const {return m_iterations;}
+
+
 };
+
 
 } // namespace ResOpt
 
-#endif // NOMADIPOPTEVALUATOR_H
+#endif // MINLPEVALUATOR_H

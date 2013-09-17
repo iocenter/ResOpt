@@ -24,9 +24,10 @@
 #include <cassert>
 #include <QVector>
 #include <QTextStream>
+#include <iostream>
 
-#include "nomadipoptoptimizer.h"
-#include "nomadipoptevaluator.h"
+#include "optimizer.h"
+#include "minlpevaluator.h"
 #include "runner.h"
 #include "model.h"
 #include "adjointscoupledmodel.h"
@@ -47,7 +48,7 @@ namespace ResOpt
 {
 
 /* Constructor. */
-NomadIpoptInterface::NomadIpoptInterface(NomadIpoptOptimizer *o, NomadIpoptEvaluator *e, Case *discrete_vars)
+NomadIpoptInterface::NomadIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *discrete_vars)
     : p_optimizer(o),
       p_evaluator(e),
       p_discrete_vars(discrete_vars),
@@ -372,18 +373,18 @@ bool NomadIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
                                                 IpoptCalculatedQuantities *ip_cq)
 {
 
-     cout << "%%%%%%%%%%%%%%%%%%%%%% intermediate callback start %%%%%%%%%%%%%%%%%%%%%%" << endl;
+     //cout << "%%%%%%%%%%%%%%%%%%%%%% intermediate callback start %%%%%%%%%%%%%%%%%%%%%%" << endl;
 
 
     // adding the current objective value to the local vector
     m_objs.push_back(obj_value);
     m_infeas.push_back(inf_pr);
 
-    cout << "iter      = " << iter << endl;
-    cout << "obj_value = " << obj_value << endl;
-    cout << "inf_pr    = " << inf_pr << endl;
-    cout << "inf_du    = " << inf_du << endl;
-    cout << "mu        = " << mu << endl;
+    //cout << "iter      = " << iter << endl;
+    //cout << "obj_value = " << obj_value << endl;
+    //cout << "inf_pr    = " << inf_pr << endl;
+    //cout << "inf_du    = " << inf_du << endl;
+    //cout << "mu        = " << mu << endl;
 
     // checking if the optimization should continue
     bool cont = p_evaluator->shouldContinue(m_objs.size()-1, obj_value, inf_pr);
@@ -396,10 +397,10 @@ bool NomadIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
         cout << "---------------------------------------------" << endl;
         cout << "Terminating IPOPT run due to slow progress..." << endl;
         cout << "---------------------------------------------" << endl;
-        cout << "---------------------------------------------" << endl;
+        cout << "---------------------------------------------" << endl << endl;
     }
 
-    cout << "%%%%%%%%%%%%%%%%%%%%%%  intermediate callback end  %%%%%%%%%%%%%%%%%%%%%%" << endl;
+    //cout << "%%%%%%%%%%%%%%%%%%%%%%  intermediate callback end  %%%%%%%%%%%%%%%%%%%%%%" << endl;
 
     return cont;
 

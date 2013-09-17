@@ -91,6 +91,9 @@ void EroptOptimizer::start()
         converged = true;
 
         result = solve(result_base_case, 0, &converged);
+        result_base_case = result;
+
+        cout << "done with solve!" << endl;
     }
 
 

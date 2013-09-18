@@ -39,6 +39,8 @@ class Reservoir
 private:
     QString m_name; /**< TODO */
     QString m_file; /**< TODO */
+    QString m_matlab_path;
+    QString m_mrst_path;
     double m_endtime; /**< TODO */
 
     bool m_gas_phase;
@@ -75,6 +77,9 @@ public:
      */
     void setFile(const QString &f) {m_file = f;}
 
+    void setMrstPath(const QString &p) {m_mrst_path = p;}
+    void setMatlabPath(const QString &p) {m_matlab_path = p;}
+
     /**
      * @brief Sets the end time of the simulation
      *
@@ -110,6 +115,9 @@ public:
      * @return QString
      */
     QString file() const {return m_file;}
+
+    QString matlabPath() const {return m_matlab_path;}
+    QString mrstPath() const {return m_mrst_path;}
 
     /**
      * @brief Returns the end time of the simulation

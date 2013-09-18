@@ -330,10 +330,12 @@ Reservoir* ModelReader::readReservoir()
     {
 
 
-        if(list.at(0).startsWith("NAME")) l_name = list.at(1);          // getting the reservoir name
-        else if(list.at(0).startsWith("FILE")) l_file = list.at(1);     // getting the file name
-        else if(list.at(0).startsWith("TIME")) l_endtime = list.at(1).toDouble(&ok);     // getting the file name
-        else if(list.at(0).startsWith("PHASES"))                         // getting the phases present in the reservoir
+        if(list.at(0).startsWith("NAME")) l_name = list.at(1);                          // getting the reservoir name
+        else if(list.at(0).startsWith("FILE")) l_file = list.at(1);                     // getting the file name
+        else if(list.at(0).startsWith("MRST")) res->setMrstPath(list.at(1));            // setting the MRST path
+        else if(list.at(0).startsWith("MATLAB")) res->setMatlabPath(list.at(1));        // setting the Matlab path
+        else if(list.at(0).startsWith("TIME")) l_endtime = list.at(1).toDouble(&ok);    // getting the file name
+        else if(list.at(0).startsWith("PHASES"))                                        // getting the phases present in the reservoir
         {
             if(list.length() != 4) // wrong number of arguments
             {

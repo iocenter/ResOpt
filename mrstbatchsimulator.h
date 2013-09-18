@@ -47,6 +47,7 @@ private:
 
     bool m_first_launch;
     int run_number;
+    QString m_matlab_path;
 
     bool generateControlInputFile(Model *m);
     bool generateEclIncludeFile(Model *m);

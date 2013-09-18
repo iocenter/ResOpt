@@ -42,6 +42,8 @@ QString Reservoir::description() const
     QString str("START RESERVOIR\n");
     str.append(" NAME " + name() + "\n");
     str.append(" FILE " + file() + "\n");
+    str.append(" MRST " + mrstPath() + "\n");
+    str.append(" MATLAB " + matlabPath() + "\n");
 
     str.append(" TIME " + QString::number(endTime()) + "\n");
 

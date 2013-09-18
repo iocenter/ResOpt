@@ -3,6 +3,8 @@
 #include <cassert>
 #include <QVector>
 #include <QTextStream>
+#include <iostream>
+
 
 #include "ipoptoptimizer.h"
 #include "runner.h"

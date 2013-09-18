@@ -1,8 +1,13 @@
 #include "ipoptoptimizer.h"
-#include "ipoptinterface.h"
+//#include "ipoptinterface.h"
 #include "runner.h"
 #include "model.h"
-#include "reservoirsimulator.h"
+//#include "reservoirsimulator.h"
+#include "case.h"
+#include "binaryvariable.h"
+#include "intvariable.h"
+
+#include "minlpevaluator.h"
 
 #include <iostream>
 #include <QString>
@@ -19,7 +24,7 @@ IpoptOptimizer::IpoptOptimizer(Runner *r)
 
 IpoptOptimizer::~IpoptOptimizer()
 {
-    // nothing to do, the SmartPtr will delete itself
+    // nothing to do
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -29,6 +34,9 @@ void IpoptOptimizer::initialize()
 {
 
     cout << "Initializing Ipopt..." << endl;
+
+
+    /*
 
     // Checking that the problem don't have any binary or integer variables
     if (runner()->model()->binaryVariables().size() > 0
@@ -89,6 +97,8 @@ void IpoptOptimizer::initialize()
         setInitialized(true);
     }
 
+    */
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -99,6 +109,22 @@ void IpoptOptimizer::start()
 
     // checking if everything is initialized
     if(!isInitialized()) initialize();
+
+    MINLPEvaluator *p_eval = new MINLPEvaluator(this);
+
+    // generating case with base values for int and bin variables
+    Case *starting_point = generateStartingPoint();
+
+    Case *result = p_eval->solveContineousProblem(starting_point);
+
+
+    sendBestCaseToRunner(result);
+
+    delete starting_point;
+    delete p_eval;
+
+
+    /*
 
     //Set up done, now let's run Ipopt
     ApplicationReturnStatus status;
@@ -120,8 +146,33 @@ void IpoptOptimizer::start()
     // be deleted.
     //return (int) status;
 
+
+    */
+
     // letting the runner know the optimization has finished
     emit finished();
+}
+
+//-----------------------------------------------------------------------------------------------
+// generates a case with the starting point variable values for int  and bin types
+//-----------------------------------------------------------------------------------------------
+Case* IpoptOptimizer::generateStartingPoint()
+{
+    Case *c = new Case();
+
+    // integer variables
+    for(int i = 0; i < runner()->model()->numberOfIntegerVariables(); ++i)
+    {
+        c->addIntegerVariableValue(runner()->model()->integerVariableValue(i));
+    }
+
+    // binary variables
+    for(int i = 0; i < runner()->model()->numberOfBinaryVariables(); ++i)
+    {
+        c->addBinaryVariableValue(runner()->model()->binaryVariableValue(i));
+    }
+
+    return c;
 }
 
 //-----------------------------------------------------------------------------------------------

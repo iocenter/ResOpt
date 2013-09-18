@@ -2,16 +2,17 @@
 #define IPOPTOPTIMIZER_H
 
 #include "optimizer.h"
-#include "IpIpoptApplication.hpp"
-#include "IpSolveStatistics.hpp"
+//#include "IpIpoptApplication.hpp"
+//#include "IpSolveStatistics.hpp"
 
-using namespace Ipopt;
+//using namespace Ipopt;
 
 namespace ResOpt
 {
 
 class Runner;
 class IpoptInterface;
+class Case;
 
 /**
  * @brief The Ipopt optimization algorithm.
@@ -21,9 +22,11 @@ class IpoptOptimizer : public Optimizer
 {
 private:
 
-    SmartPtr<IpoptInterface> p_tnlp;
-    SmartPtr<IpoptApplication> app;
+    //SmartPtr<IpoptInterface> p_tnlp;
+    //SmartPtr<IpoptApplication> app;
     //IpoptSetup m_ipopt;
+    Case* generateStartingPoint();
+
 
 public:
     IpoptOptimizer(Runner *r);

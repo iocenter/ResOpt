@@ -21,8 +21,6 @@
 
 #include "eroptoptimizer.h"
 
-
-#include "nomadipoptinterface.h"
 #include "runner.h"
 #include "model.h"
 #include "reservoirsimulator.h"
@@ -101,13 +99,13 @@ void EroptOptimizer::start()
     if(converged)
     {
         cout << "#################################" << endl;
-        cout << "EROPT converged!" << endl;
+        cout << "###      EROPT converged!     ###" << endl;
         cout << "#################################" << endl;
     }
     else
     {
         cout << "#################################" << endl;
-        cout << "EROPT did not converge!" << endl;
+        cout << "###  EROPT did not converge!  ###" << endl;
         cout << "#################################" << endl;
     }
 

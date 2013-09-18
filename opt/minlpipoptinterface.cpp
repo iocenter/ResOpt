@@ -19,7 +19,7 @@
  */
 
 
-#include "nomadipoptinterface.h"
+#include "minlpipoptinterface.h"
 
 #include <cassert>
 #include <QVector>
@@ -48,7 +48,7 @@ namespace ResOpt
 {
 
 /* Constructor. */
-NomadIpoptInterface::NomadIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *discrete_vars)
+MINLPIpoptInterface::MINLPIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *discrete_vars)
     : p_optimizer(o),
       p_evaluator(e),
       p_discrete_vars(discrete_vars),
@@ -87,13 +87,13 @@ NomadIpoptInterface::NomadIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *
 
 }
 
-NomadIpoptInterface::~NomadIpoptInterface()
+MINLPIpoptInterface::~MINLPIpoptInterface()
 {
     if(p_case_last != 0) delete p_case_last;
     if(p_case_gradients != 0) delete p_case_gradients;
 }
 
-bool NomadIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
+bool MINLPIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
                          Index& nnz_h_lag, IndexStyleEnum& index_style)
 {
     //cout << "Giving Ipopt the dimensions of the problem..." << endl;
@@ -114,7 +114,7 @@ bool NomadIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
     return true;
 }
 
-bool NomadIpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
+bool MINLPIpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
                             Index m, Number* g_l, Number* g_u)
 {
     //cout << "Giving Ipopt bounds of variables and constraints..." << endl;
@@ -143,7 +143,7 @@ bool NomadIpoptInterface::get_bounds_info(Index n, Number* x_l, Number* x_u,
     return true;
 }
 
-bool NomadIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
+bool MINLPIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
                                bool init_z, Number* z_L, Number* z_U,
                                Index m, bool init_lambda,
                                Number* lambda)
@@ -172,7 +172,7 @@ bool NomadIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
 
 }
 
-bool NomadIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
+bool MINLPIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& obj_value)
 {
     //cout << "Evaluating objective function for Ipopt..." << endl;
 
@@ -207,7 +207,7 @@ bool NomadIpoptInterface::eval_f(Index n, const Number* x, bool new_x, Number& o
 
 }
 
-bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
+bool MINLPIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Number* grad_f)
 {
     //cout << "Evaluating the objective function gradients for Ipopt..." << endl;
     bool ok = true;
@@ -234,7 +234,7 @@ bool NomadIpoptInterface::eval_grad_f(Index n, const Number* x, bool new_x, Numb
 
 }
 
-bool NomadIpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
+bool MINLPIpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, Number* g)
 {
     //cout << "Evaluating the constraints for Ipopt..." << endl;
 
@@ -274,7 +274,7 @@ bool NomadIpoptInterface::eval_g(Index n, const Number* x, bool new_x, Index m, 
     return true;
 }
 
-bool NomadIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
+bool MINLPIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
                        Index m, Index nele_jac, Index* iRow, Index *jCol,
                        Number* values)
 {
@@ -317,7 +317,7 @@ bool NomadIpoptInterface::eval_jac_g(Index n, const Number* x, bool new_x,
 
 }
 
-bool NomadIpoptInterface::eval_h(Index n, const Number* x, bool new_x,
+bool MINLPIpoptInterface::eval_h(Index n, const Number* x, bool new_x,
                    Number obj_factor, Index m, const Number* lambda,
                    bool new_lambda, Index nele_hess, Index* iRow,
                    Index* jCol, Number* values)
@@ -326,7 +326,7 @@ bool NomadIpoptInterface::eval_h(Index n, const Number* x, bool new_x,
     return true;
 }
 
-void NomadIpoptInterface::finalize_solution(SolverReturn status,
+void MINLPIpoptInterface::finalize_solution(SolverReturn status,
                               Index n, const Number* x, const Number* z_L, const Number* z_U,
                               Index m, const Number* g, const Number* lambda,
                               Number obj_value,
@@ -365,7 +365,7 @@ void NomadIpoptInterface::finalize_solution(SolverReturn status,
     p_best_case = c;
 }
 
-bool NomadIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
+bool MINLPIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
                                                 Number obj_value, Number inf_pr,
                                                 Number inf_du, Number mu, Number d_norm,
                                                 Number regularization_size, Number alpha_du,
@@ -411,7 +411,7 @@ bool NomadIpoptInterface::intermediate_callback(AlgorithmMode mode, Index iter,
 //-----------------------------------------------------------------------------------------------
 // Checks if the x values are the same as the current model values for the variables
 //-----------------------------------------------------------------------------------------------
-bool NomadIpoptInterface::newVariableValues(Index n, const Number *x)
+bool MINLPIpoptInterface::newVariableValues(Index n, const Number *x)
 {
     bool x_new = false;
 
@@ -442,7 +442,7 @@ bool NomadIpoptInterface::newVariableValues(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 // Calculates the perturbated value a variable
 //-----------------------------------------------------------------------------------------------
-double NomadIpoptInterface::perturbedVariableValue(double value, double max, double min)
+double MINLPIpoptInterface::perturbedVariableValue(double value, double max, double min)
 {
     double x_perturbed;
 
@@ -469,7 +469,7 @@ double NomadIpoptInterface::perturbedVariableValue(double value, double max, dou
 //-----------------------------------------------------------------------------------------------
 // Calculates the gradients
 //-----------------------------------------------------------------------------------------------
-void NomadIpoptInterface::calculateGradients(Index n, const Number *x)
+void MINLPIpoptInterface::calculateGradients(Index n, const Number *x)
 {
     //cout << "Starting perturbations to calculate gradients for IPOPT" << endl;
     // checking if the gradient vectors have the correct size
@@ -614,7 +614,7 @@ void NomadIpoptInterface::calculateGradients(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 // Copy gradients from case if adjoints are used
 //-----------------------------------------------------------------------------------------------
-bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
+bool MINLPIpoptInterface::copyCaseGradients(Index n, const Number *x)
 {
     //cout << "copyCaseGradients() start" << endl;
 
@@ -720,7 +720,7 @@ bool NomadIpoptInterface::copyCaseGradients(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 // Checks if the gradients are up to date
 //-----------------------------------------------------------------------------------------------
-bool NomadIpoptInterface::gradientsAreUpdated(Index n, const Number *x)
+bool MINLPIpoptInterface::gradientsAreUpdated(Index n, const Number *x)
 {
 
     // checking if the gradients case has been initialized
@@ -756,7 +756,7 @@ bool NomadIpoptInterface::gradientsAreUpdated(Index n, const Number *x)
 //-----------------------------------------------------------------------------------------------
 // Generates a Case based on the values in x
 //-----------------------------------------------------------------------------------------------
-Case* NomadIpoptInterface::generateCase(Index n, const Number *x)
+Case* MINLPIpoptInterface::generateCase(Index n, const Number *x)
 {
     // checking that the problem has the right dimensions
     assert(n == m_vars.size());

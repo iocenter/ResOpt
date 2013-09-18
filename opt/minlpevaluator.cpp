@@ -24,7 +24,7 @@
 #include "optimizer.h"
 #include "runner.h"
 #include "reservoirsimulator.h"
-#include "nomadipoptinterface.h"
+#include "minlpipoptinterface.h"
 #include "case.h"
 
 
@@ -69,7 +69,7 @@ Case* MINLPEvaluator::solveContineousProblem(Case *discrete_vars)
     // ----- Initializing IPOPT ------- //
 
     // setting up the TNLP
-    SmartPtr<NomadIpoptInterface> p_tnlp = new NomadIpoptInterface(p_optimizer, this, discrete_vars);
+    SmartPtr<MINLPIpoptInterface> p_tnlp = new MINLPIpoptInterface(p_optimizer, this, discrete_vars);
 
     // Create an instance of the IpoptApplication
     SmartPtr<IpoptApplication> app = IpoptApplicationFactory();

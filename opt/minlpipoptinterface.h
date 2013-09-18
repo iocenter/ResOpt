@@ -19,8 +19,8 @@
  */
 
 
-#ifndef NOMADIPOPTINTERFACE_H
-#define NOMADIPOPTINTERFACE_H
+#ifndef MINLPIPOPTINTERFACE_H
+#define MINLPIPOPTINTERFACE_H
 
 #include "IpTNLP.hpp"
 #include <QVector>
@@ -40,7 +40,7 @@ class Constraint;
 class Case;
 class CaseQueue;
 
-class NomadIpoptInterface : public TNLP
+class MINLPIpoptInterface : public TNLP
 {
 
 private:
@@ -87,16 +87,16 @@ private:
     bool gradientsAreUpdated(Index n, const Number *x);
 
     /**@name Block default compiler methods */
-    NomadIpoptInterface(const NomadIpoptInterface&);
-    NomadIpoptInterface& operator=(const NomadIpoptInterface&);
+    MINLPIpoptInterface(const MINLPIpoptInterface&);
+    MINLPIpoptInterface& operator=(const MINLPIpoptInterface&);
 
 public:
 
     /** default constructor */
-    NomadIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *discrete_vars);
+    MINLPIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *discrete_vars);
 
     /** default destructor */
-    virtual ~NomadIpoptInterface();
+    virtual ~MINLPIpoptInterface();
 
     /**@name Overloaded from TNLP */
 
@@ -174,4 +174,4 @@ public:
 
 } // namespace ResOpt
 
-#endif // NOMADIPOPTINTERFACE_H
+#endif // MINLPIPOPTINTERFACE_H

@@ -25,7 +25,7 @@
 #include "plot.h"
 #include "inspectoroptimizer.h"
 
-#include "optimizer.h"
+#include "opt/optimizer.h"
 #include "model.h"
 #include "case.h"
 #include "casequeue.h"

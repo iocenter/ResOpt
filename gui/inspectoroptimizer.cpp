@@ -22,14 +22,14 @@
 #include "inspectoroptimizer.h"
 
 #include "runner.h"
-#include "optimizer.h"
-#include "nomadoptimizer.h"
-#include "bonminoptimizer.h"
-#include "runonceoptimizer.h"
-#include "ipoptoptimizer.h"
-#include "lshoptimizer.h"
-#include "nomadipoptoptimizer.h"
-#include "eroptoptimizer.h"
+#include "opt/optimizer.h"
+#include "opt/nomadoptimizer.h"
+#include "opt/bonminoptimizer.h"
+#include "opt/runonceoptimizer.h"
+#include "opt/ipoptoptimizer.h"
+#include "opt/lshoptimizer.h"
+#include "opt/nomadipoptoptimizer.h"
+#include "opt/eroptoptimizer.h"
 
 using ResOpt::Optimizer;
 using ResOpt::BonminOptimizer;

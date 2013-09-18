@@ -51,14 +51,10 @@ SOURCES += main.cpp \
     gprssimulator.cpp \
     runner.cpp \
     modelreader.cpp \
-    optimizer.cpp \
-    bonminoptimizer.cpp \
-    bonmininterface.cpp \
     binaryvariable.cpp \
     productionwell.cpp \
     injectionwell.cpp \
     pipeconnection.cpp \
-    runonceoptimizer.cpp \
     launcher.cpp \
     case.cpp \
     casequeue.cpp \
@@ -69,18 +65,13 @@ SOURCES += main.cpp \
     inputratevariable.cpp \
     materialbalanceconstraint.cpp \
     component.cpp \
-    evolutionarystrategyoptimizer.cpp \
     userconstraint.cpp \
     vlptable.cpp \
     vlpsimulator.cpp \
     dptable.cpp \
     pipereader.cpp \
     dptablecalculator.cpp \
-    nomadoptimizer.cpp \
-    nomadevaluator.cpp \
     separator.cpp \
-    ipoptinterface.cpp \
-    ipoptoptimizer.cpp \
     mrstbatchsimulator.cpp \
     pressurebooster.cpp \
     gui/mainwindow.cpp \
@@ -108,22 +99,31 @@ SOURCES += main.cpp \
     adjointscoupledmodel.cpp \
     adjointcollection.cpp \
     derivative.cpp \
-    bonmininterfacegradients.cpp \
     gui/inspectorinjwell.cpp \
     gui/inspectorpressurebooster.cpp \
     gui/inspectorcapacity.cpp \
     gui/inspectorendpipe.cpp \
     gui/inspectorvariableinstall.cpp \
-    lshoptimizer.cpp \
-    lshipoptinterface.cpp \
-    lshnomadevaluator.cpp \
-    nomadipoptoptimizer.cpp \
-    nomadipoptevaluator.cpp \
-    nomadipoptinterface.cpp \
     wellconnectionvariable.cpp \
     gui/inspectorwellconnectionvariable.cpp \
-    eroptoptimizer.cpp \
-    minlpevaluator.cpp
+    opt/minlpevaluator.cpp \
+    opt/bonmininterface.cpp \
+    opt/bonmininterfacegradients.cpp \
+    opt/lshoptimizer.cpp \
+    opt/lshnomadevaluator.cpp \
+    opt/lshipoptinterface.cpp \
+    opt/ipoptoptimizer.cpp \
+    opt/ipoptinterface.cpp \
+    opt/evolutionarystrategyoptimizer.cpp \
+    opt/eroptoptimizer.cpp \
+    opt/bonminoptimizer.cpp \
+    opt/runonceoptimizer.cpp \
+    opt/optimizer.cpp \
+    opt/nomadoptimizer.cpp \
+    opt/nomadipoptoptimizer.cpp \
+    opt/nomadipoptevaluator.cpp \
+    opt/nomadevaluator.cpp \
+    opt/minlpipoptinterface.cpp
 
 HEADERS += \
     well.h \
@@ -149,14 +149,10 @@ HEADERS += \
     gprssimulator.h \
     runner.h \
     modelreader.h \
-    optimizer.h \
-    bonminoptimizer.h \
-    bonmininterface.h \
     binaryvariable.h \
     productionwell.h \
     injectionwell.h \
     pipeconnection.h \
-    runonceoptimizer.h \
     launcher.h \
     case.h \
     casequeue.h \
@@ -167,18 +163,13 @@ HEADERS += \
     inputratevariable.h \
     materialbalanceconstraint.h \
     component.h \
-    evolutionarystrategyoptimizer.h \
     userconstraint.h \
     vlpsimulator.h \
     vlptable.h \
     dptable.h \
     pipereader.h \
     dptablecalculator.h \
-    nomadoptimizer.h \
-    nomadevaluator.h \
     separator.h \
-    ipoptinterface.h \
-    ipoptoptimizer.h \
     mrstbatchsimulator.h \
     pressurebooster.h \
     gui/mainwindow.h \
@@ -206,22 +197,31 @@ HEADERS += \
     adjointscoupledmodel.h \
     adjointcollection.h \
     derivative.h \
-    bonmininterfacegradients.h \
     gui/inspectorinjwell.h \
     gui/inspectorpressurebooster.h \
     gui/inspectorcapacity.h \
     gui/inspectorendpipe.h \
     gui/inspectorvariableinstall.h \
-    lshoptimizer.h \
-    lshipoptinterface.h \
-    lshnomadevaluator.h \
-    nomadipoptoptimizer.h \
-    nomadipoptevaluator.h \
-    nomadipoptinterface.h \
     wellconnectionvariable.h \
     gui/inspectorwellconnectionvariable.h \
-    eroptoptimizer.h \
-    minlpevaluator.h
+    opt/minlpevaluator.h \
+    opt/bonmininterface.h \
+    opt/bonmininterfacegradients.h \
+    opt/lshoptimizer.h \
+    opt/lshnomadevaluator.h \
+    opt/lshipoptinterface.h \
+    opt/ipoptoptimizer.h \
+    opt/ipoptinterface.h \
+    opt/evolutionarystrategyoptimizer.h \
+    opt/eroptoptimizer.h \
+    opt/bonminoptimizer.h \
+    opt/runonceoptimizer.h \
+    opt/optimizer.h \
+    opt/nomadoptimizer.h \
+    opt/nomadipoptoptimizer.h \
+    opt/nomadipoptevaluator.h \
+    opt/nomadevaluator.h \
+    opt/minlpipoptinterface.h
 
 RESOURCES += \
     gui/images.qrc

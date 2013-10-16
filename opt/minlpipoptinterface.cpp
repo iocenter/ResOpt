@@ -91,6 +91,7 @@ MINLPIpoptInterface::~MINLPIpoptInterface()
 {
     if(p_case_last != 0) delete p_case_last;
     if(p_case_gradients != 0) delete p_case_gradients;
+    if(p_best_case != 0) delete p_best_case;
 }
 
 bool MINLPIpoptInterface::get_nlp_info(Index& n, Index& m, Index& nnz_jac_g,
@@ -358,7 +359,7 @@ void MINLPIpoptInterface::finalize_solution(SolverReturn status,
 
     cout << endl;
 
-    cout << "Storing the best case for use by NOMAD..." << endl;
+    cout << "Storing the best case for use by the descrete solver..." << endl;
     Case *c = generateCase(n,x);
     //c->setObjectiveValue(-obj_value);
 

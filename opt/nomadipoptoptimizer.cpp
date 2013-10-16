@@ -261,6 +261,7 @@ QString NomadIpoptOptimizer::description() const
     QString str("START OPTIMIZER\n");
     str.append(" TYPE NOIP \n");
     str.append(" ITERATIONS " + QString::number(maxIterations()) + "\n");
+    str.append(" CONT_ITER " + QString::number(maxIterContineous()) + "\n");
     str.append(" PERTURBATION " + QString::number(pertrurbationSize()) + "\n");
     str.append(" PARALLELRUNS " + QString::number(parallelRuns()) + "\n");
     str.append("END OPTIMIZER\n\n");

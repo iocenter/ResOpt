@@ -37,6 +37,7 @@ Optimizer::Optimizer(Runner *r)
     : QObject(r),
       p_runner(r),
       m_max_iter(1),
+      m_max_iter_cont(100),
       m_parallel_runs(1),
       m_perturbation_size(0.0001),
       m_termination(0.0),

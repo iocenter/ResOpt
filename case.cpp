@@ -199,10 +199,13 @@ void Case::printToCout()
 
     cout << endl;
 
-    cout << "OBJ DERIVATIVES:" << endl;
-    for(int i = 0; i < objectiveDerivative()->numberOfPartials(); ++i)
+    if(p_objective_derivative != 0)
     {
-        cout << i << " = " << objectiveDerivative()->value(i) << endl;
+        cout << "OBJ DERIVATIVES:" << endl;
+        for(int i = 0; i < objectiveDerivative()->numberOfPartials(); ++i)
+        {
+            cout << i << " = " << objectiveDerivative()->value(i) << endl;
+        }
     }
 }
 

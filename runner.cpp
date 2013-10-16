@@ -172,7 +172,6 @@ void Runner::initialize()
 
     if(p_optimizer == 0) p_optimizer = new RunonceOptimizer(this);
 
-    p_optimizer->initialize();
 
     // setting up the summary file
     setSummaryFile("run_summary.out");
@@ -183,6 +182,7 @@ void Runner::initialize()
     initializeLaunchers();
 
 
+    p_optimizer->initialize();
 
     cout << "Done initializing the model..." << endl;
 
@@ -701,6 +701,7 @@ void Runner::writeBestCaseToSummary(Case *c)
 //-----------------------------------------------------------------------------------------------
 void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_case)
 {
+    //cout << "runner onLauncherFinished starting..." << endl;
 
 
     // this is connected to the GUI...
@@ -777,6 +778,8 @@ void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_cas
         }
 
     }
+
+    //cout << "runner onLauncherFinished finished..." << endl;
 
 }
 

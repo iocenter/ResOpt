@@ -43,6 +43,7 @@ private:
     QVector<double> m_best_infeas;
 
     int m_iterations;
+    int m_iter_cont;
 
 public:
     MINLPEvaluator(Optimizer *o);
@@ -53,6 +54,7 @@ public:
     Case* findResult(Case *c);
 
     int iterations() const {return m_iterations;}
+    void resetIterations() {m_iterations = 0;}
 
 
 };

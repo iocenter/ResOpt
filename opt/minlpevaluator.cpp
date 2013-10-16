@@ -45,7 +45,8 @@ namespace ResOpt
 
 MINLPEvaluator::MINLPEvaluator(Optimizer *o) :
     p_optimizer(o),
-    m_iterations(0)
+    m_iterations(0),
+    m_iter_cont(0)
 {
 }
 
@@ -68,6 +69,8 @@ Case* MINLPEvaluator::solveContineousProblem(Case *discrete_vars)
 
     // ----- Initializing IPOPT ------- //
 
+    m_iter_cont = 0;
+
     // setting up the TNLP
     SmartPtr<MINLPIpoptInterface> p_tnlp = new MINLPIpoptInterface(p_optimizer, this, discrete_vars);
 
@@ -76,11 +79,14 @@ Case* MINLPEvaluator::solveContineousProblem(Case *discrete_vars)
 
     // Change some options
     app->Options()->SetStringValue("output_file", p_optimizer->runner()->reservoirSimulator()->folder().toStdString() + "/ipopt.out");
-    app->Options()->SetIntegerValue("max_iter", 100);
+    app->Options()->SetIntegerValue("max_iter", 50);
+    app->Options()->SetIntegerValue("max_soc", 1);
     app->Options()->SetNumericValue("tol", 0.01);
     app->Options()->SetNumericValue("dual_inf_tol", 5);
     app->Options()->SetNumericValue("constr_viol_tol", 0.001);
-    app->Options()->SetNumericValue("compl_inf_tol", 0.01);
+    app->Options()->SetNumericValue("compl_inf_tol", 0.02);
+    app->Options()->SetStringValue("accept_every_trial_step", "yes");
+
 
     //app->Options()->SetStringValue("derivative_test", "first-order");
     //app->Options()->SetStringValue("derivative_test_print_all", "yes");
@@ -133,13 +139,14 @@ Case* MINLPEvaluator::solveContineousProblem(Case *discrete_vars)
     // extracting the final solution from IPOPT
     result = p_tnlp->bestCase();
 
-    p_optimizer->runCase(result);
-    m_results.push_back(result);
+    Case *result_new = new Case(*result);
+    p_optimizer->runCase(result_new);
+    m_results.push_back(result_new);
 
     // increasing the number of iterations
     ++m_iterations;
 
-    return result;
+    return result_new;
 
 
 }
@@ -151,6 +158,10 @@ bool MINLPEvaluator::shouldContinue(int i, double obj, double infeas)
 {
     //cout << "checking objective for iteration #" << i << " against obj = " << obj << endl;
     //cout << "number of best objs = " << m_best_objs.size() << endl;
+
+    // checking if the max number of iterations for the sub-problem is reached
+    if(++m_iter_cont > p_optimizer->maxIterContineous()) return false;
+
 
     if(i < p_optimizer->terminationStart())
     {

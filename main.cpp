@@ -211,20 +211,20 @@ int main(int argc, char *argv[])
     else if(argc == 1)
     {
         // to launch in GUI mode
-
         a = new QApplication(argc, argv);
 
         MainWindow *p_mw = new MainWindow();
 
 
-        p_mw->show();
+        //p_mw->show();
 
+        p_mw->showMaximized();
 
 
         // to launch in console mode with default driver file name
         /*
         a = new QCoreApplication(argc, argv);
-        r = new Runner("/Users/aleksaju/Skole/Postdoc/ResOpt/Models/case24_console3/driver.dat");
+        r = new Runner("/home/aleksaju/Work/postdoc/ResOpt/build-ResOpt-Desktop_Qt_5_0_2_GCC_64bit-Release/eirik_1day/driver.dat");
 
         QObject::connect(r,SIGNAL(optimizationFinished()), a, SLOT(quit()));
         QTimer::singleShot(0, r, SLOT(run()));

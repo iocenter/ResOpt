@@ -167,14 +167,19 @@ void AdjointsCoupledModel::process()
     // running base case
     Case *base_case = processBaseCase();
 
+    //cout << "--- done processing base case ---" << endl;
+
 
 
     // setting up empty derivatives in the case
+    //cout << "--- setting up derivatives ---" << endl;
     base_case->setObjectiveDerivative(new Derivative());
     for(int i = 0; i < constraints().size(); ++i)
     {
         base_case->addConstraintDerivative(new Derivative(constraints().at(i)->id()));
     }
+
+    //cout << "--- done setting up derivatives ---" << endl;
 
     // calculating derivatives from perturbed cases
     for(int i = 0; i < numberOfRealVariables(); ++i)
@@ -303,14 +308,22 @@ Case* AdjointsCoupledModel::processBaseCase()
     // update the streams in the pipe network
     updateStreams();
 
+    //cout << "done updating streams" << endl;
+
     // calculating pressures in the Pipe network
     calculatePipePressures();
+
+    //cout << "done calculating pressures" << endl;
 
     // updating the constraints (this must be done after the pressure calc)
     updateConstraints();
 
+    //cout << "done updating constraints" << endl;
+
     // updating the objective
     updateObjectiveValue();
+
+    //cout << "done updating objective" << endl;
 
 
     return new Case(this, true);

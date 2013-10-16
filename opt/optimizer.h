@@ -46,6 +46,7 @@ private:
     Runner *p_runner;
 
     int m_max_iter;
+    int m_max_iter_cont;            // max number of iterations for the contineous sub-problem
     int m_parallel_runs;
     double m_perturbation_size;
     double m_termination;
@@ -72,6 +73,7 @@ public:
 
     // set functions
     void setMaxIterations(int i) {m_max_iter = i;} 
+    void setMaxIterContineous(int i) {m_max_iter_cont = i;}
     void setParallelRuns(int i) {m_parallel_runs = i;}
     void setPerturbationSize(double p) {m_perturbation_size = p;}
     void setTermination(double t) {m_termination = t;}
@@ -80,6 +82,7 @@ public:
 
     // get functions
     int maxIterations() const {return m_max_iter;}
+    int maxIterContineous() const {return m_max_iter_cont;}
     int parallelRuns() const {return m_parallel_runs;}
     double pertrurbationSize() const {return m_perturbation_size;}
     double termination() const {return m_termination;}

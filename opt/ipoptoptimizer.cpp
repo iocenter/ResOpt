@@ -161,13 +161,13 @@ Case* IpoptOptimizer::generateStartingPoint()
     Case *c = new Case();
 
     // integer variables
-    for(int i = 0; i < runner()->model()->numberOfIntegerVariables(); ++i)
+    for(int i = 0; i < runner()->model()->integerVariables().size(); ++i)
     {
         c->addIntegerVariableValue(runner()->model()->integerVariableValue(i));
     }
 
     // binary variables
-    for(int i = 0; i < runner()->model()->numberOfBinaryVariables(); ++i)
+    for(int i = 0; i < runner()->model()->binaryVariables().size(); ++i)
     {
         c->addBinaryVariableValue(runner()->model()->binaryVariableValue(i));
     }
@@ -183,6 +183,7 @@ QString IpoptOptimizer::description() const
     QString str("START OPTIMIZER\n");
     str.append(" TYPE IPOPT \n");
     str.append(" ITERATIONS " + QString::number(maxIterations()) + "\n");
+    str.append(" CONT_ITER " + QString::number(maxIterContineous()) + "\n");
     str.append(" PERTURBATION " + QString::number(pertrurbationSize()) + "\n");
     str.append(" PARALLELRUNS " + QString::number(parallelRuns()) + "\n");
     str.append("END OPTIMIZER\n\n");

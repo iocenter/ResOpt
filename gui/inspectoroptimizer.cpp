@@ -21,6 +21,7 @@
 
 #include "inspectoroptimizer.h"
 
+#include "mainwindow.h"
 #include "runner.h"
 #include "opt/optimizer.h"
 #include "opt/nomadoptimizer.h"
@@ -47,9 +48,10 @@ using ResOpt::EroptOptimizer;
 namespace ResOptGui
 {
 
-InspectorOptimizer::InspectorOptimizer(Runner *r, QWidget *parent) :
+InspectorOptimizer::InspectorOptimizer(Runner *r, MainWindow *mw, QWidget *parent) :
     QWidget(0),
     p_runner(r),
+    p_main_window(mw),
     m_alg_in_runner(0)
 {
 
@@ -125,23 +127,31 @@ void InspectorOptimizer::construct()
 
     layout->addWidget(p_algorithm, 0, 2);
 
-    // --- max iterations ----
-    layout->addWidget(new QLabel("Maximum number of iterations: ", this), 1, 0, 1, 2);
+    // --- max iterations descrete ----
+    layout->addWidget(new QLabel("Max iterations for discrete problem: ", this), 1, 0, 1, 2);
 
     p_max_iter = new QLineEdit(this);
     p_max_iter->setText(QString::number(p_runner->optimizer()->maxIterations()));
     p_max_iter->setValidator(new QIntValidator(this));
     layout->addWidget(p_max_iter, 1, 2);
 
+    // --- max iterations contineous ----
+    layout->addWidget(new QLabel("Max iterations for contineous problem: ", this), 2, 0, 1, 2);
+
+    p_max_iter_cont = new QLineEdit(this);
+    p_max_iter_cont->setText(QString::number(p_runner->optimizer()->maxIterContineous()));
+    p_max_iter_cont->setValidator(new QIntValidator(this));
+    layout->addWidget(p_max_iter_cont, 2, 2);
+
 
     // ---- buttons ----
     p_btn_ok = new QPushButton("Ok", this);
     connect(p_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
-    layout->addWidget(p_btn_ok, 2, 0);
+    layout->addWidget(p_btn_ok, 3, 0);
 
     p_btn_close = new QPushButton("Close", this);
     connect(p_btn_close, SIGNAL(clicked()), this, SLOT(close()));
-    layout->addWidget(p_btn_close, 2, 1);
+    layout->addWidget(p_btn_close, 3, 1);
 
 
 }
@@ -151,42 +161,58 @@ void InspectorOptimizer::construct()
 //-----------------------------------------------------------------------------------------------
 void InspectorOptimizer::saveAndClose()
 {
-    // setting the max iterations
-    int max_iter = p_max_iter->text().toInt();
-    p_runner->optimizer()->setMaxIterations(max_iter);
-
-    // seeing if the optimizer type has changed
-    if(m_alg_in_runner != p_algorithm->currentIndex())
+    if(p_main_window->isRunning() || p_main_window->isPaused())
     {
-        Optimizer *o = 0;
-
-        if(p_algorithm->currentIndex() == 0) o = new BonminOptimizer(p_runner);
-        else if(p_algorithm->currentIndex() == 1) o = new NomadOptimizer(p_runner);
-        else if(p_algorithm->currentIndex() == 2) o = new RunonceOptimizer(p_runner);
-        else if(p_algorithm->currentIndex() == 3) o = new IpoptOptimizer(p_runner);
-        else if(p_algorithm->currentIndex() == 4) o = new NomadIpoptOptimizer(p_runner);
-        else if(p_algorithm->currentIndex() == 5) o = new EroptOptimizer(p_runner);
-
-        // setting values to the new optimizer
-        o->setMaxIterations(max_iter);
-        o->setParallelRuns(p_runner->optimizer()->parallelRuns());
-        o->setPerturbationSize(p_runner->optimizer()->pertrurbationSize());
-
-        // deleting the old optimizer
-        p_runner->optimizer()->setParent(0);
-        p_runner->optimizer()->deleteLater();
-
-        // setting the new optimizer
-        p_runner->setOptimizer(o);
-
-        // initializing the new optimizer
-        p_runner->optimizer()->initialize();
-
-
+        emit sendMsg("The optimizer properties can not be saved while the model is running!");
     }
 
-    // closing
-    close();
+    else
+    {
+
+        // setting the max iterations
+        int max_iter = p_max_iter->text().toInt();
+        p_runner->optimizer()->setMaxIterations(max_iter);
+
+        // set continous max iterations
+        int max_iter_cont = p_max_iter_cont->text().toInt();
+        p_runner->optimizer()->setMaxIterContineous(max_iter_cont);
+
+        // seeing if the optimizer type has changed
+        if(m_alg_in_runner != p_algorithm->currentIndex())
+        {
+            Optimizer *o = 0;
+
+            if(p_algorithm->currentIndex() == 0) o = new BonminOptimizer(p_runner);
+            else if(p_algorithm->currentIndex() == 1) o = new NomadOptimizer(p_runner);
+            else if(p_algorithm->currentIndex() == 2) o = new RunonceOptimizer(p_runner);
+            else if(p_algorithm->currentIndex() == 3) o = new IpoptOptimizer(p_runner);
+            else if(p_algorithm->currentIndex() == 4) o = new NomadIpoptOptimizer(p_runner);
+            else if(p_algorithm->currentIndex() == 5) o = new EroptOptimizer(p_runner);
+
+            // setting values to the new optimizer
+            o->setMaxIterations(max_iter);
+            o->setMaxIterContineous(max_iter_cont);
+            o->setParallelRuns(p_runner->optimizer()->parallelRuns());
+            o->setPerturbationSize(p_runner->optimizer()->pertrurbationSize());
+
+            // deleting the old optimizer
+            p_runner->optimizer()->setParent(0);
+            p_runner->optimizer()->deleteLater();
+
+            // setting the new optimizer
+            p_runner->setOptimizer(o);
+
+            // initializing the new optimizer
+            p_runner->optimizer()->initialize();
+
+
+        }
+
+        emit sendMsg("Saving optimizer properties...");
+
+        // closing
+        close();
+    }
 }
 
 } // namespace

@@ -103,6 +103,7 @@ bool Launcher::initialize()
 //-----------------------------------------------------------------------------------------------
 void Launcher::evaluate(Case *c, Component *comp)
 {
+    //cout << "launcher evaluate starting...." << endl;
 
     cout << endl << "---- Starting model evaluation # " << ++m_number_of_runs <<  " ----" << endl;
 
@@ -128,6 +129,8 @@ void Launcher::evaluate(Case *c, Component *comp)
 
     // letting the runner know the evaluation has finished
     emit finished(this, comp, c);
+
+    //cout << "launcher evaluate finished...." << endl;
 
 
 }

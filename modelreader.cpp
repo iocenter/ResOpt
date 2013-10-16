@@ -2469,9 +2469,12 @@ void ModelReader::readOptimizer(Runner *r)
 
     double l_perturb = 0.0001;
     int l_max_iter = 1;
+    int l_max_iter_cont = 100;
     int l_parallel_runs = 1;
     double l_term = 0.0;
     int l_term_start = 5;
+
+    QList<int> l_eropt_steps;
 
     bool ok = true;
 
@@ -2493,7 +2496,8 @@ void ModelReader::readOptimizer(Runner *r)
             else if(list.at(1).startsWith("EROPT")) o = new EroptOptimizer(r);
 
         }
-        else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);     // getting the max number if iterations
+        else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);    // getting the max number if iterations
+        else if(list.at(0).startsWith("CONT_ITER")) l_max_iter_cont = list.at(1).toInt(&ok); // getting the max number if iterations for the contienous solver
         else if(list.at(0).startsWith("PERTURB")) l_perturb = list.at(1).toDouble(&ok);     // getting the perturbation size
         else if(list.at(0).startsWith("TERMINATION"))                                       // getting the termination options
         {
@@ -2501,6 +2505,25 @@ void ModelReader::readOptimizer(Runner *r)
             if(list.size() == 3)
             {
                 l_term_start = list.at(2).toInt(&ok);
+            }
+        }
+        else if(list.at(0).startsWith("STEPS"))                 // list of steps for EROPT only
+        {
+            bool ok_steps = true;
+
+            for(int i = 1; i < list.size(); ++i)
+            {
+                int stp = list.at(i).toInt(&ok_steps);
+                if(!ok_steps)
+                {
+                    cout << endl << "### Error detected in input file! ###" << endl
+                         << "Could not read STEPS in OPTIMIZER definition" << endl
+                         << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+                    exit(1);
+
+                }
+
+                l_eropt_steps.push_back(stp);
             }
         }
 
@@ -2549,10 +2572,29 @@ void ModelReader::readOptimizer(Runner *r)
 
     // everything ok, setting to optimizer
     o->setMaxIterations(l_max_iter);
+    o->setMaxIterContineous(l_max_iter_cont);
     o->setParallelRuns(l_parallel_runs);
     o->setPerturbationSize(l_perturb);
     o->setTermination(l_term);
     o->setTerminationStart(l_term_start);
+
+    // EROPT specific input
+    if(l_eropt_steps.size() > 0)
+    {
+        EroptOptimizer *p_eropt = dynamic_cast<EroptOptimizer*>(o);
+        if(p_eropt != 0)
+        {
+            p_eropt->setSteps(l_eropt_steps);
+        }
+        else
+        {
+            cout << endl << "### Error detected in input file! ###" << endl
+                 << "Keyword: " << "STEPS" << endl
+                 << "Is only applicable for the EROPT optimizer" << endl << endl;
+            exit(1);
+
+        }
+    }
 
     // setting optimizer to runner
     r->setOptimizer(o);

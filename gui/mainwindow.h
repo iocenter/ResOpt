@@ -85,6 +85,7 @@ public:
     virtual QSize sizeHint() {return QSize(800, 600);}
 
     bool isRunning() {return m_running;}
+    bool isPaused() {return m_paused;}
 
     Runner* runner() {return p_runner;}
     

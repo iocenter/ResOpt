@@ -26,6 +26,8 @@
 
 #include <QList>
 
+class QFile;
+
 namespace ResOpt
 {
 
@@ -43,16 +45,19 @@ private:
 
     MINLPEvaluator *p_evaluator;
     QList<direction> m_directions;
+    QList<int> m_steps;
+
+    QFile *p_debug_file;
 
 
     Case* generateBaseCase();
-    void perturbVariable(Case *c, int i_var, direction move_direction, int step = 1);
+    void perturbVariable(Case *c, int i_var, direction move_direction, int step);
     void setInitialDirections();
 
     bool isBetter(Case *c, Case *base_case);
     direction switchDirection(direction d);
 
-    Case* solve(Case *base_case, int start_var, bool *converged);
+    Case* solve(Case *base_case, int start_var, bool *converged, int step_length);
 
 
 public:
@@ -65,6 +70,10 @@ public:
     virtual void start();
 
     virtual QString description() const;
+
+
+    // set functions
+    void setSteps(QList<int> &steps) {m_steps = steps;}
 
 };
 

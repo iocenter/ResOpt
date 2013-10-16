@@ -37,14 +37,18 @@ using ResOpt::Runner;
 namespace ResOptGui
 {
 
+class MainWindow;
+
 class InspectorOptimizer : public QWidget
 {
     Q_OBJECT
 private:
     Runner *p_runner;
+    MainWindow *p_main_window;
 
     QComboBox *p_algorithm;
     QLineEdit *p_max_iter;
+    QLineEdit *p_max_iter_cont;
 
     QPushButton *p_btn_close;
     QPushButton *p_btn_ok;
@@ -55,9 +59,10 @@ private:
     void construct();
 
 public:
-    explicit InspectorOptimizer(Runner *r, QWidget *parent = 0);
+    explicit InspectorOptimizer(Runner *r, MainWindow *mw, QWidget *parent = 0);
     
 signals:
+    void sendMsg(QString);
     
 public slots:
     void saveAndClose();

@@ -81,7 +81,8 @@ MainWindow::MainWindow(QWidget *parent) :
     QHBoxLayout *layout = new QHBoxLayout;
 
     p_model_view = new QGraphicsView(p_model_scene);
-    p_model_view->setMinimumSize(900, 550);
+    //p_model_view->setMinimumSize(900, 550);
+    p_model_view->setMinimumSize(450, 225);
 
 
 
@@ -307,7 +308,12 @@ void MainWindow::openOptimizerInspector()
 {
     if(p_runner != 0)
     {
-        if(p_obj_inpector == 0) p_obj_inpector = new InspectorOptimizer(p_runner);
+        if(p_obj_inpector == 0)
+        {
+            p_obj_inpector = new InspectorOptimizer(p_runner, this);
+            connect(p_obj_inpector, SIGNAL(sendMsg(QString)), this, SIGNAL(sendMsg(QString)));
+        }
+
         else p_obj_inpector->show();
 
     }

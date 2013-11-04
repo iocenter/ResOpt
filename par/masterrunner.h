@@ -19,50 +19,51 @@
  */
 
 
-#ifndef NOMADIPOPTEVALUATOR_H
-#define NOMADIPOPTEVALUATOR_H
+#ifndef MASTERRUNNER_H
+#define MASTERRUNNER_H
 
-#include "nomad.hpp"
+#include <QObject>
 #include <QList>
-#include <QVector>
+#include <QString>
 
 namespace ResOpt
 {
-class NomadIpoptOptimizer;
+
+class Runner;
 class Case;
-class MINLPEvaluator;
 
-class NomadIpoptEvaluator : public NOMAD::Evaluator
+
+class MasterRunner : public QObject
 {
+    Q_OBJECT
 private:
-    NomadIpoptOptimizer *p_optimizer;
-    MINLPEvaluator *p_eval;
+    QString m_driver_file;
+    int m_parallel_runs;
 
-    Case *p_result_best;
+    QString m_path;
 
-    //QList<Case*> m_results;
-
-    //QVector<double> m_best_objs;
-    //QVector<double> m_best_infeas;
-
-    //Case* solveContineousProblem(Case *discrete_vars);
-
-    bool isBest(Case *c);
-
-
+    QList<Runner*> m_runners;
 
 public:
-    NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptOptimizer *o);
-    ~NomadIpoptEvaluator();
+    explicit MasterRunner(const QString &driver_file, int parallel_runs, QObject *parent = 0);
 
-    bool eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval);
+    ~MasterRunner();
 
-    Case* generateCase(const NOMAD::Eval_Point &x) const;
-    Case* findResult(Case *c);
+    bool initialize();
 
-    //bool shouldContinue(int i, double obj, double infeas);
+
+
+    
+signals:
+    void optimizationFinished();
+
+    
+public slots:
+    void run();
+    void onRunnerFinished(Runner *r, Case *c);
+    
 };
 
-} // namespace ResOpt
+} //namespace
 
-#endif // NOMADIPOPTEVALUATOR_H
+#endif // MASTERRUNNER_H

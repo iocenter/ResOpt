@@ -38,13 +38,15 @@ namespace ResOpt
 
 Case::Case()
     : m_objective_value(0),
-      p_objective_derivative(0)
+      p_objective_derivative(0),
+      m_infeasibility(0)
 {
 }
 
 Case::Case(Model *m, bool cpy_output)
     : m_objective_value(0),
-      p_objective_derivative(0)
+      p_objective_derivative(0),
+      m_infeasibility(0)
 {
     // adding real variables
     for(int i = 0; i < m->realVariables().size(); ++i)
@@ -82,7 +84,8 @@ Case::Case(Model *m, bool cpy_output)
 
 Case::Case(const Case &c, bool cpy_output)
     : m_objective_value(0),
-      p_objective_derivative(0)
+      p_objective_derivative(0),
+      m_infeasibility(0)
 {
     for(int i = 0; i < c.numberOfRealVariables(); ++i)
     {
@@ -116,6 +119,8 @@ Case::Case(const Case &c, bool cpy_output)
         }
 
         if(c.p_objective_derivative != 0) p_objective_derivative = new Derivative(*c.p_objective_derivative);
+
+        m_infeasibility = c.m_infeasibility;
 
 
     }
@@ -163,6 +168,8 @@ Case& Case::operator =(const Case &rhs)
         }
 
         if(rhs.p_objective_derivative != 0) p_objective_derivative =  new Derivative(*rhs.p_objective_derivative);
+
+        m_infeasibility = rhs.m_infeasibility;
 
     }
 

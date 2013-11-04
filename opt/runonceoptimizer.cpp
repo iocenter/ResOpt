@@ -81,14 +81,35 @@ void RunonceOptimizer::start()
     // creating a case for the current values in the model
     Case *c = new Case(runner()->model());
 
+    Case *c2 = new Case(*c);
+    Case *c3 = new Case(*c);
+
+    if(c2->numberOfRealVariables() > 14)
+    {
+        for(int i = 9; i <= 14; ++i)
+        {
+            c2->setRealVariableValue(i, c2->realVariableValue(i)-20);
+            c3->setRealVariableValue(i, c3->realVariableValue(i)+20);
+        }
+    }
+
+
+    CaseQueue *cq = new CaseQueue();
+
+    cq->push_back(c);
+    cq->push_back(c2);
+    cq->push_back(c3);
+
+    runCases(cq);
 
     // launching the runner on the case
-    runCase(c);
+    //runCase(c);
 
 
 
 
     delete c;
+    delete c2;
 
 
 

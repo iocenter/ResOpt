@@ -58,25 +58,7 @@ public:
     virtual void initialize();
     virtual void process();
 
-/*
-    virtual QVector<shared_ptr<BinaryVariable> >& binaryVariables(bool force_refresh = false) {return CoupledModel::binaryVariables(force_refresh);}
-    virtual QVector<shared_ptr<RealVariable> >& realVariables(bool force_refresh = false) {return CoupledModel::realVariables(force_refresh);}
-    virtual QVector<shared_ptr<IntVariable> >& integerVariables(bool force_refresh = false) {return CoupledModel::integerVariables(force_refresh);}
-    virtual QVector<shared_ptr<Constraint> >& constraints(bool force_refresh = false) {return CoupledModel::constraints(force_refresh);}
 
-    virtual QVector<shared_ptr<RealVariable> > realVariables(Component *c) {return CoupledModel::realVariables(c);}
-
-    virtual int numberOfRealVariables() const {CoupledModel::numberOfRealVariables();}
-    virtual int numberOfBinaryVariables() const {return CoupledModel::numberOfBinaryVariables();}
-    virtual int numberOfIntegerVariables() const {return CoupledModel::numberOfIntegerVariables();}
-    virtual int numberOfConstraints() const {return CoupledModel::numberOfConstraints();}
-
-    virtual double realVariableValue(int i) const {return CoupledModel::realVariableValue(i);}
-    virtual double binaryVariableValue(int i) const {return CoupledModel::binaryVariableValue(i);}
-    virtual double integerVariableValue(int i) const {return CoupledModel::integerVariableValue(i);}
-    virtual double constraintValue(int i) const {return CoupledModel::constraintValue(i);}
-
-    */
     // misc functions
 
     /**

@@ -51,6 +51,7 @@ private:
     double m_perturbation_size;
     double m_termination;
     int m_term_start;
+    bool m_startingpoint_update;
 
 
 
@@ -79,6 +80,7 @@ public:
     void setTermination(double t) {m_termination = t;}
     void setTerminationStart(int i) {m_term_start = i;}
     void setInitialized(bool i) {m_initialized = i;}
+    void setStartingpointUpdate(bool b) {m_startingpoint_update = b;}
 
     // get functions
     int maxIterations() const {return m_max_iter;}
@@ -88,6 +90,7 @@ public:
     double termination() const {return m_termination;}
     int terminationStart() const {return m_term_start;}
     bool isInitialized() const {return m_initialized;}
+    bool startingpointUpdate() const {return m_startingpoint_update;}
 
 signals:
 

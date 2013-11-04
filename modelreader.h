@@ -194,6 +194,8 @@ public:
      */
     Model* readDriverFile(Runner *r);
 
+    void setDriverFilePath(const QString &path) {m_path = path;}
+
     const QString& driverFilePath() {return m_path;}
 
 

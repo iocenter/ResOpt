@@ -50,7 +50,8 @@ namespace ResOpt
 
 NomadIpoptEvaluator::NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptOptimizer *o)
     : NOMAD::Evaluator(p),
-      p_optimizer(o)
+      p_optimizer(o),
+      p_result_best(0)
 {
     p_eval = new MINLPEvaluator(o);
 }
@@ -58,6 +59,8 @@ NomadIpoptEvaluator::NomadIpoptEvaluator(const NOMAD::Parameters &p, NomadIpoptO
 NomadIpoptEvaluator::~NomadIpoptEvaluator()
 {
     //for(int i = 0; i < m_results.size(); ++i) delete m_results.at(i);
+
+    if(p_result_best != 0) delete p_result_best;
 
     delete p_eval;
 }
@@ -110,8 +113,15 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
         x.set_bb_output(i+1, val_input);
     }
 
-    // adding to results vector
-    //m_results.push_back(result);
+
+    // checking if this is the best result so far
+    if(isBest(c))
+    {
+        if(p_result_best != 0) delete p_result_best;
+
+        p_result_best = new Case(*c, true);
+    }
+
 
     // deleting the case from the heap
     delete c;
@@ -145,10 +155,30 @@ Case* NomadIpoptEvaluator::generateCase(const NOMAD::Eval_Point &x) const
         ++var_num;
     }
 
+    // checking if contineous vars should be copied
+    if(p_result_best != 0)
+    {
+        for(int i = 0; i < p_result_best->numberOfRealVariables(); ++i)
+        {
+            c->addRealVariableValue(p_result_best->realVariableValue(i));
+        }
+    }
+
+
 
 
     return c;
 
+}
+
+//-----------------------------------------------------------------------------------------------
+// compares c against a base case to se if it is better
+//-----------------------------------------------------------------------------------------------
+bool NomadIpoptEvaluator::isBest(Case *c)
+{
+    if(c->infeasibility() >  0.0001) return false;
+
+    else return c->objectiveValue() > p_result_best->objectiveValue();
 }
 
 //-----------------------------------------------------------------------------------------------

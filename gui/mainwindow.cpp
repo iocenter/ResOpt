@@ -208,7 +208,7 @@ void MainWindow::loadModel()
         connect(p_runner, SIGNAL(newCaseFinished(Case*)), p_plot, SLOT(addCase(Case*)));
 
         // connecting to finished signal
-        connect(p_runner, SIGNAL(optimizationFinished()), this, SLOT(onOptimizationFinished()));
+        connect(p_runner, SIGNAL(runnerFinished(Runner*, Case*)), this, SLOT(onOptimizationFinished(Runner*, Case*)));
     }
 
 }
@@ -272,11 +272,13 @@ void MainWindow::runCase(Case *c)
 //-----------------------------------------------------------------------------------------------
 // Things to do after the runner has finished the optimization
 //-----------------------------------------------------------------------------------------------
-void MainWindow::onOptimizationFinished()
+void MainWindow::onOptimizationFinished(Runner *r, Case *c)
 {
     emit sendMsg("Optimization finished!");
 
     p_runner->transferModelStateFromLauncher();
+
+    p_plot->addCase(c);
 
     setFinishedState();
     emit runFinished();

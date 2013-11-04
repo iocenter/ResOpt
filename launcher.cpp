@@ -71,6 +71,8 @@ Launcher::~Launcher()
 {
     if(p_model != 0) delete p_model;
     if(p_simulator != 0) delete p_simulator;
+
+    cout << "Launcher deleted" << endl;
 }
 
 //-----------------------------------------------------------------------------------------------

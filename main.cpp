@@ -185,6 +185,7 @@ EOF
 
 #include "runner.h"
 #include "gui/mainwindow.h"
+#include "par/masterrunner.h"
 
 using namespace ResOpt;
 using namespace ResOptGui;
@@ -199,6 +200,7 @@ int main(int argc, char *argv[])
     QCoreApplication *a = 0;
     Runner *r = 0;
 
+
     if(argc == 2)
     {
 
@@ -211,6 +213,7 @@ int main(int argc, char *argv[])
     else if(argc == 1)
     {
         // to launch in GUI mode
+//*
         a = new QApplication(argc, argv);
 
         MainWindow *p_mw = new MainWindow();
@@ -219,16 +222,29 @@ int main(int argc, char *argv[])
         //p_mw->show();
 
         p_mw->showMaximized();
-
+//*/
 
         // to launch in console mode with default driver file name
-        /*
+/*
         a = new QCoreApplication(argc, argv);
         r = new Runner("/home/aleksaju/Work/postdoc/ResOpt/build-ResOpt-Desktop_Qt_5_0_2_GCC_64bit-Release/eirik_1day/driver.dat");
 
-        QObject::connect(r,SIGNAL(optimizationFinished()), a, SLOT(quit()));
+        QObject::connect(r,SIGNAL(runnerFinished(Runner*, Case*)), a, SLOT(quit()));
         QTimer::singleShot(0, r, SLOT(run()));
-        */
+*/
+
+        // to launch MasterRunner
+/*
+        a = new QCoreApplication(argc, argv);
+
+
+        //r = new Runner("/home/aleksaju/Work/postdoc/ResOpt/build-ResOpt-Desktop_Qt_5_0_2_GCC_64bit-Release/eirik_1day/driver.dat");
+        MasterRunner *mr = new MasterRunner("/home/aleksaju/Work/postdoc/ResOpt/build-ResOpt-Desktop_Qt_5_0_2_GCC_64bit-Release/par_test/driver.dat", 2);
+
+        QObject::connect(mr,SIGNAL(optimizationFinished()), a, SLOT(quit()));
+        QTimer::singleShot(0, mr, SLOT(run()));
+*/
+
 
     }
     else

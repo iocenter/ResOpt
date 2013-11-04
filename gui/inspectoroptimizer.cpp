@@ -194,6 +194,9 @@ void InspectorOptimizer::saveAndClose()
             o->setMaxIterContineous(max_iter_cont);
             o->setParallelRuns(p_runner->optimizer()->parallelRuns());
             o->setPerturbationSize(p_runner->optimizer()->pertrurbationSize());
+            o->setTermination(p_runner->optimizer()->termination());
+            o->setTerminationStart(p_runner->optimizer()->terminationStart());
+            o->setStartingpointUpdate(p_runner->optimizer()->startingpointUpdate());
 
             // deleting the old optimizer
             p_runner->optimizer()->setParent(0);

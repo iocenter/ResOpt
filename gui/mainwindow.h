@@ -96,7 +96,7 @@ signals:
 public slots:
     void loadModel();
     void runModel();
-    void onOptimizationFinished();
+    void onOptimizationFinished(Runner *r, Case *c);
     void runCase(Case *c);
     void onCaseFinished();
     void openOptimizerInspector();

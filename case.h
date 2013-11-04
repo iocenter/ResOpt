@@ -53,6 +53,8 @@ private:
     QVector<Derivative*> m_constraint_derivatives;
     Derivative *p_objective_derivative;
 
+    double m_infeasibility;
+
 public:
     Case();
     Case(Model *m, bool cpy_output = false); // constructs a case based on the current variable values in the model
@@ -80,6 +82,8 @@ public:
     void setBinaryVariableValue(int i, double v) {m_binary_var_values.replace(i,v);}
     void setIntegerVariableValue(int i, int v) {m_integer_var_values.replace(i,v);}
 
+    void setInfeasibility(double i) {m_infeasibility = i;}
+
     // get functions
     int numberOfRealVariables() const {return m_real_var_values.size();}
     int numberOfBinaryVariables() const {return m_binary_var_values.size();}
@@ -97,6 +101,8 @@ public:
 
     Derivative* constraintDerivative(int i) {return m_constraint_derivatives.at(i);}
     Derivative* objectiveDerivative() {return p_objective_derivative;}
+
+    double infeasibility() {return m_infeasibility;}
 
     // overloaded operators
     Case& operator=(const Case &rhs);

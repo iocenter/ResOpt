@@ -437,7 +437,9 @@ void EroptOptimizer::setInitialDirections()
 //-----------------------------------------------------------------------------------------------
 bool EroptOptimizer::isBetter(Case *c, Case *base_case)
 {
-    return c->objectiveValue() > base_case->objectiveValue();
+    if(c->infeasibility() >  0.0001) return false;
+
+    else return c->objectiveValue() > base_case->objectiveValue();
 }
 
 

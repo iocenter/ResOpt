@@ -81,7 +81,8 @@ Runner::Runner(const QString &driver_file, QObject *parent)
       p_last_run_launcher(0),
       m_paused(false),
       m_debug(false),
-      m_debug_case(0)
+      m_debug_case(0),
+      p_best_case(0)
 
 {
     p_reader = new ModelReader(driver_file);
@@ -97,6 +98,8 @@ Runner::~Runner()
     if(p_debug != 0) delete p_debug;
 
     for(int i = 0; i < m_launchers.size(); ++i) delete m_launchers.at(i);
+
+    if(p_best_case != 0) delete p_best_case;
 
 
 
@@ -195,14 +198,16 @@ void Runner::initialize()
 void Runner::initializeLaunchers()
 {
     //test code
-    for(int i = 0; i < m_launchers.size(); ++i) delete m_launchers.at(i);
+    for(int i = 0; i < m_launchers.size(); ++i) m_launchers.at(i)->deleteLater();
     m_launchers.resize(0);
 
+    /*
     for(int i = 0; i < m_threads.size(); ++i)
     {
         //m_threads.at(i)->terminate();
         delete m_threads.at(i);
     }
+    */
     m_threads.resize(0);
 
     m_launcher_running.resize(0);
@@ -268,6 +273,10 @@ void Runner::initializeLaunchers()
         m_launchers.push_back(l);
         m_launcher_running.push_back(false);
         m_threads.push_back(t);
+
+
+
+        connect(t, &QThread::finished, l, &QObject::deleteLater);
 
         // starting the thread
         t->start();
@@ -613,6 +622,11 @@ bool Runner::isFeasible(Case *c)
 //-----------------------------------------------------------------------------------------------
 void Runner::writeBestCaseToSummary(Case *c)
 {
+
+    if(p_best_case != 0) delete p_best_case;
+    p_best_case = new Case(*c, true);
+
+
     if(p_summary != 0)
     {
         QTextStream out(p_summary);
@@ -1021,6 +1035,15 @@ void Runner::setPaused(bool paused)
     m_paused = paused;
 
     if(!paused) emit resumePaused();
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// called when the optimization has finished
+//-----------------------------------------------------------------------------------------------
+void Runner::onOptimizationFinished()
+{
+    emit runnerFinished(this, p_best_case);
 }
 
 } // namespace ResOpt

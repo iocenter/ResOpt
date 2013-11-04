@@ -604,4 +604,5 @@ QVector<shared_ptr<RealVariable> > CoupledModel::realVariables(Component *c)
 
 
 
+
 } // namespace ResOpt

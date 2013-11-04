@@ -215,6 +215,8 @@ void AdjointsCoupledModel::process()
     // updating the status of the model
     setUpToDate(true);
 
+    cout << "Objective value = " << p_results->objectiveValue() << endl;
+
     //cout << "done processing adjoints coupled model..." << endl;
 
 }

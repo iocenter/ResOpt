@@ -86,6 +86,8 @@ private:
 
     int m_debug_case;
 
+    Case *p_best_case;
+
 
 
 
@@ -150,6 +152,8 @@ public:
     bool hasDebugFile() const {return m_debug;}
     QString debugFileName() const {return m_debug_filename;}
 
+    ModelReader* modelReader() {return p_reader;}
+
 
 
 public slots:
@@ -199,11 +203,13 @@ public slots:
 
     void setPaused(bool paused);
 
+    void onOptimizationFinished();
+
 
 
 
 signals:
-    void optimizationFinished();
+    void runnerFinished(Runner *r, Case *c);
     void casesFinished();
     void sendCase(Case *c, Component *comp);
     void newCaseFinished(Case *c);

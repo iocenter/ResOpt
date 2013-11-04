@@ -158,15 +158,27 @@ bool MINLPIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
     assert(!init_z);
     assert(!init_lambda);
 
-
-    // setting the variable starting points
-    for(int i = 0; i < m_vars.size(); ++i)
+    if(p_optimizer->startingpointUpdate() && p_discrete_vars->numberOfRealVariables() == m_vars.size())
     {
-        x[i] = m_vars.at(i)->value();  // current value = starting point
+        cout << "### Using case to setup starting points ###" << endl;
 
-        //cout <<  " < x[" << i << "] = " << m_vars.at(i)->value() << endl;
+        for(int i = 0; i < p_discrete_vars->numberOfRealVariables(); ++i)
+        {
+            x[i] = p_discrete_vars->realVariableValue(i);
+        }
+    }
 
+    // setting the variable starting points from model defaults
+    else
+    {
 
+        for(int i = 0; i < m_vars.size(); ++i)
+        {
+            x[i] = m_vars.at(i)->value();  // current value = starting point
+
+            //cout <<  " < x[" << i << "] = " << m_vars.at(i)->value() << endl;
+
+        }
     }
 
     return true;
@@ -361,6 +373,9 @@ void MINLPIpoptInterface::finalize_solution(SolverReturn status,
 
     cout << "Storing the best case for use by the descrete solver..." << endl;
     Case *c = generateCase(n,x);
+
+
+    c->setInfeasibility(m_infeas.last());
     //c->setObjectiveValue(-obj_value);
 
     p_best_case = c;

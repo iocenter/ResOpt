@@ -42,10 +42,11 @@ Optimizer::Optimizer(Runner *r)
       m_perturbation_size(0.0001),
       m_termination(0.0),
       m_term_start(5),
+      m_startingpoint_update(false),
       m_initialized(false)
 {
     // the finished() signal should be emitted when the optimizer has converged
-    connect(this, SIGNAL(finished()), p_runner, SIGNAL(optimizationFinished()));
+    connect(this, SIGNAL(finished()), p_runner, SLOT(onOptimizationFinished()));
 }
 
 Optimizer::~Optimizer()

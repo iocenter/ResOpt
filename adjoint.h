@@ -30,7 +30,9 @@ namespace ResOpt
 class Stream;
 class RealVariable;
 
-
+/**
+ * @brief Holds the adjoints for one variable with respect a single Stream
+ */
 class Adjoint
 {
 private:
@@ -47,6 +49,12 @@ public:
     Adjoint(Well *w, int time);
 
     // misc functions
+    /**
+     * @brief Perturbes the Stream asociated with these adjoints.
+     * @details All the Stream quantities (oil, gas, water, pressure) will be set to: current_value + adjoint * eps_x
+     * @param eps_x The size of the perturbation
+     * @return True if everything went ok, false if the asociated Stream could not be found.
+     */
     bool perturbStream(double eps_x);
 
     // set functions

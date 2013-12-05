@@ -40,6 +40,9 @@ class Case;
 using ResOpt::Runner;
 using ResOpt::Case;
 
+/**
+ * @brief This namespace is used for all GUI elements.
+ */
 namespace ResOptGui
 {
 
@@ -48,6 +51,9 @@ class Console;
 class Plot;
 class InspectorOptimizer;
 
+/**
+ * @brief Main GUI window for ResOpt
+ */
 class MainWindow : public QMainWindow
 {
     Q_OBJECT

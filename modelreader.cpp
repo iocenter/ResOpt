@@ -2500,7 +2500,7 @@ void ModelReader::readOptimizer(Runner *r)
         else if(list.at(0).startsWith("ITERATIONS")) l_max_iter = list.at(1).toInt(&ok);    // getting the max number if iterations
         else if(list.at(0).startsWith("CONT_ITER")) l_max_iter_cont = list.at(1).toInt(&ok); // getting the max number if iterations for the contienous solver
         else if(list.at(0).startsWith("PERTURB")) l_perturb = list.at(1).toDouble(&ok);     // getting the perturbation size
-        else if(list.at(0).startsWith("STARTINGPOINT_UPDATE")) l_startingpoint_update = true;     // getting the perturbation size
+        else if(list.at(0).startsWith("STARTINGPOINT_UPDATE")) l_startingpoint_update = true;     // using the starting-point from the best sub-problem
         else if(list.at(0).startsWith("TERMINATION"))                                       // getting the termination options
         {
             l_term = list.at(1).toDouble(&ok);

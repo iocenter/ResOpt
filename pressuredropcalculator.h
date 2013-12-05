@@ -29,7 +29,7 @@ namespace ResOpt
 
 
 /**
- * @brief Calculates pressure drops in pipe segments.
+ * @brief Abstract class to calculate pressure drops in pipe segments.
  *
  */
 class PressureDropCalculator
@@ -39,6 +39,7 @@ public:
     virtual ~PressureDropCalculator();
 
     virtual PressureDropCalculator* clone() const = 0;
+
 
     virtual double pressureDrop(Stream *s, double p_outlet, Stream::units unit) = 0;
 };

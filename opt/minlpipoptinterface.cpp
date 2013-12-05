@@ -158,9 +158,17 @@ bool MINLPIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
     assert(!init_z);
     assert(!init_lambda);
 
+
+    cout << "### Checking what starting point to use... ###" << endl;
+
+    if(p_optimizer->startingpointUpdate()) cout << "    startingpoint-update = true" << endl;
+    else cout << "    startingpoint-update = false" << endl;
+    cout << "    number of real vars = " << p_discrete_vars->numberOfRealVariables() << endl;
+
+
     if(p_optimizer->startingpointUpdate() && p_discrete_vars->numberOfRealVariables() == m_vars.size())
     {
-        cout << "### Using case to setup starting points ###" << endl;
+        cout << "### Using case to setup starting point ###" << endl;
 
         for(int i = 0; i < p_discrete_vars->numberOfRealVariables(); ++i)
         {
@@ -171,6 +179,7 @@ bool MINLPIpoptInterface::get_starting_point(Index n, bool init_x, Number* x,
     // setting the variable starting points from model defaults
     else
     {
+        cout << "### Using default starting point ###" << endl;
 
         for(int i = 0; i < m_vars.size(); ++i)
         {

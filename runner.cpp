@@ -303,6 +303,49 @@ void Runner::run()
 
 }
 
+//-----------------------------------------------------------------------------------------------
+// Main control loop when run from a MasterRunner
+//-----------------------------------------------------------------------------------------------
+bool Runner::runFromCase(Case *starting_point)
+{
+
+    writeProblemDefToSummary();
+
+    m_start_time = time(NULL);     // storing the start time of the run
+
+
+    // setting the starting point according to the case
+    if(starting_point->numberOfBinaryVariables() != model()->binaryVariables().size()) return false;
+    if(starting_point->numberOfIntegerVariables() != model()->integerVariables().size()) return false;
+    if(starting_point->numberOfRealVariables() != model()->realVariables().size()) return false;
+
+    // binary variables
+    for(int i = 0; i < starting_point->numberOfBinaryVariables(); ++i)
+    {
+        model()->binaryVariables().at(i)->setValue(starting_point->binaryVariableValue(i));
+    }
+
+    // integer variables
+    for(int i = 0; i < starting_point->numberOfIntegerVariables(); ++i)
+    {
+        model()->integerVariables().at(i)->setValue(starting_point->integerVariableValue(i));
+    }
+
+    // real variables
+    for(int i = 0; i < starting_point->numberOfRealVariables(); ++i)
+    {
+        model()->realVariables().at(i)->setValue(starting_point->realVariableValue(i));
+    }
+
+
+    // starting the optimization
+    p_optimizer->start();
+
+
+    return true;
+
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // Running a set of cases for the optimizer

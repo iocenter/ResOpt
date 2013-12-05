@@ -43,6 +43,7 @@ private:
     QString m_path;
 
     QList<Runner*> m_runners;
+    QList<bool> m_runner_states;
 
 public:
     explicit MasterRunner(const QString &driver_file, int parallel_runs, QObject *parent = 0);
@@ -50,6 +51,10 @@ public:
     ~MasterRunner();
 
     bool initialize();
+
+
+    // get functions
+    Runner* runner(int i) {return m_runners.at(i);}
 
 
 

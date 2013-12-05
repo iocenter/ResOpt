@@ -34,6 +34,10 @@ class Adjoint;
 class Stream;
 class Case;
 
+/**
+ * @brief Model that uses adjoints from a reservoir simulator to obtain derivatives.
+ * @details This model type is at the moment only used in combination with MRST. Adjoints are read from MRST, and used to calculated numerical derivatives for the production network.
+ */
 class AdjointsCoupledModel : public CoupledModel
 {
 private:

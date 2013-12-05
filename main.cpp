@@ -213,7 +213,7 @@ int main(int argc, char *argv[])
     else if(argc == 1)
     {
         // to launch in GUI mode
-//*
+/*
         a = new QApplication(argc, argv);
 
         MainWindow *p_mw = new MainWindow();
@@ -222,7 +222,7 @@ int main(int argc, char *argv[])
         //p_mw->show();
 
         p_mw->showMaximized();
-//*/
+*/
 
         // to launch in console mode with default driver file name
 /*
@@ -234,7 +234,7 @@ int main(int argc, char *argv[])
 */
 
         // to launch MasterRunner
-/*
+//*
         a = new QCoreApplication(argc, argv);
 
 
@@ -243,7 +243,7 @@ int main(int argc, char *argv[])
 
         QObject::connect(mr,SIGNAL(optimizationFinished()), a, SLOT(quit()));
         QTimer::singleShot(0, mr, SLOT(run()));
-*/
+//*/
 
 
     }

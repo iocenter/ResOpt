@@ -35,6 +35,9 @@ class RealVariable;
 class Well;
 class Stream;
 
+/**
+ * @brief A collection of all the Adjoints for a given variable
+ */
 class AdjointCollection
 {
 private:
@@ -46,6 +49,12 @@ public:
     AdjointCollection(const AdjointCollection &ac);
 
     // misc functions
+    /**
+     * @brief Perturbs all Streams asociated with this adjoint collection.
+     * @details Perturbs all Streams asociated with variable(). See Adjoint::perturbStream(double).
+     * @param eps_x The size of the perturbation
+     * @return
+     */
     bool perturbStreams(double eps_x);
 
 
@@ -58,7 +67,18 @@ public:
     // get functions
     shared_ptr<RealVariable> variable() {return p_var;}
     Adjoint* adjoint(int i) {return m_adjoints.at(i);}
+    /**
+     * @brief Returns the Adjoint for the Stream from a given Well at the specified timestep.
+     * @param w
+     * @param time
+     * @return The adjoints for the Stream from Well w at timestep time, with respect to the variable variable()
+     */
     Adjoint* adjoint(Well *w, int time);
+
+    /**
+     * @brief Returns the numer of adjoints in this collection.
+     * @return
+     */
     int numberOfAdjoints() {return m_adjoints.size();}
 
 

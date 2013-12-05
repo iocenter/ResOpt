@@ -25,6 +25,7 @@
 #include "modelreader.h"
 #include "model.h"
 #include "reservoir.h"
+#include "case.h"
 
 #include <QDir>
 #include <iostream>
@@ -87,8 +88,12 @@ bool MasterRunner::initialize()
 
         r->initialize();
 
+        // connecting signals
+        connect(r, SIGNAL(runnerFinished(Runner*,Case*)), this, SLOT(onRunnerFinished(Runner*,Case*)));
+
 
         m_runners.push_back(r);
+        m_runner_states.push_back(false);
 
 
     }
@@ -116,6 +121,8 @@ void MasterRunner::run()
 //-----------------------------------------------------------------------------------------------
 void MasterRunner::onRunnerFinished(Runner *r, Case *c)
 {
+
+
 
 }
 

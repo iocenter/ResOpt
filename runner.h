@@ -175,6 +175,8 @@ public slots:
      */
     void run();
 
+    bool runFromCase(Case *starting_point);
+
 
     /**
      * @brief Evaluates a list of cases.

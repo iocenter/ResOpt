@@ -76,9 +76,9 @@ public:
     /**
      * @brief Calculates the pressure drop in the pipe for a given stream and outlet pressure
      *
-     * @param s
-     * @param p_outlet
-     * @return double
+     * @param s The rates going through the pipe segment
+     * @param p_outlet The outlet pressure of the pipe
+     * @return The calculated pressure drop in the pipe
      */
     virtual double pressureDrop(Stream *s, double p_outlet, Stream::units unit);
 

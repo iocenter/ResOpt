@@ -70,23 +70,28 @@ NomadIpoptEvaluator::~NomadIpoptEvaluator()
 //-----------------------------------------------------------------------------------------------
 bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bool &count_eval)
 {
-    cout << "staring new evaluation for NOMAD" << endl;
+    cout << "//// staring new NOMAD  evaluation ////" << endl;
 
+    cout << "//// generating case ////" << endl;
     // generating a case from the evaluation point
     Case *c = generateCase(x);
 
+    cout << "//// solving sub-problem ////" << endl;
     // sending the case off for evaluation by IPOPT
     Case *result = p_eval->solveContineousProblem(c);
 
     // need to re-run the case to get constraint values (done in MINLPEValuator now...)
     //p_optimizer->runCase(result);
 
+
+    cout << "//// getting objective value ////" << endl;
     // extracting the objective
     x.set_bb_output(0, -result->objectiveValue());
 
 
 
 
+    cout << "//// calculating constraint values ////" << endl;
 
     // extracting the constraint values
     // the constraints in NOMAD must be on the form: c <= 0
@@ -114,18 +119,31 @@ bool NomadIpoptEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_ma
     }
 
 
+    cout << "//// checking if this is the best solution ////" << endl;
+
+
     // checking if this is the best result so far
-    if(isBest(c))
+    if(isBest(result))
     {
+        cout << "//    This is the best solution!    //" << endl;
+
         if(p_result_best != 0) delete p_result_best;
 
-        p_result_best = new Case(*c, true);
+        p_result_best = new Case(*result, true);
+
+        p_result_best->printToCout();
     }
+
+
+    cout << "//// deleting case ////" << endl;
 
 
     // deleting the case from the heap
     delete c;
 
+
+
+    cout << "//// Finished NOMAD evaluation ////" << endl;
 
     return true;
 
@@ -158,8 +176,11 @@ Case* NomadIpoptEvaluator::generateCase(const NOMAD::Eval_Point &x) const
     // checking if contineous vars should be copied
     if(p_result_best != 0)
     {
+        cout << "//   updating cont. vars. from the best solution   //" << endl;
+
         for(int i = 0; i < p_result_best->numberOfRealVariables(); ++i)
         {
+            cout << "Adding var #" << i << endl;
             c->addRealVariableValue(p_result_best->realVariableValue(i));
         }
     }
@@ -176,8 +197,8 @@ Case* NomadIpoptEvaluator::generateCase(const NOMAD::Eval_Point &x) const
 //-----------------------------------------------------------------------------------------------
 bool NomadIpoptEvaluator::isBest(Case *c)
 {
+    if(p_result_best == 0) return true;
     if(c->infeasibility() >  0.0001) return false;
-
     else return c->objectiveValue() > p_result_best->objectiveValue();
 }
 

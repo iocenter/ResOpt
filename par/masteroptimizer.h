@@ -22,10 +22,33 @@
 #ifndef MASTEROPTIMIZER_H
 #define MASTEROPTIMIZER_H
 
-class MasterOptimizer
+#include <QObject>
+
+namespace ResOpt
 {
+
+class MasterRunner;
+class Case;
+
+class MasterOptimizer : public QObject
+{
+    Q_OBJECT
+
+private:
+    MasterRunner *p_master_runner;
+
+    Case* generateBaseCase();
+
 public:
-    MasterOptimizer();
+    MasterOptimizer(MasterRunner *mr);
+
+    void initialize();
+
+    void start();
+
 };
+
+
+} // namespace ResOpt
 
 #endif // MASTEROPTIMIZER_H

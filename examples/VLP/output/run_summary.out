@@ -1,0 +1,32 @@
+----------------------------------------------------------------------
+------------------------ ResOpt Summary File -------------------------
+----------------------------------------------------------------------
+
+MODEL DESCRIPTION:
+Number of wells      = 2
+Number of pipes      = 1
+Number of separators = 0
+
+OPTIMIZATION PROBLEM:
+Number of contineous variables  = 2
+Number of binary variables      = 0
+Number of constraints           = 2
+
+CONTINEOUS VARIABLES:
+VAR_C1: Control variable for well: WELL05, until time = 1, bounds: (18.01 < 80 < 190)
+VAR_C2: Control variable for well: WELL06, until time = 1, bounds: (18.01 < 80 < 190)
+
+BINARY VARIABLES:
+
+INTEGER VARIABLES:
+
+CONSTRAINTS:
+CON1: Bottomhole pressure constraint for well: WELL05 for time = 1, bounds: (0 < c < 1)
+CON2: Bottomhole pressure constraint for well: WELL06 for time = 1, bounds: (0 < c < 1)
+
+MODEL EVALUATIONS:
+----------------------------------------------------------------------
+#	FEAS	OBJ	VAR_C1	VAR_C2	CON1	CON2	
+1	yes	436	80	80	0.54960164	0.54960164	
+2	yes	436	80	80	0.54960164	0.54960164	
+3	yes	436	80	80	0.54960164	0.54960164	

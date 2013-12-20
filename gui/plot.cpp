@@ -26,6 +26,11 @@
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
 
+#include <iostream>
+
+using std::endl;
+using std::cout;
+
 namespace ResOptGui
 {
 
@@ -230,6 +235,7 @@ void Plot::clearCases()
 //-----------------------------------------------------------------------------------------------
 void Plot::onSelectionChanged()
 {
+
     if(m_custom_plot.selectedItems().size() == 1 && !p_mainwindow->isRunning()) p_btn_rerun->setEnabled(true);
     else p_btn_rerun->setEnabled(false);
 }

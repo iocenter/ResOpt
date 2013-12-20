@@ -29,7 +29,9 @@ using std::tr1::shared_ptr;
 
 
 
-
+/**
+ * @brief This namespace is used for all core elements.
+ */
 namespace ResOpt
 {
 

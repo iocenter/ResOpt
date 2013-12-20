@@ -29,7 +29,10 @@ namespace ResOptGui
 
 class ModelItem;
 
-
+/**
+ * @brief Graphical representation of a routing option.
+ *
+ */
 class Connector : public QGraphicsLineItem
 {
 public:

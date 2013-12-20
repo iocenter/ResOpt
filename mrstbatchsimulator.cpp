@@ -840,6 +840,8 @@ bool MrstBatchSimulator::launchSimulator()
 
 
     QString program = m_matlab_path;
+
+
     //QString program = "/usr/local/MATLAB/R2013a/bin/matlab";  // linux virtual
     //QString program = "matlab";   // beehive
     //QString program = "/Applications/MATLAB_R2011b.app/bin/matlab";     // mac

@@ -27,6 +27,44 @@ This is the documentation for the Reservoir Optimization Framework (ResOpt). Res
 The core functionallity of ResOpt is to connect a reservoir simulator to a simple pipe network, and to do optimization on the resulting model.
 
 
+\section sec_pri Setting up resopt_libs.pri
+A .pri include file containing paths to libraries and headers for the external libraries ResOpt use must be present.
+
+Example of the .pri file:
+
+
+@code
+# bonmin libraries:
+LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -lbonmin -lipopt -lCbc -lCgl -lOsiClp -lOsi -lClp -lCoinUtils
+
+# ipopt libraries (from ipopt_addlibs_cpp.txt):
+LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lipopt -ldl -lcoinmumps -lpthread -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+# cgl libraries (from cgl_addlibs.txt):
+LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCgl -lOsiClp -lClp -lOsi -lcoinmumps -lpthread -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+# osi libraries (from osi_addlibs.txt):
+LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lOsi -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+# clp libraries (from clp_addlibs.txt):
+LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lClp -lcoinmumps -lpthread -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+# coinutils libraries (from coinutils_addlibs.txt):
+LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+# NOMAD library
+LIBS += /home/aleksaju/nomad/nomad.3.5.1/lib/nomad.a
+
+# bonmin header files
+INCLUDEPATH += /home/aleksaju/bonmin/Bonmin-1.5.3/build/include/coin
+
+
+#NOMAD header files
+INCLUDEPATH += /home/aleksaju/nomad/nomad.3.5.1/src
+
+@endcode
+
+
 \section sec_running Running the framework
 
 ResOpt is run from the command line like this:
@@ -185,7 +223,7 @@ EOF
 
 #include "runner.h"
 #include "gui/mainwindow.h"
-#include "par/masterrunner.h"
+//#include "par/masterrunner.h"
 
 using namespace ResOpt;
 using namespace ResOptGui;
@@ -213,7 +251,7 @@ int main(int argc, char *argv[])
     else if(argc == 1)
     {
         // to launch in GUI mode
-/*
+//*
         a = new QApplication(argc, argv);
 
         MainWindow *p_mw = new MainWindow();
@@ -222,7 +260,7 @@ int main(int argc, char *argv[])
         //p_mw->show();
 
         p_mw->showMaximized();
-*/
+//*/
 
         // to launch in console mode with default driver file name
 /*
@@ -234,7 +272,7 @@ int main(int argc, char *argv[])
 */
 
         // to launch MasterRunner
-//*
+/*
         a = new QCoreApplication(argc, argv);
 
 
@@ -243,7 +281,7 @@ int main(int argc, char *argv[])
 
         QObject::connect(mr,SIGNAL(optimizationFinished()), a, SLOT(quit()));
         QTimer::singleShot(0, mr, SLOT(run()));
-//*/
+*/
 
 
     }

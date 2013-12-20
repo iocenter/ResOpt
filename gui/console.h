@@ -24,7 +24,7 @@
 
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QTextEdit>
-
+#include <QtWidgets/QProgressBar>
 
 
 namespace ResOptGui
@@ -35,7 +35,8 @@ class Console : public QDockWidget
     Q_OBJECT
 
 private:
-    QTextEdit m_edit;
+    QProgressBar *p_progress;
+    QTextEdit *p_edit;
 
 
 public:
@@ -45,6 +46,9 @@ signals:
     
 public slots:
     void printMsg(QString);
+    void startProgress();
+    void stopProgress();
+
     
 };
 

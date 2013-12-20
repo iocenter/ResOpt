@@ -50,13 +50,14 @@ namespace ResOpt
 
 
 RunonceOptimizer::RunonceOptimizer(Runner *r)
-    : Optimizer(r)
+    : Optimizer(r),
+      p_c(0)
 {
 }
 
 RunonceOptimizer::~RunonceOptimizer()
 {
-    // nothing to do
+   if(p_c != 0) delete p_c;
 }
 
 
@@ -78,40 +79,19 @@ void RunonceOptimizer::start()
 {
     cout << "Starting RUN_ONCE..." << endl;
 
+
+    if(p_c != 0) delete p_c;
+
     // creating a case for the current values in the model
-    Case *c = new Case(runner()->model());
+    p_c = new Case(runner()->model());
 
-    Case *c2 = new Case(*c);
-    Case *c3 = new Case(*c);
-
-    if(c2->numberOfRealVariables() > 14)
-    {
-        for(int i = 9; i <= 14; ++i)
-        {
-            c2->setRealVariableValue(i, c2->realVariableValue(i)-20);
-            c3->setRealVariableValue(i, c3->realVariableValue(i)+20);
-        }
-    }
-
-
-    CaseQueue *cq = new CaseQueue();
-
-    cq->push_back(c);
-    cq->push_back(c2);
-    cq->push_back(c3);
-
-    runCases(cq);
 
     // launching the runner on the case
-    //runCase(c);
+    runCase(p_c);
 
 
-
-
-    delete c;
-    delete c2;
-
-
+    // best case (needed...)
+    runner()->writeBestCaseToSummary(p_c);
 
 
     // letting the runner know that the optimization has finished

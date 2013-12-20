@@ -131,6 +131,7 @@ Case::Case(const Case &c, bool cpy_output)
 Case::~Case()
 {
 
+
     if(p_objective_derivative != 0) delete p_objective_derivative;
 
     for(int i = 0; i < m_constraint_derivatives.size(); ++i) delete m_constraint_derivatives.at(i);

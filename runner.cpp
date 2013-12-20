@@ -758,7 +758,7 @@ void Runner::writeBestCaseToSummary(Case *c)
 //-----------------------------------------------------------------------------------------------
 void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_case)
 {
-    //cout << "runner onLauncherFinished starting..." << endl;
+    //cout << "Runner::onLauncherFinished() starting..." << endl;
 
 
     // this is connected to the GUI...
@@ -785,11 +785,14 @@ void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_cas
 
     }
 
+
     // check if there are more cases to run
     Case *c = p_cases->next();
 
+
     if(c != 0)      // found a new case, sending it to the launcher
     {
+
         // connecting the launcher
         connect(this, SIGNAL(sendCase(Case*, Component*)), l, SLOT(evaluate(Case*, Component*)));
 
@@ -830,6 +833,7 @@ void Runner::onLauncherFinished(Launcher *l, Component *comp, Case *finished_cas
         // if all launchers are finished, letting the optimizer know
         if(all_finished)
         {
+
             writeCasesToSummary();
             emit casesFinished();
         }
@@ -1086,6 +1090,8 @@ void Runner::setPaused(bool paused)
 //-----------------------------------------------------------------------------------------------
 void Runner::onOptimizationFinished()
 {
+
+    cout << "The optimizer has finished..." << endl;
     emit runnerFinished(this, p_best_case);
 }
 

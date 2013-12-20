@@ -46,9 +46,15 @@
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QToolBar>
+#include <QtWidgets/QLabel>
+#include <QMovie>
 
 #include <QDir>
 
+#include <iostream>
+
+using std::cout;
+using std::endl;
 
 using ResOpt::Case;
 using ResOpt::CaseQueue;
@@ -176,10 +182,20 @@ void MainWindow::createMenus()
     setIconSize(QSize(40, 40));
 
     QToolBar *toolbar = addToolBar("Tools");
+
     p_act_startbutton = toolbar->addAction(QIcon(":new/images/play"), "Start Optimization");
     p_act_startbutton->setShortcut(Qt::CTRL + Qt::Key_R);
 
     connect(p_act_startbutton, SIGNAL(triggered()), this, SLOT(onStartButtonTriggered()));
+
+
+    p_act_runoncebutton = toolbar->addAction(QIcon(":new/images/play_once"), "Run Once");
+    //p_act_startbutton->setShortcut(Qt::CTRL + Qt::Key_R);
+
+    connect(p_act_runoncebutton, SIGNAL(triggered()), this, SLOT(onRunonceButtonTriggered()));
+
+
+
 
 }
 
@@ -282,6 +298,7 @@ void MainWindow::onOptimizationFinished(Runner *r, Case *c)
 
     setFinishedState();
     emit runFinished();
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -474,6 +491,47 @@ void MainWindow::onStartButtonTriggered()
     }
 }
 
+//-----------------------------------------------------------------------------------------------
+// called when the start/pause button is triggered
+//-----------------------------------------------------------------------------------------------
+void MainWindow::onRunonceButtonTriggered()
+{
+
+    if(p_runner == 0) emit sendMsg("No model is loaded, unable to run!");
+
+    else
+    {
+        if(!m_running)
+        {
+            //setRunningState();
+            m_running = true;
+            p_console->startProgress();
+
+            emit sendMsg("Updating model...");
+            p_runner->initializeLaunchers();
+
+
+            connect(p_runner, SIGNAL(casesFinished()), this, SLOT(onCaseFinished()));
+
+            // generating case
+            Case *c = new Case(p_runner->model());
+
+            CaseQueue *cq = new CaseQueue();
+
+            cq->push_back(c);
+
+            emit sendMsg("Running the model once...");
+
+            p_runner->evaluate(cq, 0);
+
+            //delete cq;
+            //cq = 0;
+        }
+        else emit sendMsg("Could not evaluate case, model is running!");
+    }
+}
+
+
 
 //-----------------------------------------------------------------------------------------------
 // sets all gui changes when model run starts
@@ -483,6 +541,7 @@ void MainWindow::setRunningState()
     m_running = true;
     p_act_startbutton->setIcon(QIcon(":new/images/pause"));
     p_act_startbutton->setText("Pause Optimization");
+    p_console->startProgress();
 
 }
 
@@ -494,6 +553,7 @@ void MainWindow::setFinishedState()
     m_running = false;
     p_act_startbutton->setIcon(QIcon(":new/images/play"));
     p_act_startbutton->setText("Start Optimization");
+    p_console->stopProgress();
 }
 
 //-----------------------------------------------------------------------------------------------

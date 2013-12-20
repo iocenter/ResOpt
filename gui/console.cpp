@@ -21,18 +21,38 @@
 
 #include "console.h"
 
+#include <QtWidgets/QVBoxLayout>
 
 namespace ResOptGui
 {
 
 Console::Console(QWidget *parent) :
-    QDockWidget(parent),
-    m_edit(this)
+    QDockWidget(parent)
 {
+    QWidget *widget = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    setWidget(&m_edit);
+    p_progress = new QProgressBar(widget);
+    p_progress->setMaximum(10);
+    p_progress->setMinimum(0);
+    p_progress->setValue(0);
+    p_progress->setTextVisible(false);
 
-    m_edit.setReadOnly(true);
+    p_progress->setMaximumHeight(5);
+
+
+
+    p_edit = new QTextEdit(widget);
+    p_edit->setReadOnly(true);
+
+    layout->addWidget(p_edit);
+
+    layout->addWidget(p_progress);
+
+
+    setWidget(widget);
+
+
 
 
 }
@@ -42,7 +62,25 @@ Console::Console(QWidget *parent) :
 //-----------------------------------------------------------------------------------------------
 void Console::printMsg(QString msg)
 {
-    m_edit.append(msg);
+    p_edit->append(msg);
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// starts the progress bar
+//-----------------------------------------------------------------------------------------------
+void Console::startProgress()
+{
+    p_progress->setMaximum(0);
+}
+
+//-----------------------------------------------------------------------------------------------
+// stops the progress bar
+//-----------------------------------------------------------------------------------------------
+void Console::stopProgress()
+{
+    p_progress->setMaximum(10);
+
 }
 
 

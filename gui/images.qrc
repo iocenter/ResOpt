@@ -12,5 +12,7 @@
         <file alias="cap_svg">img/capacity.svg</file>
         <file alias="play">img/play.png</file>
         <file alias="pause">img/pause.png</file>
+        <file alias="play_once">img/play_once.png</file>
+        <file alias="loader">img/loader.gif</file>
     </qresource>
 </RCC>

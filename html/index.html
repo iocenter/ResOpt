@@ -71,15 +71,46 @@ var searchBox = new SearchBox("searchBox", "search",false,'Search');
 </div>
 <div class="header">
   <div class="headertitle">
-<div class="title">ResOpt Documentation </div>  </div>
+<div class="title"><a class="el" href="namespaceResOpt.html" title="This namespace is used for all core elements.">ResOpt</a> Documentation </div>  </div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><h2><a class="anchor" id="sec_intro"></a>
 Introduction</h2>
-<p>This is the documentation for the Reservoir Optimization Framework (ResOpt). ResOpt is a framework for model integration and optimization. The core functionallity of ResOpt is to connect a reservoir simulator to a simple pipe network, and to do optimization on the resulting model.</p>
-<h2><a class="anchor" id="sec_running"></a>
+<p>This is the documentation for the Reservoir Optimization Framework (<a class="el" href="namespaceResOpt.html" title="This namespace is used for all core elements.">ResOpt</a>). <a class="el" href="namespaceResOpt.html" title="This namespace is used for all core elements.">ResOpt</a> is a framework for model integration and optimization. The core functionallity of <a class="el" href="namespaceResOpt.html" title="This namespace is used for all core elements.">ResOpt</a> is to connect a reservoir simulator to a simple pipe network, and to do optimization on the resulting model.</p>
+<h2><a class="anchor" id="sec_pri"></a>
+Setting up resopt_libs.pri</h2>
+<p>A .pri include file containing paths to libraries and headers for the external libraries <a class="el" href="namespaceResOpt.html" title="This namespace is used for all core elements.">ResOpt</a> use must be present.</p>
+<p>Example of the .pri file:</p>
+<div class="fragment"><pre class="fragment"><span class="preprocessor"># bonmin libraries:</span>
+<span class="preprocessor"></span>LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -lbonmin -lipopt -lCbc -lCgl -lOsiClp -lOsi -lClp -lCoinUtils
+
+<span class="preprocessor"># ipopt libraries (from ipopt_addlibs_cpp.txt):</span>
+<span class="preprocessor"></span>LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lipopt -ldl -lcoinmumps -lpthread -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+<span class="preprocessor"># cgl libraries (from cgl_addlibs.txt):</span>
+<span class="preprocessor"></span>LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCgl -lOsiClp -lClp -lOsi -lcoinmumps -lpthread -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+<span class="preprocessor"># osi libraries (from osi_addlibs.txt):</span>
+<span class="preprocessor"></span>LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lOsi -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+<span class="preprocessor"># clp libraries (from clp_addlibs.txt):</span>
+<span class="preprocessor"></span>LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lClp -lcoinmumps -lpthread -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+<span class="preprocessor"># coinutils libraries (from coinutils_addlibs.txt):</span>
+<span class="preprocessor"></span>LIBS += -L/home/aleksaju/bonmin/Bonmin-1.5.3/build/lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1 -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../x86_64-linux-gnu -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../../../lib -L/lib/x86_64-linux-gnu -L/lib/../lib -L/usr/lib/../lib -L/usr/lib/gcc/x86_64-linux-gnu/4.6.1/../../.. -lCoinUtils -lcoinlapack -lcoinblas -lgfortran -lm -lgcc_s -lquadmath
+
+<span class="preprocessor"># NOMAD library</span>
+<span class="preprocessor"></span>LIBS += /home/aleksaju/nomad/nomad.3.5.1/lib/nomad.a
+
+<span class="preprocessor"># bonmin header files</span>
+<span class="preprocessor"></span>INCLUDEPATH += /home/aleksaju/bonmin/Bonmin-1.5.3/build/include/coin
+
+
+<span class="preprocessor">#NOMAD header files</span>
+<span class="preprocessor">INCLUDEPATH += /home/aleksaju/nomad/nomad.3.5.1/src</span>
+</pre></div><h2><a class="anchor" id="sec_running"></a>
 Running the framework</h2>
-<p>ResOpt is run from the command line like this:</p>
+<p><a class="el" href="namespaceResOpt.html" title="This namespace is used for all core elements.">ResOpt</a> is run from the command line like this:</p>
 <div class="fragment"><pre class="fragment">ResOpt <span class="stringliteral">&#39;driver file&#39;</span>
 </pre></div><h2><a class="anchor" id="sec_ex"></a>
 Example driver file</h2>
@@ -235,7 +266,7 @@ EOF
 
 
 <hr class="footer"/><address class="footer"><small>
-Generated on Tue Dec 3 2013 13:46:51 for ResOpt by &#160;<a href="http://www.doxygen.org/index.html">
+Generated on Wed Dec 18 2013 09:53:46 for ResOpt by &#160;<a href="http://www.doxygen.org/index.html">
 <img class="footer" src="doxygen.png" alt="doxygen"/>
 </a> 1.7.6.1
 </small></address>

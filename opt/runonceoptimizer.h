@@ -38,6 +38,7 @@ class Pipe;
 class RunonceOptimizer : public Optimizer
 {
 private:
+    Case *p_c;
 
     Case* buildCase(Pipe *p);
 

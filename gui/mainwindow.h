@@ -31,6 +31,7 @@
 class QGraphicsView;
 class QTabWidget;
 class QAction;
+class QMovie;
 
 namespace ResOpt
 {
@@ -68,6 +69,8 @@ private:
     InspectorOptimizer *p_obj_inpector;
 
     QAction *p_act_startbutton;
+    QAction *p_act_runoncebutton;
+
 
 
 
@@ -107,6 +110,7 @@ public slots:
     void onCaseFinished();
     void openOptimizerInspector();
     void onStartButtonTriggered();
+    void onRunonceButtonTriggered();
     void savePlot();
     void saveModelAs();
     void onLastCaseBeforePause(Case *c);

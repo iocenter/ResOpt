@@ -77,9 +77,9 @@ RATE MATRIX:
 time = 1 days
 COMP	QO	QG	QW	P
 ----	--	--	--	-
-WELL05	218	56.785	131.864	80
+WELL05	217.95	56.7812	131.834	80.0172
 WELL06	218	56.785	131.864	80
-#1	436	113.57	263.727	36.0319
+#1	435.95	113.566	263.697	36.0338
 
 ------------------------------
 WELL: WELL05
@@ -87,7 +87,7 @@ WELL: WELL05
 
 ------Controls-------
 time       = 1
-value      = 80
+value      = 80.0172
 type       = BHP
 
 ------Routing-------
@@ -96,10 +96,10 @@ value            = 1
 
 ------Rate Data-------
 time       = 1 (days)
-gas rate   = 56.785 (mcf/d)
-oil rate   = 218 (bbl/d)
-water rate = 131.864 (bbl/d)
-pressure   = 80 (psia)
+gas rate   = 56.7812 (mcf/d)
+oil rate   = 217.95 (bbl/d)
+water rate = 131.834 (bbl/d)
+pressure   = 80.0172 (psia)
 
 ------------------------------
 WELL: WELL06
@@ -129,10 +129,10 @@ Minimum outlet pressure = 10 (psia)
 
 ------Rate Data-------
 time            = 1 (days)
-gas rate        = 113.57 (mcf/d)
-oil rate        = 436 (bbl/d)
-water rate      = 263.727 (bbl/d)
-inlet pressure  = 36.0319 (psia)
+gas rate        = 113.566 (mcf/d)
+oil rate        = 435.95 (bbl/d)
+water rate      = 263.697 (bbl/d)
+inlet pressure  = 36.0338 (psia)
 
 RUN # 3
 CURRENT MODEL STATE:
@@ -146,8 +146,8 @@ time = 1 days
 COMP	QO	QG	QW	P
 ----	--	--	--	-
 WELL05	218	56.785	131.864	80
-WELL06	218	56.785	131.864	80
-#1	436	113.57	263.727	36.0319
+WELL06	217.95	56.7812	131.834	80.0172
+#1	435.95	113.566	263.697	36.0338
 
 ------------------------------
 WELL: WELL05
@@ -175,7 +175,7 @@ WELL: WELL06
 
 ------Controls-------
 time       = 1
-value      = 80
+value      = 80.0172
 type       = BHP
 
 ------Routing-------
@@ -184,10 +184,10 @@ value            = 1
 
 ------Rate Data-------
 time       = 1 (days)
-gas rate   = 56.785 (mcf/d)
-oil rate   = 218 (bbl/d)
-water rate = 131.864 (bbl/d)
-pressure   = 80 (psia)
+gas rate   = 56.7812 (mcf/d)
+oil rate   = 217.95 (bbl/d)
+water rate = 131.834 (bbl/d)
+pressure   = 80.0172 (psia)
 
 ------------------------------
 END PIPE: 1
@@ -197,8 +197,1912 @@ Minimum outlet pressure = 10 (psia)
 
 ------Rate Data-------
 time            = 1 (days)
-gas rate        = 113.57 (mcf/d)
-oil rate        = 436 (bbl/d)
-water rate      = 263.727 (bbl/d)
-inlet pressure  = 36.0319 (psia)
+gas rate        = 113.566 (mcf/d)
+oil rate        = 435.95 (bbl/d)
+water rate      = 263.697 (bbl/d)
+inlet pressure  = 36.0338 (psia)
+
+RUN # 4
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	226.09	57.4072	136.757	77.1909
+WELL06	226.09	57.4072	136.757	77.1909
+#1	452.18	114.814	273.514	35.4075
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 77.1909
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 57.4072 (mcf/d)
+oil rate   = 226.09 (bbl/d)
+water rate = 136.757 (bbl/d)
+pressure   = 77.1909 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 77.1909
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 57.4072 (mcf/d)
+oil rate   = 226.09 (bbl/d)
+water rate = 136.757 (bbl/d)
+pressure   = 77.1909 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 114.814 (mcf/d)
+oil rate        = 452.18 (bbl/d)
+water rate      = 273.514 (bbl/d)
+inlet pressure  = 35.4075 (psia)
+
+RUN # 5
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	226.041	57.4034	136.727	77.2081
+WELL06	226.09	57.4072	136.757	77.1909
+#1	452.131	114.811	273.484	35.4095
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 77.2081
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 57.4034 (mcf/d)
+oil rate   = 226.041 (bbl/d)
+water rate = 136.727 (bbl/d)
+pressure   = 77.2081 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 77.1909
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 57.4072 (mcf/d)
+oil rate   = 226.09 (bbl/d)
+water rate = 136.757 (bbl/d)
+pressure   = 77.1909 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 114.811 (mcf/d)
+oil rate        = 452.131 (bbl/d)
+water rate      = 273.484 (bbl/d)
+inlet pressure  = 35.4095 (psia)
+
+RUN # 6
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	226.09	57.4072	136.757	77.1909
+WELL06	226.041	57.4034	136.727	77.2081
+#1	452.131	114.811	273.484	35.4095
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 77.1909
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 57.4072 (mcf/d)
+oil rate   = 226.09 (bbl/d)
+water rate = 136.757 (bbl/d)
+pressure   = 77.1909 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 77.2081
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 57.4034 (mcf/d)
+oil rate   = 226.041 (bbl/d)
+water rate = 136.727 (bbl/d)
+pressure   = 77.2081 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 114.811 (mcf/d)
+oil rate        = 452.131 (bbl/d)
+water rate      = 273.484 (bbl/d)
+inlet pressure  = 35.4095 (psia)
+
+RUN # 7
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	397.683	79.3601	248.195	18.6018
+WELL06	397.683	79.3601	248.195	18.6018
+#1	795.366	158.72	496.39	22.6384
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 18.6018
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 79.3601 (mcf/d)
+oil rate   = 397.683 (bbl/d)
+water rate = 248.195 (bbl/d)
+pressure   = 18.6018 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 18.6018
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 79.3601 (mcf/d)
+oil rate   = 397.683 (bbl/d)
+water rate = 248.195 (bbl/d)
+pressure   = 18.6018 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 158.72 (mcf/d)
+oil rate        = 795.366 (bbl/d)
+water rate      = 496.39 (bbl/d)
+inlet pressure  = 22.6384 (psia)
+
+RUN # 8
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	397.617	79.3418	248.143	18.619
+WELL06	397.683	79.3601	248.195	18.6018
+#1	795.3	158.702	496.338	22.638
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 18.619
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 79.3418 (mcf/d)
+oil rate   = 397.617 (bbl/d)
+water rate = 248.143 (bbl/d)
+pressure   = 18.619 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 18.6018
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 79.3601 (mcf/d)
+oil rate   = 397.683 (bbl/d)
+water rate = 248.195 (bbl/d)
+pressure   = 18.6018 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 158.702 (mcf/d)
+oil rate        = 795.3 (bbl/d)
+water rate      = 496.338 (bbl/d)
+inlet pressure  = 22.638 (psia)
+
+RUN # 9
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	397.683	79.3601	248.195	18.6018
+WELL06	397.617	79.3418	248.143	18.619
+#1	795.3	158.702	496.338	22.638
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 18.6018
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 79.3601 (mcf/d)
+oil rate   = 397.683 (bbl/d)
+water rate = 248.195 (bbl/d)
+pressure   = 18.6018 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 18.619
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 79.3418 (mcf/d)
+oil rate   = 397.617 (bbl/d)
+water rate = 248.143 (bbl/d)
+pressure   = 18.619 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 158.702 (mcf/d)
+oil rate        = 795.3 (bbl/d)
+water rate      = 496.338 (bbl/d)
+inlet pressure  = 22.638 (psia)
+
+RUN # 10
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	352.116	67.1105	212.988	30.6763
+WELL06	352.116	67.1105	212.988	30.6763
+#1	704.232	134.221	425.975	22.5738
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 30.6763
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 67.1105 (mcf/d)
+oil rate   = 352.116 (bbl/d)
+water rate = 212.988 (bbl/d)
+pressure   = 30.6763 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 30.6763
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 67.1105 (mcf/d)
+oil rate   = 352.116 (bbl/d)
+water rate = 212.988 (bbl/d)
+pressure   = 30.6763 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 134.221 (mcf/d)
+oil rate        = 704.232 (bbl/d)
+water rate      = 425.975 (bbl/d)
+inlet pressure  = 22.5738 (psia)
+
+RUN # 11
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	352.073	67.1072	212.962	30.6935
+WELL06	352.116	67.1105	212.988	30.6763
+#1	704.189	134.218	425.949	22.5744
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 30.6935
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 67.1072 (mcf/d)
+oil rate   = 352.073 (bbl/d)
+water rate = 212.962 (bbl/d)
+pressure   = 30.6935 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 30.6763
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 67.1105 (mcf/d)
+oil rate   = 352.116 (bbl/d)
+water rate = 212.988 (bbl/d)
+pressure   = 30.6763 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 134.218 (mcf/d)
+oil rate        = 704.189 (bbl/d)
+water rate      = 425.949 (bbl/d)
+inlet pressure  = 22.5744 (psia)
+
+RUN # 12
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	352.116	67.1105	212.988	30.6763
+WELL06	352.073	67.1072	212.962	30.6935
+#1	704.189	134.218	425.949	22.5744
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 30.6763
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 67.1105 (mcf/d)
+oil rate   = 352.116 (bbl/d)
+water rate = 212.988 (bbl/d)
+pressure   = 30.6763 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 30.6935
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 67.1072 (mcf/d)
+oil rate   = 352.073 (bbl/d)
+water rate = 212.962 (bbl/d)
+pressure   = 30.6935 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 134.218 (mcf/d)
+oil rate        = 704.189 (bbl/d)
+water rate      = 425.949 (bbl/d)
+inlet pressure  = 22.5744 (psia)
+
+RUN # 13
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	364.064	70.0748	222.003	27.334
+WELL06	364.064	70.0748	222.003	27.334
+#1	728.128	140.15	444.005	22.2976
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 27.334
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 70.0748 (mcf/d)
+oil rate   = 364.064 (bbl/d)
+water rate = 222.003 (bbl/d)
+pressure   = 27.334 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 27.334
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 70.0748 (mcf/d)
+oil rate   = 364.064 (bbl/d)
+water rate = 222.003 (bbl/d)
+pressure   = 27.334 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 140.15 (mcf/d)
+oil rate        = 728.128 (bbl/d)
+water rate      = 444.005 (bbl/d)
+inlet pressure  = 22.2976 (psia)
+
+RUN # 14
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	363.998	70.0565	221.951	27.3512
+WELL06	364.064	70.0748	222.003	27.334
+#1	728.062	140.131	443.954	22.2978
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 27.3512
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 70.0565 (mcf/d)
+oil rate   = 363.998 (bbl/d)
+water rate = 221.951 (bbl/d)
+pressure   = 27.3512 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 27.334
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 70.0748 (mcf/d)
+oil rate   = 364.064 (bbl/d)
+water rate = 222.003 (bbl/d)
+pressure   = 27.334 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 140.131 (mcf/d)
+oil rate        = 728.062 (bbl/d)
+water rate      = 443.954 (bbl/d)
+inlet pressure  = 22.2978 (psia)
+
+RUN # 15
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	364.064	70.0748	222.003	27.334
+WELL06	363.998	70.0565	221.951	27.3512
+#1	728.062	140.131	443.954	22.2978
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 27.334
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 70.0748 (mcf/d)
+oil rate   = 364.064 (bbl/d)
+water rate = 222.003 (bbl/d)
+pressure   = 27.334 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 27.3512
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 70.0565 (mcf/d)
+oil rate   = 363.998 (bbl/d)
+water rate = 221.951 (bbl/d)
+pressure   = 27.3512 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 140.131 (mcf/d)
+oil rate        = 728.062 (bbl/d)
+water rate      = 443.954 (bbl/d)
+inlet pressure  = 22.2978 (psia)
+
+RUN # 16
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	374.331	72.9106	230.002	24.6672
+WELL06	374.331	72.9106	230.002	24.6672
+#1	748.663	145.821	460.004	22.3656
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 24.6672
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 72.9106 (mcf/d)
+oil rate   = 374.331 (bbl/d)
+water rate = 230.002 (bbl/d)
+pressure   = 24.6672 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 24.6672
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 72.9106 (mcf/d)
+oil rate   = 374.331 (bbl/d)
+water rate = 230.002 (bbl/d)
+pressure   = 24.6672 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 145.821 (mcf/d)
+oil rate        = 748.663 (bbl/d)
+water rate      = 460.004 (bbl/d)
+inlet pressure  = 22.3656 (psia)
+
+RUN # 17
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	374.265	72.8923	229.95	24.6844
+WELL06	374.331	72.9106	230.002	24.6672
+#1	748.597	145.803	459.952	22.3652
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 24.6844
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 72.8923 (mcf/d)
+oil rate   = 374.265 (bbl/d)
+water rate = 229.95 (bbl/d)
+pressure   = 24.6844 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 24.6672
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 72.9106 (mcf/d)
+oil rate   = 374.331 (bbl/d)
+water rate = 230.002 (bbl/d)
+pressure   = 24.6672 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 145.803 (mcf/d)
+oil rate        = 748.597 (bbl/d)
+water rate      = 459.952 (bbl/d)
+inlet pressure  = 22.3652 (psia)
+
+RUN # 18
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	374.331	72.9106	230.002	24.6672
+WELL06	374.265	72.8923	229.95	24.6844
+#1	748.597	145.803	459.952	22.3652
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 24.6672
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 72.9106 (mcf/d)
+oil rate   = 374.331 (bbl/d)
+water rate = 230.002 (bbl/d)
+pressure   = 24.6672 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 24.6844
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 72.8923 (mcf/d)
+oil rate   = 374.265 (bbl/d)
+water rate = 229.95 (bbl/d)
+pressure   = 24.6844 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 145.803 (mcf/d)
+oil rate        = 748.597 (bbl/d)
+water rate      = 459.952 (bbl/d)
+inlet pressure  = 22.3652 (psia)
+
+RUN # 19
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	384.449	75.7049	237.884	22.0393
+WELL06	384.449	75.7049	237.884	22.0393
+#1	768.897	151.41	475.768	22.4931
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.0393
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.7049 (mcf/d)
+oil rate   = 384.449 (bbl/d)
+water rate = 237.884 (bbl/d)
+pressure   = 22.0393 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.0393
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.7049 (mcf/d)
+oil rate   = 384.449 (bbl/d)
+water rate = 237.884 (bbl/d)
+pressure   = 22.0393 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 151.41 (mcf/d)
+oil rate        = 768.897 (bbl/d)
+water rate      = 475.768 (bbl/d)
+inlet pressure  = 22.4931 (psia)
+
+RUN # 20
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	384.382	75.6866	237.833	22.0565
+WELL06	384.449	75.7049	237.884	22.0393
+#1	768.831	151.391	475.717	22.4927
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.0565
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.6866 (mcf/d)
+oil rate   = 384.382 (bbl/d)
+water rate = 237.833 (bbl/d)
+pressure   = 22.0565 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.0393
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.7049 (mcf/d)
+oil rate   = 384.449 (bbl/d)
+water rate = 237.884 (bbl/d)
+pressure   = 22.0393 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 151.391 (mcf/d)
+oil rate        = 768.831 (bbl/d)
+water rate      = 475.717 (bbl/d)
+inlet pressure  = 22.4927 (psia)
+
+RUN # 21
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	384.449	75.7049	237.884	22.0393
+WELL06	384.382	75.6866	237.833	22.0565
+#1	768.831	151.391	475.717	22.4927
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.0393
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.7049 (mcf/d)
+oil rate   = 384.449 (bbl/d)
+water rate = 237.884 (bbl/d)
+pressure   = 22.0393 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.0565
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.6866 (mcf/d)
+oil rate   = 384.382 (bbl/d)
+water rate = 237.833 (bbl/d)
+pressure   = 22.0565 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 151.391 (mcf/d)
+oil rate        = 768.831 (bbl/d)
+water rate      = 475.717 (bbl/d)
+inlet pressure  = 22.4927 (psia)
+
+RUN # 22
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.009	75.0311	235.984	22.6729
+WELL06	382.009	75.0311	235.984	22.6729
+#1	764.019	150.062	471.967	22.464
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.6729
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.0311 (mcf/d)
+oil rate   = 382.009 (bbl/d)
+water rate = 235.984 (bbl/d)
+pressure   = 22.6729 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.6729
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.0311 (mcf/d)
+oil rate   = 382.009 (bbl/d)
+water rate = 235.984 (bbl/d)
+pressure   = 22.6729 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.062 (mcf/d)
+oil rate        = 764.019 (bbl/d)
+water rate      = 471.967 (bbl/d)
+inlet pressure  = 22.464 (psia)
+
+RUN # 23
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	381.943	75.0129	235.932	22.6901
+WELL06	382.009	75.0311	235.984	22.6729
+#1	763.952	150.044	471.916	22.4636
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.6901
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.0129 (mcf/d)
+oil rate   = 381.943 (bbl/d)
+water rate = 235.932 (bbl/d)
+pressure   = 22.6901 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.6729
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.0311 (mcf/d)
+oil rate   = 382.009 (bbl/d)
+water rate = 235.984 (bbl/d)
+pressure   = 22.6729 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.044 (mcf/d)
+oil rate        = 763.952 (bbl/d)
+water rate      = 471.916 (bbl/d)
+inlet pressure  = 22.4636 (psia)
+
+RUN # 24
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.009	75.0311	235.984	22.6729
+WELL06	381.943	75.0129	235.932	22.6901
+#1	763.952	150.044	471.916	22.4636
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.6729
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.0311 (mcf/d)
+oil rate   = 382.009 (bbl/d)
+water rate = 235.984 (bbl/d)
+pressure   = 22.6729 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.6901
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.0129 (mcf/d)
+oil rate   = 381.943 (bbl/d)
+water rate = 235.932 (bbl/d)
+pressure   = 22.6901 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.044 (mcf/d)
+oil rate        = 763.952 (bbl/d)
+water rate      = 471.916 (bbl/d)
+inlet pressure  = 22.4636 (psia)
+
+RUN # 25
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.778	75.2434	236.582	22.4733
+WELL06	382.778	75.2434	236.582	22.4733
+#1	765.556	150.487	473.165	22.4733
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.487 (mcf/d)
+oil rate        = 765.556 (bbl/d)
+water rate      = 473.165 (bbl/d)
+inlet pressure  = 22.4733 (psia)
+
+RUN # 26
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.712	75.2251	236.531	22.4905
+WELL06	382.778	75.2434	236.582	22.4733
+#1	765.49	150.469	473.113	22.4729
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4905
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2251 (mcf/d)
+oil rate   = 382.712 (bbl/d)
+water rate = 236.531 (bbl/d)
+pressure   = 22.4905 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.469 (mcf/d)
+oil rate        = 765.49 (bbl/d)
+water rate      = 473.113 (bbl/d)
+inlet pressure  = 22.4729 (psia)
+
+RUN # 27
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.778	75.2434	236.582	22.4733
+WELL06	382.712	75.2251	236.531	22.4905
+#1	765.49	150.469	473.113	22.4729
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4905
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2251 (mcf/d)
+oil rate   = 382.712 (bbl/d)
+water rate = 236.531 (bbl/d)
+pressure   = 22.4905 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.469 (mcf/d)
+oil rate        = 765.49 (bbl/d)
+water rate      = 473.113 (bbl/d)
+inlet pressure  = 22.4729 (psia)
+
+RUN # 28
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.778	75.2434	236.582	22.4733
+WELL06	382.778	75.2434	236.582	22.4733
+#1	765.556	150.487	473.165	22.4733
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.487 (mcf/d)
+oil rate        = 765.556 (bbl/d)
+water rate      = 473.165 (bbl/d)
+inlet pressure  = 22.4733 (psia)
+
+RUN # 29
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.712	75.2251	236.531	22.4905
+WELL06	382.778	75.2434	236.582	22.4733
+#1	765.489	150.469	473.113	22.4729
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4905
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2251 (mcf/d)
+oil rate   = 382.712 (bbl/d)
+water rate = 236.531 (bbl/d)
+pressure   = 22.4905 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.469 (mcf/d)
+oil rate        = 765.489 (bbl/d)
+water rate      = 473.113 (bbl/d)
+inlet pressure  = 22.4729 (psia)
+
+RUN # 30
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.778	75.2434	236.582	22.4733
+WELL06	382.712	75.2251	236.531	22.4905
+#1	765.489	150.469	473.113	22.4729
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4905
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2251 (mcf/d)
+oil rate   = 382.712 (bbl/d)
+water rate = 236.531 (bbl/d)
+pressure   = 22.4905 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.469 (mcf/d)
+oil rate        = 765.489 (bbl/d)
+water rate      = 473.113 (bbl/d)
+inlet pressure  = 22.4729 (psia)
+
+RUN # 31
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 1 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+WELL05	382.778	75.2434	236.582	22.4733
+WELL06	382.778	75.2434	236.582	22.4733
+#1	765.556	150.487	473.165	22.4733
+
+------------------------------
+WELL: WELL05
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+WELL: WELL06
+------------------------------
+
+------Controls-------
+time       = 1
+value      = 22.4733
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 1 (days)
+gas rate   = 75.2434 (mcf/d)
+oil rate   = 382.778 (bbl/d)
+water rate = 236.582 (bbl/d)
+pressure   = 22.4733 (psia)
+
+------------------------------
+END PIPE: 1
+------------------------------
+
+Minimum outlet pressure = 10 (psia)
+
+------Rate Data-------
+time            = 1 (days)
+gas rate        = 150.487 (mcf/d)
+oil rate        = 765.556 (bbl/d)
+water rate      = 473.165 (bbl/d)
+inlet pressure  = 22.4733 (psia)
 

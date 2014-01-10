@@ -96,13 +96,13 @@ Case* MINLPEvaluator::solveContineousProblem(Case *discrete_vars)
     app->Options()->SetStringValue("hessian_approximation", "limited-memory"); // exact (default, no approx) or limited-memory (quasi-Newton)
 
     // Initialize the IpoptApplication and process the options
-    ApplicationReturnStatus status;
-    app->Initialize();
+    ApplicationReturnStatus status = app->Initialize();
 
 
     if (status != Solve_Succeeded)
     {
-        std::cout << std::endl << std::endl << "*** Error during IPOPT initialization!" << std::endl;
+        cout << endl << endl << "*** Error during IPOPT initialization!" << endl;
+        //cout << "Status = " << status.s
         exit(1);
     }
 
@@ -112,11 +112,11 @@ Case* MINLPEvaluator::solveContineousProblem(Case *discrete_vars)
 
     if (status == Solve_Succeeded)
     {
-        std::cout << std::endl << std::endl << "*** The contineous IPOPT sub-problem problem solved!" << std::endl;
+        cout << endl << endl << "*** The contineous IPOPT sub-problem problem solved!" << endl;
     }
     else
     {
-        std::cout << std::endl << std::endl << "*** The contineous IPOPT sub-problem problem FAILED!" << std::endl;
+        cout << endl << endl << "*** The contineous IPOPT sub-problem problem FAILED!" << endl;
     }
 
     // checking if this is the best solution so far

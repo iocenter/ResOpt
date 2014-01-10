@@ -60,6 +60,8 @@ MINLPIpoptInterface::MINLPIpoptInterface(Optimizer *o, MINLPEvaluator *e, Case *
     m_vars = p_optimizer->runner()->model()->realVariables();
     m_cons = p_optimizer->runner()->model()->constraints();
 
+    cout << "MINLPIpoptInterface(): m_vars = " << m_vars.size() << endl;
+
 
     // setting up the gradients file
     p_grad_file= new QFile(p_optimizer->runner()->reservoirSimulator()->folder() + "/ipopt_gradients.dat");

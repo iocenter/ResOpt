@@ -59,6 +59,7 @@ public:
 
 
     // add functions
+
     void addAdjoint(Adjoint *a) {m_adjoints.push_back(a);}
 
     // set functions

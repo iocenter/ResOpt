@@ -278,8 +278,8 @@ void MainWindow::runCase(Case *c)
 
         p_runner->evaluate(cq, 0);
 
-        //delete cq;
-        //cq = 0;
+        delete cq;
+        cq = 0;
     }
     else emit sendMsg("Could not evaluate case, model is running!");
 
@@ -466,6 +466,7 @@ void MainWindow::onStartButtonTriggered()
             p_runner->setPaused(false);
             p_act_startbutton->setIcon(QIcon(":new/images/pause"));
             p_act_startbutton->setText("Pause Optimization");
+            p_console->startProgress();
             m_paused = false;
 
 
@@ -524,8 +525,8 @@ void MainWindow::onRunonceButtonTriggered()
 
             p_runner->evaluate(cq, 0);
 
-            //delete cq;
-            //cq = 0;
+           // delete cq;
+           // cq = 0;
         }
         else emit sendMsg("Could not evaluate case, model is running!");
     }
@@ -567,6 +568,7 @@ void MainWindow::onLastCaseBeforePause(Case *c)
     disconnect(p_runner, SIGNAL(newCaseFinished(Case*)), this, SLOT(onLastCaseBeforePause(Case*)));
 
     p_act_startbutton->setDisabled(false);
+    p_console->stopProgress();
     p_act_startbutton->setText("Resume Optimization");
 
 }

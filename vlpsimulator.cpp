@@ -298,6 +298,9 @@ bool VlpSimulator::readOutput(Model *m)
         } // production well
     } // well
 
+
+    return true;
+
 }
 
 

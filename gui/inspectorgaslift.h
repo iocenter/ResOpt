@@ -1,7 +1,7 @@
 /*
  * This file is part of the ResOpt project.
  *
- * Copyright (C) 2011-2013 Aleksander O. Juell <aleksander.juell@ntnu.no>
+ * Copyright (C) 2011-2014 Aleksander O. Juell <aleksander.juell@ntnu.no>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,39 +19,45 @@
  */
 
 
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef INSPECTORGASLIFT_H
+#define INSPECTORGASLIFT_H
 
-#include <QtWidgets/QDockWidget>
-#include <QtWidgets/QTextEdit>
-#include <QMovie>
+#include <QWidget>
 
+#include "wellcontrol.h"
+
+using ResOpt::WellControl;
+
+class QLineEdit;
+class QLabel;
 
 namespace ResOptGui
 {
 
-class Console : public QDockWidget
+class InspectorGasLift : public QWidget
 {
     Q_OBJECT
+public:
+    explicit InspectorGasLift(double time, double value, double max, double min, QWidget *parent = 0, bool header = false);
+
+    double value();
+    double max();
+    double min();
+
+
+signals:
+
+public slots:
 
 private:
-    QMovie *p_loader;
-    QTextEdit *p_edit;
+
+    QLineEdit *p_max;
+    QLineEdit *p_min;
+    QLineEdit *p_value;
+    QLabel *p_time;
 
 
-public:
-    explicit Console(QWidget *parent = 0);
-    
-signals:
-    
-public slots:
-    void printMsg(QString);
-    void startProgress();
-    void stopProgress();
-
-    
 };
 
 } // namespace
-
-#endif // CONSOLE_H
+#endif // INSPECTORGASLIFT_H

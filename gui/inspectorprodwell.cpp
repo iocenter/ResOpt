@@ -23,6 +23,7 @@
 
 #include "inspectorvariable.h"
 #include "inspectorwellcontrol.h"
+#include "inspectorgaslift.h"
 #include "inspectorconstraint.h"
 #include "inspectorwellconnectionvariable.h"
 #include "plotstreams.h"
@@ -111,6 +112,40 @@ void InspectorProdWell::construct()
 
     layout->addWidget(box_control, row, 0, 1, 3, Qt::AlignCenter);
     ++row;
+
+    // ---- setting up the gas lift variables -----
+    if(p_well->hasGasLift())
+    {
+        box_gaslift = new QGroupBox("Gas Lift Variables", this);
+        box_gaslift->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+        box_gaslift->setFixedWidth(500);
+
+        QVBoxLayout *layout_gaslift = new QVBoxLayout(box_gaslift);
+        //layout_control->setSizeConstraint(QLayout::SetFixedSize);
+        box_gaslift->setLayout(layout_gaslift);
+
+        for(int i = 0; i < p_well->numberOfGasLiftControls(); ++i)
+        {
+            WellControl *gl = p_well->gasLiftControl(i);
+            InspectorGasLift *igl = new InspectorGasLift(gl->endTime(), gl->controlVar()->value(), gl->controlVar()->max(), gl->controlVar()->min(), this, i == 0);
+            m_gaslift.push_back(igl);
+            layout_gaslift->addWidget(igl);
+        }
+
+        // show/hide
+        p_btn_gaslift = new QPushButton("-", this);
+        p_btn_gaslift->setFixedSize(25, 25);
+        p_btn_gaslift->setCheckable(true);
+        p_btn_gaslift->setChecked(false);
+        connect(p_btn_gaslift, SIGNAL(toggled(bool)), this, SLOT(hideGasLift(bool)));
+        layout_gaslift->addWidget(p_btn_gaslift);
+
+
+        layout->addWidget(box_gaslift, row, 0, 1, 3, Qt::AlignCenter);
+        ++row;
+
+
+    }
 
 
     // ---- setting up the variable well connections
@@ -222,6 +257,14 @@ void InspectorProdWell::saveAndClose()
         p_well->control(i)->setType(m_controls.at(i)->type());
     }
 
+    // saving the gas lift variables
+    for(int i = 0; i < p_well->numberOfGasLiftControls(); ++i)
+    {
+        p_well->gasLiftControl(i)->controlVar()->setValue(m_gaslift.at(i)->value());
+        p_well->gasLiftControl(i)->controlVar()->setMax(m_gaslift.at(i)->max());
+        p_well->gasLiftControl(i)->controlVar()->setMin(m_gaslift.at(i)->min());
+    }
+
     // saving the connection variables
     for(int i = 0; i < p_well->numberOfVariableConnections(); ++i)
     {
@@ -266,6 +309,23 @@ void InspectorProdWell::hideControls(bool b)
     box_control->adjustSize();
     this->adjustSize();
 }
+
+//-----------------------------------------------------------------------------------------------
+// hides or shows the gas lift
+//-----------------------------------------------------------------------------------------------
+void InspectorProdWell::hideGasLift(bool b)
+{
+    for(int i = 0; i < m_gaslift.size(); ++i)
+    {
+        m_gaslift.at(i)->setHidden(b);
+    }
+
+    p_btn_gaslift->setText(b ? "+" : "-");
+
+    box_gaslift->adjustSize();
+    this->adjustSize();
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // hides or shows the connection variables

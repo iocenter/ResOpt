@@ -14,5 +14,6 @@
         <file alias="pause">img/pause.png</file>
         <file alias="play_once">img/play_once.png</file>
         <file alias="loader">img/loader.gif</file>
+        <file alias="loader2">img/loader2.gif</file>
     </qresource>
 </RCC>

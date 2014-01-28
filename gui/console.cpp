@@ -22,6 +22,7 @@
 #include "console.h"
 
 #include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QLabel>
 
 namespace ResOptGui
 {
@@ -32,22 +33,25 @@ Console::Console(QWidget *parent) :
     QWidget *widget = new QWidget(this);
     QVBoxLayout *layout = new QVBoxLayout(widget);
 
-    p_progress = new QProgressBar(widget);
-    p_progress->setMaximum(10);
-    p_progress->setMinimum(0);
-    p_progress->setValue(0);
-    p_progress->setTextVisible(false);
 
-    p_progress->setMaximumHeight(5);
+    // loader animation
+    QLabel *gif_anim = new QLabel(widget);
+    p_loader = new QMovie(":new/images/loader");
+    gif_anim->setMovie(p_loader);
+    p_loader->start();
+    p_loader->stop();
 
 
 
     p_edit = new QTextEdit(widget);
     p_edit->setReadOnly(true);
 
+
+
     layout->addWidget(p_edit);
 
-    layout->addWidget(p_progress);
+    layout->addWidget(gif_anim);
+
 
 
     setWidget(widget);
@@ -71,7 +75,8 @@ void Console::printMsg(QString msg)
 //-----------------------------------------------------------------------------------------------
 void Console::startProgress()
 {
-    p_progress->setMaximum(0);
+    p_loader->start();
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -79,7 +84,8 @@ void Console::startProgress()
 //-----------------------------------------------------------------------------------------------
 void Console::stopProgress()
 {
-    p_progress->setMaximum(10);
+    p_loader->stop();
+
 
 }
 

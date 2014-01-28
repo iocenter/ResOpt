@@ -21,15 +21,27 @@
 
 #include "plot.h"
 #include "mainwindow.h"
+#include "runner.h"
+#include "model.h"
+#include "realvariable.h"
+#include "constraint.h"
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSlider>
+#include <QtWidgets/QComboBox>
+#include <QVariant>
 
 #include <iostream>
 
 using std::endl;
 using std::cout;
+
+using ResOpt::Runner;
+using ResOpt::Model;
+using ResOpt::RealVariable;
+using ResOpt::Constraint;
+
 
 namespace ResOptGui
 {
@@ -40,7 +52,8 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
     m_custom_plot(this),
     m_max(6),
     m_min(5),
-    m_user_changed_slider(false)
+    m_user_changed_slider(false),
+    m_series_updated(false)
 {
     QGridLayout *layout = new QGridLayout;
 
@@ -73,7 +86,7 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
     m_custom_plot.xAxis->setAutoTickStep(false);
     m_custom_plot.xAxis->setTickStep(1.0);
 
-    m_custom_plot.yAxis->setLabel("Objective Value");
+    m_custom_plot.yAxis->setLabel("Value");
     m_custom_plot.yAxis->setNumberFormat("gbc");
 
     m_custom_plot.setRangeDrag(Qt::Vertical | Qt::Horizontal);
@@ -104,6 +117,14 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
 
     layout->addWidget(p_btn_rerun, 2, 1);
 
+    // setting up the series selection drop-down
+    p_series = new QComboBox(this);
+    p_series->addItem("Objective", 0);
+    connect(p_series, SIGNAL(currentIndexChanged(int)), this, SLOT(onSeriesSelectionChanged(int)));
+
+
+    layout->addWidget(p_series, 2, 2);
+
 
 
     connect(p_mainwindow, SIGNAL(runFinished()), this, SLOT(onSelectionChanged()));
@@ -124,32 +145,74 @@ Plot::~Plot()
 }
 
 //-----------------------------------------------------------------------------------------------
-// Adds data from the case to the plot
+// Adds the case to the plot
 //-----------------------------------------------------------------------------------------------
 void Plot::addCase(Case *c)
 {
     // adding the case to the vector
-    m_cases.push_back(new Case(*c));
+    m_cases.push_back(new Case(*c, true));
+
+    // updating the series drop-down
+    if(!m_series_updated)
+    {
+        updateSeriesList(c);
+        m_series_updated = true;
+    }
+
+    addToPlot(m_cases.last());
 
 
-    m_custom_plot.graph(0)->addData(m_cases.size(), c->objectiveValue());
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Plots the case
+//-----------------------------------------------------------------------------------------------
+void Plot::addToPlot(Case *c, bool replot)
+{
+    m_plotted_cases.push_back(c);
+
+
+    // finding what to plot
+    double value;
+
+    double max_real_var = c->numberOfRealVariables();
+
+    int index = p_series->itemData(p_series->currentIndex()).toInt();
+
+    if(index == 0) value = c->objectiveValue();
+    else if(index <= max_real_var)
+    {
+        value = c->realVariableValue(index-1);
+    }
+
+    else
+    {
+        value = c->constraintValue(index - max_real_var -1);
+    }
+
+
+
+    // adding to plot
+
+    m_custom_plot.graph(0)->addData(m_plotted_cases.size(), value);
 
     // adding point to graph 1 if infeasible
-    if(!p_mainwindow->runner()->isFeasible(c)) m_custom_plot.graph(1)->addData(m_cases.size(), c->objectiveValue());
+    if(!p_mainwindow->runner()->isFeasible(c)) m_custom_plot.graph(1)->addData(m_plotted_cases.size(), value);
 
     // x axis range
-    if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
+    if(m_cases.size() >= 5) m_custom_plot.xAxis->setRange(m_plotted_cases.size() - p_sld_xaxis->value(), m_plotted_cases.size() + 1);
 
     // y axis range
-    if(m_cases.size() == 1)
+    if(m_plotted_cases.size() == 1)
     {
-        m_min = c->objectiveValue()*0.9;
-        m_max = c->objectiveValue()*1.1;
+        m_min = value*0.9;
+        m_max = value*1.1;
     }
     else
     {
-        if(c->objectiveValue() < m_min) m_min = c->objectiveValue();
-        if(c->objectiveValue() > m_max) m_max = c->objectiveValue();
+        if(value < m_min) m_min = value;
+        if(value > m_max) m_max = value;
     }
 
     double padding = (m_max - m_min)*0.1;
@@ -160,7 +223,7 @@ void Plot::addCase(Case *c)
     // adding tracer
     QCPItemTracer *tracer = new QCPItemTracer(&m_custom_plot);
     tracer->setGraph(m_custom_plot.graph(0));
-    tracer->setGraphKey(m_cases.size());
+    tracer->setGraphKey(m_plotted_cases.size());
     tracer->setStyle(QCPItemTracer::tsPlus);
     tracer->setSize(20);
     QPen pen(Qt::blue);
@@ -176,11 +239,11 @@ void Plot::addCase(Case *c)
     m_custom_plot.addItem(tracer);
 
     // updating the slider max
-    p_sld_xaxis->setMaximum(m_cases.size());
-    if(!m_user_changed_slider) p_sld_xaxis->setValue(m_cases.size());
+    p_sld_xaxis->setMaximum(m_plotted_cases.size());
+    if(!m_user_changed_slider) p_sld_xaxis->setValue(m_plotted_cases.size());
     else
     {
-        if(m_cases.size() > 5) m_custom_plot.xAxis->setRange(m_cases.size() - p_sld_xaxis->value(), m_cases.size() + 1);
+        if(m_plotted_cases.size() > 5) m_custom_plot.xAxis->setRange(m_plotted_cases.size() - p_sld_xaxis->value(), m_plotted_cases.size() + 1);
 
         // checking if the x-axis tick step must change
         if(p_sld_xaxis->value() > 10)
@@ -190,7 +253,7 @@ void Plot::addCase(Case *c)
         }
 
 
-        m_custom_plot.replot();
+        if(replot) m_custom_plot.replot();
     }
 
 
@@ -198,7 +261,6 @@ void Plot::addCase(Case *c)
    // m_custom_plot.replot();
 
 }
-
 
 //-----------------------------------------------------------------------------------------------
 // Clears the cases from the plot
@@ -213,6 +275,7 @@ void Plot::clearCases()
     }
 
 
+    m_plotted_cases.clear();
 
     for(int i = 0; i < m_cases.size(); ++i) delete m_cases.at(i);
     m_cases.resize(0);
@@ -305,5 +368,69 @@ void Plot::onXAxisSliderPressed()
 
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Updated the list of available series to plot
+//-----------------------------------------------------------------------------------------------
+void Plot::updateSeriesList(Case *c)
+{
+    Model *m = p_mainwindow->runner()->model();
+
+    int count = 1;
+
+    // real variables
+    for(int i = 0; i < c->numberOfRealVariables(); ++i)
+    {
+
+        QString name = m->realVariables().at(i)->name();
+
+        //QString name = "Real Variable " + QString::number(i+1);
+        p_series->addItem(name, count++);
+    }
+
+    // constraints
+    for(int i = 0; i < c->numberOfConstraints(); ++i)
+    {
+        QString name = m->constraints().at(i)->name();
+
+        p_series->addItem(name, count++);
+    }
+
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// Updated the plotted series to the one currently selected
+//-----------------------------------------------------------------------------------------------
+void Plot::onSeriesSelectionChanged(int index)
+{
+
+    // clearing the plot
+    m_custom_plot.clearItems();
+
+    for(int i = 0; i < m_custom_plot.graphCount(); ++i)
+    {
+        m_custom_plot.graph(i)->clearData();
+    }
+
+    m_plotted_cases.clear();
+
+
+    // changing the title of the plot
+
+    m_custom_plot.setTitle(p_series->currentText());
+
+
+    // replotting
+
+    for(int i = 0; i < m_cases.size(); ++i)
+    {
+        addToPlot(m_cases.at(i), false);
+    }
+
+    m_custom_plot.replot();
+
+}
+
 
 } // namespace

@@ -125,7 +125,8 @@ SOURCES += main.cpp \
     opt/nomadevaluator.cpp \
     opt/minlpipoptinterface.cpp \
     par/masterrunner.cpp \
-    par/masteroptimizer.cpp
+    par/masteroptimizer.cpp \
+    gui/inspectorgaslift.cpp
 
 HEADERS += \
     well.h \
@@ -225,7 +226,8 @@ HEADERS += \
     opt/nomadevaluator.h \
     opt/minlpipoptinterface.h \
     par/masterrunner.h \
-    par/masteroptimizer.h
+    par/masteroptimizer.h \
+    gui/inspectorgaslift.h
 
 RESOURCES += \
     gui/images.qrc

@@ -33,6 +33,7 @@ using ResOpt::Case;
 
 class QPushButton;
 class QSlider;
+class QComboBox;
 
 namespace ResOptGui
 {
@@ -52,11 +53,17 @@ private:
     QPushButton *p_btn_clear;
     QPushButton *p_btn_rerun;
     QSlider *p_sld_xaxis;
+    QComboBox *p_series;
 
     QCustomPlot m_custom_plot;
     QVector<Case*> m_cases;
+    QVector<Case*> m_plotted_cases;
 
     bool m_user_changed_slider;
+    bool m_series_updated;
+
+    void updateSeriesList(Case *c);
+    void addToPlot(Case *c, bool replot=true);
 
 
 public:
@@ -73,6 +80,8 @@ public slots:
     void rerunSelectedCase();
     void onXAxisSliderChanged();
     void onXAxisSliderPressed();
+    void onSeriesSelectionChanged(int index);
+
 };
 
 

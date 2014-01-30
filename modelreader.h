@@ -38,6 +38,7 @@ class Pipe;
 class MidPipe;
 class Objective;
 class Capacity;
+class WellPath;
 
 
 /**
@@ -107,6 +108,11 @@ private:
     bool readWellConnections(Well *w);
 
     bool readVariableWellConnections(Well *w);
+
+    bool readWellPath(Well *w);
+    bool readWellPathHeel(WellPath *wp, Well *w);
+    bool readWellPathToe(WellPath *wp, Well *w);
+    bool readWellPathOptions(WellPath *wp, Well *w);
 
 
     /**

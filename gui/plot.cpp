@@ -24,6 +24,8 @@
 #include "runner.h"
 #include "model.h"
 #include "realvariable.h"
+#include "intvariable.h"
+#include "binaryvariable.h"
 #include "constraint.h"
 
 #include <QtWidgets/QGridLayout>
@@ -40,6 +42,8 @@ using std::cout;
 using ResOpt::Runner;
 using ResOpt::Model;
 using ResOpt::RealVariable;
+using ResOpt::IntVariable;
+using ResOpt::BinaryVariable;
 using ResOpt::Constraint;
 
 
@@ -119,7 +123,8 @@ Plot::Plot(MainWindow *mw, QWidget *parent) :
 
     // setting up the series selection drop-down
     p_series = new QComboBox(this);
-    p_series->addItem("Objective", 0);
+    p_series->addItem(QIcon(":new/images/f"), "Objective", 0);
+    p_series->setIconSize(QSize(40,20));
     connect(p_series, SIGNAL(currentIndexChanged(int)), this, SLOT(onSeriesSelectionChanged(int)));
 
 
@@ -177,18 +182,28 @@ void Plot::addToPlot(Case *c, bool replot)
     double value;
 
     double max_real_var = c->numberOfRealVariables();
+    double max_int_var = max_real_var + c->numberOfIntegerVariables();
+    double max_bin_var = max_int_var + c->numberOfBinaryVariables();
 
     int index = p_series->itemData(p_series->currentIndex()).toInt();
 
-    if(index == 0) value = c->objectiveValue();
-    else if(index <= max_real_var)
+    if(index == 0) value = c->objectiveValue(); // objective
+    else if(index <= max_real_var)      // real variable
     {
         value = c->realVariableValue(index-1);
     }
-
-    else
+    else if(index <= max_int_var)       // int variable
     {
-        value = c->constraintValue(index - max_real_var -1);
+        value = c->integerVariableValue(index - max_real_var -1);
+    }
+    else if(index <= max_bin_var)       // bin variable
+    {
+        value = c->binaryVariableValue(index - max_int_var -1);
+    }
+
+    else        // constraint
+    {
+        value = c->constraintValue(index - max_bin_var -1);
     }
 
 
@@ -385,7 +400,23 @@ void Plot::updateSeriesList(Case *c)
         QString name = m->realVariables().at(i)->name();
 
         //QString name = "Real Variable " + QString::number(i+1);
-        p_series->addItem(name, count++);
+        p_series->addItem(QIcon(":new/images/x"), name, count++);
+    }
+
+    // integer variables
+    for(int i = 0; i < c->numberOfIntegerVariables(); ++i)
+    {
+        QString name = m->integerVariables().at(i)->name();
+        p_series->addItem(QIcon(":new/images/x"), name, count++);
+
+
+    }
+
+    // binary variables
+    for(int i = 0; i < c->numberOfBinaryVariables(); ++i)
+    {
+        QString name = m->binaryVariables().at(i)->name();
+        p_series->addItem(QIcon(":new/images/x"), name, count++);
     }
 
     // constraints
@@ -393,7 +424,7 @@ void Plot::updateSeriesList(Case *c)
     {
         QString name = m->constraints().at(i)->name();
 
-        p_series->addItem(name, count++);
+        p_series->addItem(QIcon(":new/images/c"), name, count++);
     }
 
 }

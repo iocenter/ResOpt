@@ -41,6 +41,7 @@
 #include "wellcontrol.h"
 #include "wellconnection.h"
 #include "wellconnectionvariable.h"
+#include "wellpath.h"
 #include "pipeconnection.h"
 #include "npvobjective.h"
 #include "cumoilobjective.h"
@@ -334,6 +335,7 @@ Reservoir* ModelReader::readReservoir()
         else if(list.at(0).startsWith("FILE")) l_file = list.at(1);                     // getting the file name
         else if(list.at(0).startsWith("MRST")) res->setMrstPath(list.at(1));            // setting the MRST path
         else if(list.at(0).startsWith("MATLAB")) res->setMatlabPath(list.at(1));        // setting the Matlab path
+        else if(list.at(0).startsWith("SCRIPT")) res->setMrstScript(list.at(1));        // setting a custom MRST script
         else if(list.at(0).startsWith("TIME")) l_endtime = list.at(1).toDouble(&ok);    // getting the file name
         else if(list.at(0).startsWith("PHASES"))                                        // getting the phases present in the reservoir
         {
@@ -589,6 +591,7 @@ Well* ModelReader::readWell()
             if(list.at(1).startsWith("SCHEDULE")) readWellSchedule(w);                  // reading SCHEDULE
             else if(list.at(1).startsWith("CON")) readWellConnections(w);               // reading CONNECTIONS
             else if(list.at(1).startsWith("VARCON")) readVariableWellConnections(w);    // reading VARCONNECTIONS
+            else if(list.at(1).startsWith("WELLPATH")) readWellPath(w);                 // reading WELLPATH
             else if(list.at(1).startsWith("OUTLETPIPE"))                                // reading OUTLETPIPES
             {
 
@@ -1097,6 +1100,372 @@ bool ModelReader::readVariableWellConnections(Well *w)
     return true;
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// Reads the well WELLPATH
+//-----------------------------------------------------------------------------------------------
+bool ModelReader::readWellPath(Well *w)
+{
+    cout << "        well path..." << endl;
+
+    bool ok = true;
+    WellPath *wp = new WellPath();
+
+
+    QStringList list;
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END") && !list.at(1).startsWith("WELLPATH"))
+    {
+
+
+        if(list.at(0).startsWith("START") && list.at(1).startsWith("TOE")) readWellPathToe(wp, w);
+        else if(list.at(0).startsWith("START") && list.at(1).startsWith("HEEL")) readWellPathHeel(wp, w);
+        else if(list.at(0).startsWith("START") && list.at(1).startsWith("OPTIONS")) readWellPathOptions(wp, w);
+
+        else
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The WELLPATH entry does not have the right format..."
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+            }
+        }
+
+        list = processLine(m_driver_file.readLine());
+    }
+
+
+    if(!wp->initialize())
+    {
+        cout << "WELLPATH did not initialize" << endl;
+        ok = false;
+    }
+
+
+    if(ok)
+    {
+        w->setWellPath(wp);
+    }
+
+    else
+    {
+        cout << endl << "### Error detected in input file! ###" << endl
+             <<  "The WELLPATH entry does not have the right format..."
+             << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+        exit(1);
+    }
+
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// Reads the well WELLPATH TOE
+//-----------------------------------------------------------------------------------------------
+bool ModelReader::readWellPathToe(WellPath *wp, Well *w)
+{
+    cout << "        toe..." << endl;
+    QStringList list;
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+
+
+
+        if(list.size() == 4) // correct number of elements (type, value, max, min)
+        {
+            bool ok;
+
+            // checking the type
+            if(list.at(0).startsWith("I") || list.at(0).startsWith("J") || list.at(0).startsWith("K")) ok = true;
+            else ok = false;
+
+
+
+            // checking the numbers
+            QVector<double> nums;
+
+            for(int i = 1; i < 4; ++i)
+            {
+                nums.push_back(list.at(i).toDouble(&ok));
+                if(!ok) break;
+            }
+
+
+
+            // all ok
+            if(ok)
+            {
+                shared_ptr<IntVariable> v(new IntVariable(w));
+                v->setValue(nums.at(0));
+                v->setMax(nums.at(1));
+                v->setMin(nums.at(2));
+
+                if(list.at(0).startsWith("I"))
+                {
+
+                    wp->setToeI(v);
+                }
+                else if(list.at(0).startsWith("J"))
+                {
+
+                    wp->setToeJ(v);
+                }
+                else if(list.at(0).startsWith("K"))
+                {
+
+                    wp->setToeK(v);
+                }
+
+
+            }
+            else     // error when reading
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The WELLPATH TOE entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+
+
+        else        // wrong number of arguments on line
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The WELLPATH TOE entry does not have the right format..."
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+            }
+        }
+
+
+
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    cout << "end toe" << endl;
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Reads the well WELLPATH HEEL
+//-----------------------------------------------------------------------------------------------
+bool ModelReader::readWellPathHeel(WellPath *wp, Well *w)
+{
+    cout << "        heel..." << endl;
+
+    QStringList list;
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+
+        if(list.size() == 4) // correct number of elements (type, value, max, min)
+        {
+            bool ok;
+
+            // checking the type
+            if(list.at(0).startsWith("I") || list.at(0).startsWith("J") || list.at(0).startsWith("K")) ok = true;
+            else ok = false;
+
+
+
+            // checking the numbers
+            QVector<double> nums;
+
+            for(int i = 1; i < 4; ++i)
+            {
+                nums.push_back(list.at(i).toDouble(&ok));
+                if(!ok) break;
+            }
+
+
+
+            // all ok
+            if(ok)
+            {
+                shared_ptr<IntVariable> v(new IntVariable(w));
+                v->setValue(nums.at(0));
+                v->setMax(nums.at(1));
+                v->setMin(nums.at(2));
+
+                if(list.at(0).startsWith("I")) wp->setHeelI(v);
+                else if(list.at(0).startsWith("J")) wp->setHeelJ(v);
+                else if(list.at(0).startsWith("K")) wp->setHeelK(v);
+
+
+            }
+            else     // error when reading
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The WELLPATH HEEL entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+
+
+        else        // wrong number of arguments on line
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The WELLPATH HEEL entry does not have the right format..."
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+            }
+        }
+
+
+
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    return true;
+}
+
+//-----------------------------------------------------------------------------------------------
+// Reads the well WELLPATH OPTIONS
+//-----------------------------------------------------------------------------------------------
+bool ModelReader::readWellPathOptions(WellPath *wp, Well *w)
+{
+    cout << "        options..." << endl;
+
+    QStringList list;
+
+
+    list = processLine(m_driver_file.readLine());
+
+    while(!m_driver_file.atEnd() && !list.at(0).startsWith("END"))
+    {
+
+
+        if(list.size() == 4) // variable (name, value, max, min)
+        {
+            bool ok;
+
+            // checking the numbers
+            QVector<double> nums;
+
+            for(int i = 1; i < 4; ++i)
+            {
+                nums.push_back(list.at(i).toDouble(&ok));
+                if(!ok) break;
+            }
+
+
+
+            // all ok
+            if(ok)
+            {
+                shared_ptr<IntVariable> v(new IntVariable(w));
+                v->setValue(nums.at(0));
+                v->setMax(nums.at(1));
+                v->setMin(nums.at(2));
+
+                v->setName(list.at(0));
+
+                wp->addOptionVariable(v);
+
+            }
+            else     // error when reading
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The WELLPATH OPTION entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+        else if(list.size() == 2) // constant (name, value)
+        {
+            bool ok= true;
+
+            // checking the number
+            double value = list.at(1).toDouble(&ok);
+
+
+
+            // all ok
+            if(ok)
+            {
+
+                wp->addOptionConstant(list.at(0), value);
+
+            }
+            else     // error when reading
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     << "The WELLPATH OPTION entry could not be read..." << endl
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+
+
+            }
+        }
+
+
+
+        else        // wrong number of arguments on line
+        {
+            if(!isEmpty(list))
+            {
+                cout << endl << "### Error detected in input file! ###" << endl
+                     <<  "The WELLPATH OPTION entry does not have the right format..."
+                     << "Last line: " << list.join(" ").toLatin1().constData() << endl;
+
+                exit(1);
+            }
+        }
+
+
+
+
+
+        list = processLine(m_driver_file.readLine());
+
+    }
+
+    return true;
+}
+
 
 
 //-----------------------------------------------------------------------------------------------
@@ -2652,6 +3021,7 @@ void ModelReader::readUserDefinedConstraints(Model *m)
 //-----------------------------------------------------------------------------------------------
 QStringList ModelReader::processLine(const QString& line)
 {
+
     QString temp = line.split("!").at(0);   // removing everything after !
     temp = temp.trimmed();                  // removing trailing and leadnig whitespaces
 

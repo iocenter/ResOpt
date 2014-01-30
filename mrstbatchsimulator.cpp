@@ -41,6 +41,8 @@
 #include "stream.h"
 #include "adjoint.h"
 #include "adjointcollection.h"
+#include "wellpath.h"
+
 
 namespace ResOpt
 {
@@ -51,14 +53,16 @@ using std::endl;
 
 MrstBatchSimulator::MrstBatchSimulator() :
     m_first_launch(true),
-    run_number(1)
+    run_number(1),
+    m_script("test2")
 {
 }
 
 MrstBatchSimulator::MrstBatchSimulator(const MrstBatchSimulator &m)
     : ReservoirSimulator(m),
       m_first_launch(true),
-      run_number(1)
+      run_number(1),
+      m_script("test2")
 {
 }
 
@@ -68,7 +72,7 @@ MrstBatchSimulator::~MrstBatchSimulator()
 
 
 //-----------------------------------------------------------------------------------------------
-// generates the control input file
+// generates the control input file, when using the auto-generated MRST script
 //-----------------------------------------------------------------------------------------------
 bool MrstBatchSimulator::generateControlInputFile(Model *m)
 {
@@ -205,6 +209,80 @@ bool MrstBatchSimulator::generateControlInputFile(Model *m)
 
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// generates the control input file, when using a custom MRST script
+//-----------------------------------------------------------------------------------------------
+bool MrstBatchSimulator::generateScriptControlFile(Model *m)
+{
+    bool ok = true;
+
+    cout << "generateScriptControlFile(): start" << endl;
+
+
+    QFile ctrl_file(folder() + "/" + m->reservoir()->file().split(".").at(0) + "_CONTROLS.TXT");
+
+    if(!ctrl_file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qWarning("Could not connect to control file: %s", ctrl_file.fileName().toLatin1().constData());
+        exit(1);
+    }
+
+    QTextStream *out_ctrl = new QTextStream(&ctrl_file);
+
+    out_ctrl->setRealNumberNotation(QTextStream::ScientificNotation);
+
+    //sorting the wells in a list first: injectors first, then producers
+    QList<Well*> wells;
+
+    // injectors
+    for(int i = 0; i < m->numberOfWells(); ++i)
+    {
+        Well *w = m->well(i);
+
+        InjectionWell *inj = dynamic_cast<InjectionWell*>(w);
+        if(inj != 0) wells.push_back(w);
+    }
+
+    // producers
+    for(int i = 0; i < m->numberOfWells(); ++i)
+    {
+        Well *w = m->well(i);
+
+        ProductionWell *prod = dynamic_cast<ProductionWell*>(w);
+        if(prod != 0) wells.push_back(w);
+    }
+
+
+    // printing to file
+    for(int i = 0; i < m->numberOfMasterScheduleTimes(); ++i)
+    {
+        for(int j = 0; j < wells.size(); ++j)
+        {
+            WellControl *wc = wells.at(j)->control(i);
+            double value = wc->controlVar()->value();
+
+            if(wc->type() == WellControl::BHP) value = value * 100000;
+            else value = value * 1.15740741 / 100000;
+
+
+            *out_ctrl << value << " ";
+        }
+
+        *out_ctrl << "\n";
+    }
+
+
+    // closing file
+    ctrl_file.close();
+    delete out_ctrl;
+
+    cout << "generateScriptControlFile(): end" << endl;
+
+
+    return ok;
+}
+
 
 //-----------------------------------------------------------------------------------------------
 // generates the MRST Run2 function
@@ -768,6 +846,63 @@ bool MrstBatchSimulator::generateEclIncludeFile(Model *m)
 }
 
 //-----------------------------------------------------------------------------------------------
+// Writes well paths to file (if present)
+//-----------------------------------------------------------------------------------------------
+void MrstBatchSimulator::writeWellPaths(Model *m)
+{
+    QFile path_file(folder() + "/wellpaths.txt");
+
+    if(!path_file.open(QIODevice::WriteOnly | QIODevice::Text))
+    {
+        qWarning("Could not connect to well path file: %s", path_file.fileName().toLatin1().constData());
+        exit(1);
+    }
+
+    QTextStream *out_path = new QTextStream(&path_file);
+
+
+    // writing to file
+    for(int i = 0; i < m->numberOfWells(); ++i)
+    {
+        Well *w = m->well(i);
+
+        if(w->hasWellPath())
+        {
+            WellPath *wp = w->wellPath();
+
+            *out_path << "WELL " << w->name() << "\n";
+
+            *out_path << "TOE_I " << wp->toeI()->value() << "\n";
+            *out_path << "TOE_J " << wp->toeJ()->value() << "\n";
+            *out_path << "TOE_K " << wp->toeK()->value() << "\n";
+            *out_path << "HEEL_I " << wp->heelI()->value() << "\n";
+            *out_path << "HEEL_J " << wp->heelJ()->value() << "\n";
+            *out_path << "HEEL_K " << wp->heelK()->value() << "\n";
+
+            for(int j = 0; j < wp->numberOfVariableOptions(); ++j)
+            {
+                *out_path << "OPTION " << wp->variableOption(j)->name() << " " << wp->variableOption(j)->value() << "\n";
+            }
+
+            for(int j = 0; j < wp->numberOfConstantOptions(); ++j)
+            {
+                *out_path << "OPTION " << wp->constantOption(j).first << " " << wp->constantOption(j).second << "\n";
+            }
+
+            *out_path << "\n";
+
+        }
+    }
+
+
+    // closing file
+    path_file.close();
+    delete out_path;
+
+
+}
+
+//-----------------------------------------------------------------------------------------------
 // generates the input files for the GPRS launch
 //-----------------------------------------------------------------------------------------------
 bool MrstBatchSimulator::generateInputFiles(Model *m)
@@ -786,20 +921,40 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
         // the model is not available when the simulator is launched
         m_matlab_path = m->reservoir()->matlabPath();
 
+        if(m->reservoir()->useMrstScript())
+        {
+            m_script = m->reservoir()->mrstScript().split(".").at(0);
 
-        // removing old versions of the files
-        QFile::remove(folder() + "/test2.m");
-        QFile::remove(folder() + "/runSim2.m");
-        QFile::remove(folder() + "/initStateADI.m");
+            // removing old versions of the file
+            QFile::remove(folder() + "/" + m->reservoir()->mrstScript());
 
+            // copy original
+            bool ok_cpy = QFile::copy(m->driverPath() + "/" + m->reservoir()->mrstScript(), folder() + "/" + m->reservoir()->mrstScript());
 
+            if(!ok_cpy)
+            {
+                cout << endl << "### Runtime Error ###" << endl
+                     << "Did not find user specified MRST script in root folder... " << endl
+                     << "SCRIPT: " << m->reservoir()->mrstScript().toStdString() <<  endl;
 
-        // copying the originals
-        QFile::copy(m->driverPath() + "/initStateADI.m", folder() + "/initStateADI.m");
+                exit(1);
+            }
+        }
+        else
+        {
+            // removing old versions of the files
+            QFile::remove(folder() + "/test2.m");
+            QFile::remove(folder() + "/runSim2.m");
+            QFile::remove(folder() + "/initStateADI.m");
 
-        // generating runsim2
-        AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(m);
-        generateMRSTScript(m, am != 0);
+            // copying the originals
+            QFile::copy(m->driverPath() + "/initStateADI.m", folder() + "/initStateADI.m");
+
+            // generating runsim2
+            AdjointsCoupledModel *am = dynamic_cast<AdjointsCoupledModel*>(m);
+            generateMRSTScript(m, am != 0);
+
+        }
 
 
         m_first_launch = false;
@@ -808,6 +963,9 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
 
     // generating schedule
     generateEclIncludeFile(m);
+
+    // generate well path file
+    writeWellPaths(m);
 
 
     // removing the .mat file every time, since inconsistent results occur when not removed
@@ -818,7 +976,15 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
     QFile::remove(folder() + "/" + base_name + "_GRAD.TXT");
 
     // generating the control input file
-    generateControlInputFile(m);
+
+    if(m->reservoir()->useMrstScript())
+    {
+        generateScriptControlFile(m);
+    }
+    else
+    {
+        generateControlInputFile(m);
+    }
 
 
 
@@ -853,7 +1019,9 @@ bool MrstBatchSimulator::launchSimulator()
     args.push_back("-nosplash");
     args.push_back("-nodesktop");
     args.push_back("-r");
-    args.push_back("test2;exit");
+
+
+    args.push_back(m_script + ";exit");
 
     // setting up the process
     mrst.setProcessChannelMode(QProcess::MergedChannels);

@@ -48,10 +48,14 @@ private:
     bool m_first_launch;
     int run_number;
     QString m_matlab_path;
+    QString m_script;
 
     bool generateControlInputFile(Model *m);
+    bool generateScriptControlFile(Model *m);
     bool generateEclIncludeFile(Model *m);
     bool generateMRSTScript(Model *m, bool adjoints = false);
+    void writeWellPaths(Model *m);
+
     bool readAdjoints(AdjointsCoupledModel *m);
     bool readStandardOutput(Model *m);
 

@@ -32,6 +32,7 @@
 #include "capacity.h"
 #include "userconstraint.h"
 #include "wellconnectionvariable.h"
+#include "wellpath.h"
 
 #include <iostream>
 
@@ -493,6 +494,12 @@ QVector<shared_ptr<IntVariable> >& CoupledModel::integerVariables(bool force_ref
                     if(well(i)->variableConnection(j)->jVariable()->isVariable()) m_vars_integer.push_back(well(i)->variableConnection(j)->jVariable());
                 }
 
+            }
+
+            // checking if the well has a well path
+            if(well(i)->hasWellPath())
+            {
+                m_vars_integer += well(i)->wellPath()->variables();
             }
         }
 

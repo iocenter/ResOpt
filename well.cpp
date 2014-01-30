@@ -29,6 +29,7 @@
 #include "constraint.h"
 #include "wellcontrol.h"
 #include "intvariable.h"
+#include "wellpath.h"
 #include "cost.h"
 
 
@@ -41,7 +42,8 @@ namespace ResOpt
 
 Well::Well()
     : m_bhp_inj(WellControl::QWAT),
-      p_cost(0)
+      p_cost(0),
+      p_well_path(0)
 {
 
 
@@ -52,7 +54,8 @@ Well::Well()
 //-----------------------------------------------------------------------------------------------
 Well::Well(const Well &w)
     : Component(w),
-      p_cost(0)
+      p_cost(0),
+      p_well_path(0)
 {
 
     // copying basic types
@@ -85,6 +88,10 @@ Well::Well(const Well &w)
     // copying the cost and install time
     if(w.p_cost != 0) p_cost = new Cost(*w.p_cost);
     if(w.p_install_time != 0) p_install_time = shared_ptr<IntVariable>(new IntVariable(*w.p_install_time));
+    if(w.p_well_path != 0)
+    {
+        p_well_path = new WellPath(*w.p_well_path);
+    }
 
 
 }
@@ -108,6 +115,8 @@ Well::~Well()
     }
 
     if(p_cost != 0) delete p_cost;
+
+    if(p_well_path != 0) delete p_well_path;
 
 
 }

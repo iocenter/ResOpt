@@ -26,7 +26,7 @@
 #include <QPushButton>
 #include <QVector>
 #include <QtWidgets/QGroupBox>
-
+#include <QScrollArea>
 
 namespace ResOpt
 {
@@ -41,6 +41,7 @@ namespace ResOptGui
 class InspectorVariable;
 class InspectorWellControl;
 class InspectorWellConnectionVariable;
+class InspectorWellPath;
 
 class InspectorInjWell : public QWidget
 {
@@ -50,11 +51,18 @@ private:
 
     QVector<InspectorWellControl*> m_controls;
     QVector<InspectorWellConnectionVariable*> m_varcons;
+    InspectorWellPath *p_inspector_wellpath;
+
+
+    QWidget *widget;
+
     QGroupBox *box_control;
     QGroupBox *box_varcon;
+    QGroupBox *box_wellpath;
 
     QPushButton *p_btn_control;
     QPushButton *p_btn_varcon;
+    QPushButton *p_btn_wellpath;
 
     QPushButton m_btn_close;
     QPushButton m_btn_ok;
@@ -74,6 +82,7 @@ public slots:
     void openPlot();
     void hideControls(bool b);
     void hideConnectionVariables(bool b);
+    void hideWellPath(bool b);
 
 };
 

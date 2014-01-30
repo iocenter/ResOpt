@@ -34,6 +34,7 @@ namespace ResOpt
 {
 class WellConnection;
 class WellConnectionVariable;
+class WellPath;
 class Stream;
 class Cost;
 class IntVariable;
@@ -62,6 +63,7 @@ private:
 
     QVector<WellConnection*> m_connections;                 // the perforations of the well
     QVector<WellConnectionVariable*> m_var_connections;     // variable perforations
+    WellPath *p_well_path;                                  // well path (MRST)
     QVector<WellControl*> m_schedule;                       // the control schedule of the well /**< TODO */
 
     Cost *p_cost;                               // the cost associated with installing the well (only used if the install time is set
@@ -92,6 +94,7 @@ public:
     bool hasInstallTime() const {return p_install_time != 0;}
     bool hasCost() const {return p_cost != 0;}
     bool hasVariableConnections() const {return m_var_connections.size()>0;}
+    bool hasWellPath() const {return p_well_path != 0;}
 
     // virtual functions
 
@@ -167,6 +170,8 @@ public:
 
     void setCost(Cost *c) {p_cost = c;}
     void setInstallTime(shared_ptr<IntVariable> t) {p_install_time = t;}
+
+    void setWellPath(WellPath *wp) {p_well_path = wp;}
 
 
 
@@ -258,6 +263,7 @@ public:
     Cost* cost() const {return p_cost;}
     shared_ptr<IntVariable> installTime() const {return p_install_time;}
 
+    WellPath* wellPath() {return p_well_path;}
 
 
 

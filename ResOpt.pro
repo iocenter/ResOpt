@@ -126,7 +126,11 @@ SOURCES += main.cpp \
     opt/minlpipoptinterface.cpp \
     par/masterrunner.cpp \
     par/masteroptimizer.cpp \
-    gui/inspectorgaslift.cpp
+    gui/inspectorgaslift.cpp \
+    wellpath.cpp \
+    gui/inspectorwellpath.cpp \
+    gui/inspectorheelvariable.cpp \
+    gui/inspectorconstant.cpp
 
 HEADERS += \
     well.h \
@@ -227,7 +231,11 @@ HEADERS += \
     opt/minlpipoptinterface.h \
     par/masterrunner.h \
     par/masteroptimizer.h \
-    gui/inspectorgaslift.h
+    gui/inspectorgaslift.h \
+    wellpath.h \
+    gui/inspectorwellpath.h \
+    gui/inspectorheelvariable.h \
+    gui/inspectorconstant.h
 
 RESOURCES += \
     gui/images.qrc

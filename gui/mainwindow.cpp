@@ -511,6 +511,13 @@ void MainWindow::onRunonceButtonTriggered()
             emit sendMsg("Updating model...");
             p_runner->initializeLaunchers();
 
+            // refreshing variables and con lists
+            p_runner->model()->realVariables(true);
+            p_runner->model()->binaryVariables(true);
+            p_runner->model()->integerVariables(true);
+            p_runner->model()->constraints(true);
+
+
 
             connect(p_runner, SIGNAL(casesFinished()), this, SLOT(onCaseFinished()));
 

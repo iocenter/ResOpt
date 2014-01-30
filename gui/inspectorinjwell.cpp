@@ -24,6 +24,7 @@
 #include "inspectorvariable.h"
 #include "inspectorwellcontrol.h"
 #include "inspectorwellconnectionvariable.h"
+#include "inspectorwellpath.h"
 #include "plotstreams.h"
 
 #include "injectionwell.h"
@@ -39,8 +40,11 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QHBoxLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QRadioButton>
+#include <QDesktopWidget>
+#include <QSizePolicy>
 
 
 using ResOpt::IntVariable;
@@ -55,8 +59,10 @@ namespace ResOptGui
 InspectorInjWell::InspectorInjWell(InjectionWell *well, QWidget *parent) :
     QWidget(parent),
     p_well(well),
+    p_inspector_wellpath(0),
     box_control(0),
     box_varcon(0),
+    box_wellpath(0),
     m_btn_close("Close", this),
     m_btn_ok("Ok", this),
     m_btn_plot("Plot", this)
@@ -66,7 +72,7 @@ InspectorInjWell::InspectorInjWell(InjectionWell *well, QWidget *parent) :
 
 
     construct();
-
+    //widget->show();
     show();
 }
 
@@ -78,13 +84,55 @@ void InspectorInjWell::construct()
 {
     setWindowTitle("Injection Well " + p_well->name() + " Properties");
 
-    QGridLayout *layout = new QGridLayout(this);
+    //QDesktopWidget desktop;
+    //int height = desktop.geometry().height();
+    //setMaximumHeight(height*0.8);
+
+
+    QScrollArea *scroll_area = new QScrollArea(this);
+
+    widget = new QWidget(this);
+
+    widget->setMinimumSize(600, 300);
+    //widget->setMaximumSize(600, 800);
+
+    scroll_area->setAlignment(Qt::AlignCenter);
+
+
+
+
+    scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+
+    //QVBoxLayout *layout_scroll = new QVBoxLayout(scroll_area);
+    //scroll_area->setLayout(layout_scroll);
+
+    //layout_scroll->addWidget(widget, 0, Qt::AlignHCenter);
+
+    scroll_area->setWidget(widget);
+
+    //scroll_area->setMaximumHeight(800);
+
+    QSizePolicy policy = scroll_area->sizePolicy();
+
+    policy.setVerticalStretch(1);
+    policy.setHorizontalStretch(1);
+    policy.setVerticalPolicy(QSizePolicy::Expanding);
+
+    //scroll_area->setWidgetResizable(true);
+
+
+
+    QVBoxLayout *layout_main = new QVBoxLayout(this);
+    setLayout(layout_main);
+
+
+    QVBoxLayout *layout = new QVBoxLayout(widget);
     int row = 0;
 
-    setLayout(layout);
+    widget->setLayout(layout);
 
     // ---- setting up the control variables -----
-    box_control = new QGroupBox("Control Variables", this);
+    box_control = new QGroupBox("Control Variables", widget);
     box_control->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
     box_control->setFixedWidth(500);
     QVBoxLayout *layout_control = new QVBoxLayout(box_control);
@@ -95,13 +143,13 @@ void InspectorInjWell::construct()
     for(int i = 0; i < p_well->numberOfControls(); ++i)
     {
         WellControl *wc = p_well->control(i);
-        InspectorWellControl *iwc = new InspectorWellControl(wc->endTime(), wc->controlVar()->value(), wc->controlVar()->max(), wc->controlVar()->min(), wc->type(), this, i == 0);
+        InspectorWellControl *iwc = new InspectorWellControl(wc->endTime(), wc->controlVar()->value(), wc->controlVar()->max(), wc->controlVar()->min(), wc->type(), widget, i == 0);
         m_controls.push_back(iwc);
         layout_control->addWidget(iwc);
     }
 
     // show/hide
-    p_btn_control = new QPushButton("-", this);
+    p_btn_control = new QPushButton("-", widget);
     p_btn_control->setFixedSize(25, 25);
     p_btn_control->setCheckable(true);
     p_btn_control->setChecked(false);
@@ -109,14 +157,14 @@ void InspectorInjWell::construct()
     layout_control->addWidget(p_btn_control);
 
 
-    layout->addWidget(box_control, row, 0, 1, 3, Qt::AlignCenter);
+    layout->addWidget(box_control, 0, Qt::AlignHCenter);
     ++row;
 
 
     // ---- setting up the variable well connections
     if(p_well->hasVariableConnections())
     {
-        box_varcon = new QGroupBox("Connection Variables", this);
+        box_varcon = new QGroupBox("Connection Variables", widget);
         box_varcon->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
         box_varcon->setFixedWidth(500);
         QVBoxLayout *layout_varcon = new QVBoxLayout(box_varcon);
@@ -135,14 +183,14 @@ void InspectorInjWell::construct()
                                                                                         wcv->wellConnection()->k1(),
                                                                                         wcv->wellConnection()->k2(),
                                                                                         wcv->wellConnection()->wellIndex(),
-                                                                                        this);
+                                                                                        widget);
             m_varcons.push_back(iwcv);
             layout_varcon->addWidget(iwcv);
 
         }
 
         // show/hide
-        p_btn_varcon = new QPushButton("-", this);
+        p_btn_varcon = new QPushButton("-", widget);
         p_btn_varcon->setFixedSize(25, 25);
         p_btn_varcon->setCheckable(true);
         p_btn_varcon->setChecked(false);
@@ -150,26 +198,76 @@ void InspectorInjWell::construct()
         layout_varcon->addWidget(p_btn_varcon);
 
 
-        layout->addWidget(box_varcon, row, 0, 1, 3, Qt::AlignCenter);
+        layout->addWidget(box_varcon, 0, Qt::AlignHCenter);
+        ++row;
+
+    }
+
+    // setting up the wellpath inspector
+    if(p_well->hasWellPath())
+    {
+        box_wellpath = new QGroupBox("Well Path", widget);
+        box_wellpath->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+        box_wellpath->setFixedWidth(500);
+        QVBoxLayout *layout_wellpath = new QVBoxLayout(box_wellpath);
+        box_wellpath->setLayout(layout_wellpath);
+
+        // the inspector
+        p_inspector_wellpath = new InspectorWellPath(p_well->wellPath(), widget);
+
+        layout_wellpath->addWidget(p_inspector_wellpath);
+
+        // show/hide
+        p_btn_wellpath = new QPushButton("-", widget);
+        p_btn_wellpath->setFixedSize(25, 25);
+        p_btn_wellpath->setCheckable(true);
+        p_btn_wellpath->setChecked(false);
+        connect(p_btn_wellpath, SIGNAL(toggled(bool)), this, SLOT(hideWellPath(bool)));
+        layout_wellpath->addWidget(p_btn_wellpath);
+
+
+        layout->addWidget(box_wellpath, 0, Qt::AlignHCenter);
         ++row;
 
     }
 
 
+
+
+    layout_main->addWidget(scroll_area, 1 , Qt::AlignHCenter);
+
+    //scroll_area->setSizePolicy(QSizePolicy::Expanding);
+
+    widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+
+
     // ---- setting up the buttons ----
-    layout->addWidget(&m_btn_ok, row, 0);
+    QWidget *widget_btn = new QWidget(this);
+    QHBoxLayout *layout_btn = new QHBoxLayout(widget_btn);
+
+
+    layout_btn->addWidget(&m_btn_ok);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
 
-    layout->addWidget(&m_btn_plot, row, 1);
+    layout_btn->addWidget(&m_btn_plot);
     connect(&m_btn_plot, SIGNAL(clicked()), this, SLOT(openPlot()));
 
-    layout->addWidget(&m_btn_close, row, 2);
+    layout_btn->addWidget(&m_btn_close);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
     ++row;
 
+    widget_btn->setLayout(layout_btn);
+
+    layout_main->addWidget(widget_btn);
 
 
 
+    //layout_main->setRowStretch(0, 10);
+    //layout_main->setRowStretch(1, 0);
+
+
+
+    widget->adjustSize();
 
 }
 
@@ -208,6 +306,9 @@ void InspectorInjWell::saveAndClose()
         p_well->variableConnection(i)->setWellIndex(m_varcons.at(i)->wi());
     }
 
+    // saving the well path info
+    if(p_inspector_wellpath != 0) p_inspector_wellpath->save();
+
 
     close();
 }
@@ -235,7 +336,7 @@ void InspectorInjWell::hideControls(bool b)
     p_btn_control->setText(b ? "+" : "-");
 
     box_control->adjustSize();
-    this->adjustSize();
+    widget->adjustSize();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -251,7 +352,22 @@ void InspectorInjWell::hideConnectionVariables(bool b)
     p_btn_varcon->setText(b ? "+" : "-");
 
     if(box_varcon != 0) box_varcon->adjustSize();
-    this->adjustSize();
+    widget->adjustSize();
+}
+
+//-----------------------------------------------------------------------------------------------
+// hides or shows the well path
+//-----------------------------------------------------------------------------------------------
+void InspectorInjWell::hideWellPath(bool b)
+{
+
+    p_inspector_wellpath->setHidden(b);
+
+
+    p_btn_wellpath->setText(b ? "+" : "-");
+
+    if(box_wellpath != 0) box_wellpath->adjustSize();
+    widget->adjustSize();
 }
 
 

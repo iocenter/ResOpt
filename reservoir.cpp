@@ -25,7 +25,8 @@ namespace ResOpt
 
 
 Reservoir::Reservoir()
-    : m_gas_phase(false),
+    : m_use_mrst_script(false),
+      m_gas_phase(false),
       m_oil_phase(false),
       m_wat_phase(false),
       m_den_gas(0.0),
@@ -44,6 +45,7 @@ QString Reservoir::description() const
     str.append(" FILE " + file() + "\n");
     str.append(" MRST " + mrstPath() + "\n");
     str.append(" MATLAB " + matlabPath() + "\n");
+    str.append(" SCRIPT " + mrstScript() + "\n");
 
     str.append(" TIME " + QString::number(endTime()) + "\n");
 

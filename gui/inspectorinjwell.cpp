@@ -43,7 +43,6 @@
 #include <QHBoxLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QRadioButton>
-#include <QDesktopWidget>
 #include <QSizePolicy>
 
 
@@ -72,7 +71,7 @@ InspectorInjWell::InspectorInjWell(InjectionWell *well, QWidget *parent) :
 
 
     construct();
-    //widget->show();
+
     show();
 }
 
@@ -84,47 +83,22 @@ void InspectorInjWell::construct()
 {
     setWindowTitle("Injection Well " + p_well->name() + " Properties");
 
-    //QDesktopWidget desktop;
-    //int height = desktop.geometry().height();
-    //setMaximumHeight(height*0.8);
-
-
     QScrollArea *scroll_area = new QScrollArea(this);
 
     widget = new QWidget(this);
-
     widget->setMinimumSize(600, 300);
-    //widget->setMaximumSize(600, 800);
 
     scroll_area->setAlignment(Qt::AlignCenter);
-
-
-
-
     scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-
-    //QVBoxLayout *layout_scroll = new QVBoxLayout(scroll_area);
-    //scroll_area->setLayout(layout_scroll);
-
-    //layout_scroll->addWidget(widget, 0, Qt::AlignHCenter);
-
     scroll_area->setWidget(widget);
 
-    //scroll_area->setMaximumHeight(800);
-
     QSizePolicy policy = scroll_area->sizePolicy();
-
     policy.setVerticalStretch(1);
     policy.setHorizontalStretch(1);
     policy.setVerticalPolicy(QSizePolicy::Expanding);
 
-    //scroll_area->setWidgetResizable(true);
-
-
-
     QVBoxLayout *layout_main = new QVBoxLayout(this);
     setLayout(layout_main);
-
 
     QVBoxLayout *layout = new QVBoxLayout(widget);
     int row = 0;
@@ -236,7 +210,6 @@ void InspectorInjWell::construct()
 
     layout_main->addWidget(scroll_area, 1 , Qt::AlignHCenter);
 
-    //scroll_area->setSizePolicy(QSizePolicy::Expanding);
 
     widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
@@ -244,7 +217,6 @@ void InspectorInjWell::construct()
     // ---- setting up the buttons ----
     QWidget *widget_btn = new QWidget(this);
     QHBoxLayout *layout_btn = new QHBoxLayout(widget_btn);
-
 
     layout_btn->addWidget(&m_btn_ok);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
@@ -259,11 +231,6 @@ void InspectorInjWell::construct()
     widget_btn->setLayout(layout_btn);
 
     layout_main->addWidget(widget_btn);
-
-
-
-    //layout_main->setRowStretch(0, 10);
-    //layout_main->setRowStretch(1, 0);
 
 
 

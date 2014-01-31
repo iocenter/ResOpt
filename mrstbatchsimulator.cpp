@@ -881,7 +881,7 @@ void MrstBatchSimulator::writeWellPaths(Model *m)
 
             for(int j = 0; j < wp->numberOfVariableOptions(); ++j)
             {
-                *out_path << "OPTION " << wp->variableOption(j)->name() << " " << wp->variableOption(j)->value() << "\n";
+                *out_path << "OPTION " << wp->variableOption(j)->name().split(" ").at(1) << " " << wp->variableOption(j)->value() << "\n";
             }
 
             for(int j = 0; j < wp->numberOfConstantOptions(); ++j)

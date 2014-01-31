@@ -26,6 +26,7 @@
 #include "inspectorgaslift.h"
 #include "inspectorconstraint.h"
 #include "inspectorwellconnectionvariable.h"
+#include "inspectorwellpath.h"
 #include "plotstreams.h"
 
 #include "productionwell.h"
@@ -40,8 +41,11 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QHBoxLayout>
 #include <QtWidgets/QGroupBox>
 #include <QtWidgets/QRadioButton>
+#include <QScrollArea>
+#include <QSizePolicy>
 
 
 using ResOpt::IntVariable;
@@ -56,6 +60,10 @@ namespace ResOptGui
 InspectorProdWell::InspectorProdWell(ProductionWell *well, QWidget *parent) :
     QWidget(parent),
     p_well(well),
+    p_inspector_wellpath(0),
+    box_control(0),
+    box_varcon(0),
+    box_wellpath(0),
     m_btn_close("Close", this),
     m_btn_ok("Ok", this),
     m_btn_plot("Plot", this)
@@ -77,31 +85,47 @@ void InspectorProdWell::construct()
 {
     setWindowTitle("Production Well " + p_well->name() + " Properties");
 
-    QGridLayout *layout = new QGridLayout(this);
+    QScrollArea *scroll_area = new QScrollArea(this);
+
+    widget = new QWidget(this);
+    widget->setMinimumSize(600, 300);
+
+    scroll_area->setAlignment(Qt::AlignCenter);
+    scroll_area->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    scroll_area->setWidget(widget);
+
+    QSizePolicy policy = scroll_area->sizePolicy();
+    policy.setVerticalStretch(1);
+    policy.setHorizontalStretch(1);
+    policy.setVerticalPolicy(QSizePolicy::Expanding);
+
+    QVBoxLayout *layout_main = new QVBoxLayout(this);
+    setLayout(layout_main);
+
+    QVBoxLayout *layout = new QVBoxLayout(widget);
     int row = 0;
 
-    setLayout(layout);
+    widget->setLayout(layout);
 
     // ---- setting up the control variables -----
-    box_control = new QGroupBox("Control Variables", this);
+    box_control = new QGroupBox("Control Variables", widget);
     box_control->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
     box_control->setFixedWidth(500);
-
     QVBoxLayout *layout_control = new QVBoxLayout(box_control);
-    //layout_control->setSizeConstraint(QLayout::SetFixedSize);
+
     box_control->setLayout(layout_control);
 
 
     for(int i = 0; i < p_well->numberOfControls(); ++i)
     {
         WellControl *wc = p_well->control(i);
-        InspectorWellControl *iwc = new InspectorWellControl(wc->endTime(), wc->controlVar()->value(), wc->controlVar()->max(), wc->controlVar()->min(), wc->type(), this, i == 0);
+        InspectorWellControl *iwc = new InspectorWellControl(wc->endTime(), wc->controlVar()->value(), wc->controlVar()->max(), wc->controlVar()->min(), wc->type(), widget, i == 0);
         m_controls.push_back(iwc);
         layout_control->addWidget(iwc);
     }
 
     // show/hide
-    p_btn_control = new QPushButton("-", this);
+    p_btn_control = new QPushButton("-", widget);
     p_btn_control->setFixedSize(25, 25);
     p_btn_control->setCheckable(true);
     p_btn_control->setChecked(false);
@@ -110,13 +134,13 @@ void InspectorProdWell::construct()
 
 
 
-    layout->addWidget(box_control, row, 0, 1, 3, Qt::AlignCenter);
+    layout->addWidget(box_control, 0, Qt::AlignHCenter);
     ++row;
 
     // ---- setting up the gas lift variables -----
     if(p_well->hasGasLift())
     {
-        box_gaslift = new QGroupBox("Gas Lift Variables", this);
+        box_gaslift = new QGroupBox("Gas Lift Variables", widget);
         box_gaslift->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
         box_gaslift->setFixedWidth(500);
 
@@ -127,13 +151,13 @@ void InspectorProdWell::construct()
         for(int i = 0; i < p_well->numberOfGasLiftControls(); ++i)
         {
             WellControl *gl = p_well->gasLiftControl(i);
-            InspectorGasLift *igl = new InspectorGasLift(gl->endTime(), gl->controlVar()->value(), gl->controlVar()->max(), gl->controlVar()->min(), this, i == 0);
+            InspectorGasLift *igl = new InspectorGasLift(gl->endTime(), gl->controlVar()->value(), gl->controlVar()->max(), gl->controlVar()->min(), widget, i == 0);
             m_gaslift.push_back(igl);
             layout_gaslift->addWidget(igl);
         }
 
         // show/hide
-        p_btn_gaslift = new QPushButton("-", this);
+        p_btn_gaslift = new QPushButton("-", widget);
         p_btn_gaslift->setFixedSize(25, 25);
         p_btn_gaslift->setCheckable(true);
         p_btn_gaslift->setChecked(false);
@@ -141,7 +165,7 @@ void InspectorProdWell::construct()
         layout_gaslift->addWidget(p_btn_gaslift);
 
 
-        layout->addWidget(box_gaslift, row, 0, 1, 3, Qt::AlignCenter);
+        layout->addWidget(box_gaslift, 0, Qt::AlignHCenter);
         ++row;
 
 
@@ -151,7 +175,7 @@ void InspectorProdWell::construct()
     // ---- setting up the variable well connections
     if(p_well->hasVariableConnections())
     {
-        box_varcon = new QGroupBox("Connection Variables", this);
+        box_varcon = new QGroupBox("Connection Variables", widget);
         box_varcon->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
         box_varcon->setFixedWidth(500);
 
@@ -171,14 +195,14 @@ void InspectorProdWell::construct()
                                                                                         wcv->wellConnection()->k1(),
                                                                                         wcv->wellConnection()->k2(),
                                                                                         wcv->wellConnection()->wellIndex(),
-                                                                                        this);
+                                                                                        widget);
             m_varcons.push_back(iwcv);
             layout_varcon->addWidget(iwcv);
 
         }
 
         // show/hide
-        p_btn_varcon = new QPushButton("-", this);
+        p_btn_varcon = new QPushButton("-", widget);
         p_btn_varcon->setFixedSize(25, 25);
         p_btn_varcon->setCheckable(true);
         p_btn_varcon->setChecked(false);
@@ -186,7 +210,36 @@ void InspectorProdWell::construct()
         layout_varcon->addWidget(p_btn_varcon);
 
 
-        layout->addWidget(box_varcon, row, 0, 1, 3, Qt::AlignCenter);
+        layout->addWidget(box_varcon, 0, Qt::AlignHCenter);
+        ++row;
+
+    }
+
+
+    // setting up the wellpath inspector
+    if(p_well->hasWellPath())
+    {
+        box_wellpath = new QGroupBox("Well Path", widget);
+        box_wellpath->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
+        box_wellpath->setFixedWidth(500);
+        QVBoxLayout *layout_wellpath = new QVBoxLayout(box_wellpath);
+        box_wellpath->setLayout(layout_wellpath);
+
+        // the inspector
+        p_inspector_wellpath = new InspectorWellPath(p_well->wellPath(), widget);
+
+        layout_wellpath->addWidget(p_inspector_wellpath);
+
+        // show/hide
+        p_btn_wellpath = new QPushButton("-", widget);
+        p_btn_wellpath->setFixedSize(25, 25);
+        p_btn_wellpath->setCheckable(true);
+        p_btn_wellpath->setChecked(false);
+        connect(p_btn_wellpath, SIGNAL(toggled(bool)), this, SLOT(hideWellPath(bool)));
+        layout_wellpath->addWidget(p_btn_wellpath);
+
+
+        layout->addWidget(box_wellpath, 0, Qt::AlignHCenter);
         ++row;
 
     }
@@ -194,8 +247,9 @@ void InspectorProdWell::construct()
 
 
 
+
     // ----- setting up the bhp constraints ------
-    box_bhp_con = new QGroupBox("BHP Constraints", this);
+    box_bhp_con = new QGroupBox("BHP Constraints", widget);
     box_bhp_con->setStyleSheet("QGroupBox{border:2px solid gray;border-radius:5px;margin-top: 1ex;} QGroupBox::title{subcontrol-origin: margin;subcontrol-position:top center;padding:0 3px;}");
     box_bhp_con->setFixedWidth(500);
 
@@ -207,33 +261,53 @@ void InspectorProdWell::construct()
     {
 
 
-        InspectorConstraint *ic = new InspectorConstraint(p_well->control(i)->endTime(), p_well->bhpConstraint(i)->value(), p_well->bhpConstraint(i)->max(), p_well->bhpConstraint(i)->min(), this, i == 0);
+        InspectorConstraint *ic = new InspectorConstraint(p_well->control(i)->endTime(), p_well->bhpConstraint(i)->value(), p_well->bhpConstraint(i)->max(), p_well->bhpConstraint(i)->min(), widget, i == 0);
         m_bhp_constraints.push_back(ic);
         layout_bhp_con->addWidget(ic);
     }
 
     // show/hide
-    p_btn_bhp_con = new QPushButton("+", this);
+    p_btn_bhp_con = new QPushButton("+", widget);
     p_btn_bhp_con->setFixedSize(25, 25);
     p_btn_bhp_con->setCheckable(true);
     connect(p_btn_bhp_con, SIGNAL(toggled(bool)), this, SLOT(hideBhpConstraints(bool)));
     layout_bhp_con->addWidget(p_btn_bhp_con);
     p_btn_bhp_con->setChecked(true);
 
-    layout->addWidget(box_bhp_con, row, 0, 1, 3, Qt::AlignCenter);
+    layout->addWidget(box_bhp_con,0 , Qt::AlignHCenter);
     ++row;
+
+
+    layout_main->addWidget(scroll_area, 1 , Qt::AlignHCenter);
+
+
+    widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
 
     // ---- setting up the buttons ----
-    layout->addWidget(&m_btn_ok, row, 0);
+    QWidget *widget_btn = new QWidget(this);
+    QHBoxLayout *layout_btn = new QHBoxLayout(widget_btn);
+
+    layout_btn->addWidget(&m_btn_ok);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
 
-    layout->addWidget(&m_btn_plot, row, 1);
+    layout_btn->addWidget(&m_btn_plot);
     connect(&m_btn_plot, SIGNAL(clicked()), this, SLOT(openPlot()));
 
-    layout->addWidget(&m_btn_close, row, 2);
+    layout_btn->addWidget(&m_btn_close);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
     ++row;
+
+    widget_btn->setLayout(layout_btn);
+
+    layout_main->addWidget(widget_btn);
+
+
+
+    widget->adjustSize();
+
+    scroll_area->adjustSize();
+
 
 
 }
@@ -307,7 +381,7 @@ void InspectorProdWell::hideControls(bool b)
     p_btn_control->setText(b ? "+" : "-");
 
     box_control->adjustSize();
-    this->adjustSize();
+    widget->adjustSize();
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -323,7 +397,7 @@ void InspectorProdWell::hideGasLift(bool b)
     p_btn_gaslift->setText(b ? "+" : "-");
 
     box_gaslift->adjustSize();
-    this->adjustSize();
+    widget->adjustSize();
 }
 
 
@@ -340,7 +414,22 @@ void InspectorProdWell::hideConnectionVariables(bool b)
     p_btn_varcon->setText(b ? "+" : "-");
 
     if(box_varcon != 0) box_varcon->adjustSize();
-    this->adjustSize();
+    widget->adjustSize();
+}
+
+//-----------------------------------------------------------------------------------------------
+// hides or shows the well path
+//-----------------------------------------------------------------------------------------------
+void InspectorProdWell::hideWellPath(bool b)
+{
+
+    p_inspector_wellpath->setHidden(b);
+
+
+    p_btn_wellpath->setText(b ? "+" : "-");
+
+    if(box_wellpath != 0) box_wellpath->adjustSize();
+    widget->adjustSize();
 }
 
 
@@ -357,7 +446,7 @@ void InspectorProdWell::hideBhpConstraints(bool b)
     p_btn_bhp_con->setText(b ? "+" : "-");
 
     box_bhp_con->adjustSize();
-    this->adjustSize();
+    widget->adjustSize();
 }
 
 } // namespace

@@ -28,6 +28,7 @@
 #include "modelitemendpipe.h"
 #include "modelitempressurebooster.h"
 #include "modelitemcapacity.h"
+#include "modelitemreservoir.h"
 #include "connector.h"
 
 #include "model.h"
@@ -101,9 +102,14 @@ ModelScene::ModelScene(QObject *parent) :
 //-----------------------------------------------------------------------------------------------
 void ModelScene::buildSceneFromModel(Model *m)
 {
+    // reservoir
+
+    ModelItemReservoir *res_item = new ModelItemReservoir(m->reservoir());
+    int x_res = (m->numberOfWells()-1)*40 -6;
+    res_item->setPos(-200, x_res);
+    addItem(res_item);
+
     // wells
-
-
 
     for(int i = 0; i < m->numberOfWells(); ++i)
     {
@@ -122,6 +128,11 @@ void ModelScene::buildSceneFromModel(Model *m)
             addItem(prod_item);
             m_prodwell_items.append(prod_item);
 
+            // connecting to reservoir
+            Connector *c = new Connector(res_item, prod_item, true);
+            addItem(c);
+
+
             // adding upstream items to the scene
             addUpstreamToScene(prod_item);
 
@@ -139,6 +150,11 @@ void ModelScene::buildSceneFromModel(Model *m)
 
             addItem(inj_item);
             m_injwell_items.append(inj_item);
+
+            // connecting to reservoir
+            Connector *c = new Connector(res_item, inj_item, true);
+            addItem(c);
+
 
         }
 

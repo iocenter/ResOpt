@@ -18,5 +18,7 @@
         <file alias="c">img/c.png</file>
         <file alias="f">img/f.png</file>
         <file alias="x">img/x.png</file>
+        <file alias="reservoir">img/reservoir.png</file>
+        <file alias="res_svg">img/reservoir.svg</file>
     </qresource>
 </RCC>

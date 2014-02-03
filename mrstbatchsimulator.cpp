@@ -369,10 +369,12 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m, bool adjoints)
     *out_mrst << "numSteps = numel(wellSols);\n";
     *out_mrst << "wrats    = zeros(numWells, numSteps);\n";
     *out_mrst << "orats    = zeros(numWells, numSteps);\n";
+    *out_mrst << "grats    = zeros(numWells, numSteps);\n";
     *out_mrst << "bhps     = zeros(numWells, numSteps);\n";
     *out_mrst << "for wn = 1:numWells\n";
     *out_mrst << "    wrats(wn,:) = cellfun(@(x)x(wn).qWs, wellSols)';\n";
     *out_mrst << "    orats(wn,:) = cellfun(@(x)x(wn).qOs, wellSols)';\n";
+    *out_mrst << "    grats(wn,:) = cellfun(@(x)x(wn).qGs, wellSols)';\n";
     *out_mrst << "    bhps(wn,:)  = cellfun(@(x)x(wn).pressure, wellSols)';\n";
     *out_mrst << "end\n\n";
 
@@ -381,11 +383,12 @@ bool MrstBatchSimulator::generateMRSTScript(Model *m, bool adjoints)
     *out_mrst << "M = sparse((1:numSteps)', schedule.step.control, schedule.step.val, numSteps, numContrSteps);\n";
     *out_mrst << "wrats = (wrats*M)./(ones(numWells, 1)*sum(M));\n";
     *out_mrst << "orats = (orats*M)./(ones(numWells, 1)*sum(M));\n";
+    *out_mrst << "grats = (grats*M)./(ones(numWells, 1)*sum(M));\n";
     *out_mrst << "bhps  = (bhps*M)./(ones(numWells, 1)*sum(M));\n\n";
 
     *out_mrst << "% write output\n";
     *out_mrst << "fid = fopen(outNm, 'w');\n";
-    *out_mrst << "fprintf(fid, '%+12.6e %+12.6e %+12.6e\\n',  full([wrats(:) orats(:) bhps(:)]'));\n";
+    *out_mrst << "fprintf(fid, '%+12.6e %+12.6e %+12.6e %+12.6e\\n',  full([wrats(:) orats(:) grats(:) bhps(:)]'));\n";
     *out_mrst << "fclose(fid);\n\n";
 
     if(adjoints)
@@ -921,6 +924,12 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
         // the model is not available when the simulator is launched
         m_matlab_path = m->reservoir()->matlabPath();
 
+        // removing old version of the .mat file
+        if(m->reservoir()->keepMatFile())
+        {
+            QFile::remove(folder() + "/" + base_name + ".mat");
+        }
+
         if(m->reservoir()->useMrstScript())
         {
             m_script = m->reservoir()->mrstScript().split(".").at(0);
@@ -934,7 +943,7 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
             if(!ok_cpy)
             {
                 cout << endl << "### Runtime Error ###" << endl
-                     << "Did not find user specified MRST script in root folder... " << endl
+                     << "Did not find user specified MRST script... " << endl
                      << "SCRIPT: " << m->reservoir()->mrstScript().toStdString() <<  endl;
 
                 exit(1);
@@ -968,9 +977,11 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
     writeWellPaths(m);
 
 
-    // removing the .mat file every time, since inconsistent results occur when not removed
-    QFile::remove(folder() + "/" + base_name + ".mat");
-
+    if(!m->reservoir()->keepMatFile())
+    {
+        // removing the .mat file every time, since inconsistent results occur when not removed
+        QFile::remove(folder() + "/" + base_name + ".mat");
+    }
     // removing old output file
     QFile::remove(folder() + "/" + base_name + "_RES.TXT");
     QFile::remove(folder() + "/" + base_name + "_GRAD.TXT");
@@ -1142,16 +1153,18 @@ bool MrstBatchSimulator::readStandardOutput(Model *m)
             // processing the line
             double q_wat = list.at(0).toDouble();
             double q_oil = list.at(1).toDouble();
-            double pres = list.at(2).toDouble();
+            double q_gas = list.at(2).toDouble();
+            double pres = list.at(3).toDouble();
 
             // converting the rates and pressures to the correct units
             // production rates are negative, injection positive
             q_wat = -86400 * q_wat;
             q_oil = -86400 * q_oil;
+            q_gas = -86400 * q_gas;
             pres = 1e-5 * pres;
 
 
-            Stream *s = new Stream(m->masterScheduleTime(i), q_oil, 0.0, q_wat, pres);
+            Stream *s = new Stream(m->masterScheduleTime(i), q_oil, q_gas, q_wat, pres);
 
             s->setInputUnits(Stream::METRIC);
 

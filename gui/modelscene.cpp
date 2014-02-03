@@ -100,12 +100,15 @@ ModelScene::ModelScene(QObject *parent) :
 //-----------------------------------------------------------------------------------------------
 // Builds all the graphical elements from a model
 //-----------------------------------------------------------------------------------------------
-void ModelScene::buildSceneFromModel(Model *m)
+void ModelScene::buildSceneFromModel(Model *m, ReservoirSimulator *sim)
 {
     // reservoir
 
-    ModelItemReservoir *res_item = new ModelItemReservoir(m->reservoir());
-    int x_res = (m->numberOfWells()-1)*40 -6;
+
+
+
+    ModelItemReservoir *res_item = new ModelItemReservoir(m->reservoir(), sim);
+    int x_res = (m->numberOfWells()-1)*40 -4;
     res_item->setPos(-200, x_res);
     addItem(res_item);
 

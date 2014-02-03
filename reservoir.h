@@ -43,6 +43,7 @@ private:
     QString m_mrst_path;
     QString m_mrst_script;
     bool m_use_mrst_script;
+    bool m_keep_mat_file;
     double m_endtime; /**< TODO */
 
     bool m_gas_phase;
@@ -82,6 +83,7 @@ public:
     void setMrstPath(const QString &p) {m_mrst_path = p;}
     void setMatlabPath(const QString &p) {m_matlab_path = p;}
     void setMrstScript(const QString &s) {m_mrst_script = s; m_use_mrst_script = true;}
+    void setKeepMatFile(bool b) {m_keep_mat_file = b;}
 
     /**
      * @brief Sets the end time of the simulation
@@ -123,6 +125,7 @@ public:
     QString mrstPath() const {return m_mrst_path;}
     QString mrstScript() const {return m_mrst_script;}
     bool useMrstScript() const {return m_use_mrst_script;}
+    bool keepMatFile() const {return m_keep_mat_file;}
 
     /**
      * @brief Returns the end time of the simulation

@@ -28,11 +28,13 @@ namespace ResOpt
 {
 class Model;
 class Component;
+class ReservoirSimulator;
 
 }
 
 using ResOpt::Model;
 using ResOpt::Component;
+using ResOpt::ReservoirSimulator;
 
 namespace ResOptGui
 {
@@ -78,7 +80,7 @@ private:
 public:
     explicit ModelScene(QObject *parent = 0);
 
-    void buildSceneFromModel(Model *m);
+    void buildSceneFromModel(Model *m, ReservoirSimulator *sim);
 
 
     ModelItem* itemFromComponent(Component *c);

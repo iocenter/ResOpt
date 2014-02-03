@@ -27,9 +27,11 @@
 namespace ResOpt
 {
 class Reservoir;
+class ReservoirSimulator;
 }
 
 using ResOpt::Reservoir;
+using ResOpt::ReservoirSimulator;
 
 
 
@@ -40,13 +42,14 @@ class ModelItemReservoir : public ModelItem
 {
 private:
     Reservoir *p_res;
+    ReservoirSimulator *p_sim;
 
 protected:
     virtual void mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event);
 
 public:
 
-    ModelItemReservoir(Reservoir *res, const QString &file_name = ":new/images/res_svg", QGraphicsItem *parent = 0);
+    ModelItemReservoir(Reservoir *res, ReservoirSimulator *sim, const QString &file_name = ":new/images/res_svg", QGraphicsItem *parent = 0);
 
 
     Reservoir* reservoir() {return p_res;}

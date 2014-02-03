@@ -34,9 +34,11 @@
 namespace ResOpt
 {
 class Reservoir;
+class ReservoirSimulator;
 }
 
 using ResOpt::Reservoir;
+using ResOpt::ReservoirSimulator;
 
 namespace ResOptGui
 {
@@ -46,27 +48,41 @@ class InspectorReservoir : public QWidget
     Q_OBJECT
 private:
     Reservoir *p_res;
+    ReservoirSimulator *p_sim;
 
-    QLabel m_lbl_pout;
-    QLineEdit m_led_pout;
-    QComboBox m_cbx_pout;
+
+
+    QComboBox *p_cbx_sim;
+    QLineEdit *p_led_res_file;
+    QLineEdit *p_led_mrst;
+    QLineEdit *p_led_matlab;
+
+    QPushButton *p_btn_res_file;
+    QPushButton *p_btn_mrst;
+    QPushButton *p_btn_matlab;
+
+
+
 
 
     QPushButton m_btn_close;
     QPushButton m_btn_ok;
-    QPushButton m_btn_plot;
 
     void construct();
 
 
 public:
-    explicit InspectorReservoir(Reservoir *res, QWidget *parent = 0);
+    explicit InspectorReservoir(Reservoir *res, ReservoirSimulator *sim, QWidget *parent = 0);
 
 signals:
     void sendMsg(QString);
 
 public slots:
     void saveAndClose();
+
+    void browseResFile();
+    void browseMrst();
+    void browseMatlab();
 
 
 };

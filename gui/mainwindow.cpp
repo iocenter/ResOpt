@@ -217,7 +217,7 @@ void MainWindow::loadModel()
 
         p_runner->initialize();
 
-        p_model_scene->buildSceneFromModel(p_runner->model());
+        p_model_scene->buildSceneFromModel(p_runner->model(), p_runner->reservoirSimulator());
 
 
         // connecting to plot
@@ -278,8 +278,8 @@ void MainWindow::runCase(Case *c)
 
         p_runner->evaluate(cq, 0);
 
-        delete cq;
-        cq = 0;
+        //delete cq;
+        //cq = 0;
     }
     else emit sendMsg("Could not evaluate case, model is running!");
 

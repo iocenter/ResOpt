@@ -23,31 +23,30 @@
 
 #include "plotstreams.h"
 
-#include "endpipe.h"
-#include "stream.h"
+#include "reservoir.h"
+#include "reservoirsimulator.h"
 
-using ResOpt::Stream;
+
 
 #include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QVBoxLayout>
+#include <QHBoxLayout>
 #include <QtWidgets/QGroupBox>
 #include <QDoubleValidator>
+#include <QFileDialog>
 
 
 namespace ResOptGui
 {
 
-InspectorReservoir::InspectorReservoir(Reservoir *res, QWidget *parent) :
+InspectorReservoir::InspectorReservoir(Reservoir *res, ReservoirSimulator *sim, QWidget *parent) :
     QWidget(parent),
     p_res(res),
-    m_lbl_pout("Minimum Outlet Pressure:", this),
-    m_led_pout(this),
-    m_cbx_pout(this),
+    p_sim(sim),
     m_btn_close("Close", this),
-    m_btn_ok("Ok", this),
-    m_btn_plot("Plot", this)
+    m_btn_ok("Ok", this)
 {
 
     setAttribute(Qt::WA_DeleteOnClose);
@@ -66,40 +65,96 @@ void InspectorReservoir::construct()
 {
     setWindowTitle("Reservoir Properties");
 
-    QGridLayout *layout = new QGridLayout(this);
+    QVBoxLayout *layout_main = new QVBoxLayout(this);
 
-    setLayout(layout);
+    setLayout(layout_main);
 
-    // ---- setting up the outlet pressure  -----
-    layout->addWidget(&m_lbl_pout, 0, 0);
+    QWidget *widget = new QWidget(widget);
+    QGridLayout *layout = new QGridLayout(widget);
+    widget->setLayout(layout);
+
+    int row = 0;
+    // ---- setting up the reservoir simulator  -----
+    QLabel *lbl_sim = new QLabel("Reservoir simulator: ", widget);
+    layout->addWidget(lbl_sim, row, 0);
+
+    p_cbx_sim = new QComboBox(this);
+    p_cbx_sim->addItem("MRST");
+    p_cbx_sim->addItem("GPRS");
+    p_cbx_sim->addItem("VLP");
+
+    layout->addWidget(p_cbx_sim, row, 1);
+
+    ++row;
+
+    // ---- setting up the reservoir file  -----
+    QLabel *lbl_res_file = new QLabel(widget);
+    lbl_res_file->setText("Reservoir input file: ");
+    layout->addWidget(lbl_res_file, row, 0);
+
+    p_led_res_file = new QLineEdit(widget);
+    p_led_res_file->setText(p_res->file());
+    p_led_res_file->setMinimumWidth(300);
+    layout->addWidget(p_led_res_file, row, 1);
+
+    p_btn_res_file = new QPushButton("...", widget);
+    layout->addWidget(p_btn_res_file, row, 2);
+    connect(p_btn_res_file, SIGNAL(clicked()), this, SLOT(browseResFile()));
+
+    ++row;
 
 
-    // the value
-    m_led_pout.setText("2");
-    m_led_pout.setValidator(new QDoubleValidator(this));
+    // ---- setting up the mrst path  -----
+    QLabel *lbl_mrst = new QLabel(widget);
+    lbl_mrst->setText("MRST path: ");
+    layout->addWidget(lbl_mrst, row, 0);
 
-    layout->addWidget(&m_led_pout, 0, 1);
+    p_led_mrst = new QLineEdit(widget);
+    p_led_mrst->setText(p_res->mrstPath());
+    p_led_mrst->setMinimumWidth(300);
+    layout->addWidget(p_led_mrst, row, 1);
 
-    // the unit type
-    m_cbx_pout.addItem("BARA", Stream::METRIC);
-    m_cbx_pout.addItem("PSIA", Stream::FIELD);
+    p_btn_mrst = new QPushButton("...", widget);
+    layout->addWidget(p_btn_mrst, row, 2);
+    connect(p_btn_mrst, SIGNAL(clicked()), this, SLOT(browseMrst()));
 
-    //m_cbx_pout.setCurrentIndex(m_cbx_pout.findData(p_pipe->outletUnit()));
+    ++row;
 
-    layout->addWidget(&m_cbx_pout, 0, 2);
 
+    // ---- setting up the mrst path  -----
+    QLabel *lbl_matlab = new QLabel(widget);
+    lbl_matlab->setText("MATLAB executable: ");
+    layout->addWidget(lbl_matlab, row, 0);
+
+    p_led_matlab = new QLineEdit(widget);
+    p_led_matlab->setText(p_res->matlabPath());
+    p_led_matlab->setMinimumWidth(300);
+    layout->addWidget(p_led_matlab, row, 1);
+
+    p_btn_matlab = new QPushButton("...", widget);
+    layout->addWidget(p_btn_matlab, row, 2);
+    connect(p_btn_matlab, SIGNAL(clicked()), this, SLOT(browseMatlab()));
+
+    ++row;
+
+
+    layout_main->addWidget(widget);
 
     // setting up the buttons
-    layout->addWidget(&m_btn_ok, 1, 0);
+    QWidget *widget_btn = new QWidget(this);
+    QHBoxLayout * layout_btn = new QHBoxLayout(widget_btn);
+    widget_btn->setLayout(layout_btn);
+
+
+    layout_btn->addWidget(&m_btn_ok);
     connect(&m_btn_ok, SIGNAL(clicked()), this, SLOT(saveAndClose()));
 
-    layout->addWidget(&m_btn_plot, 1, 1);
-    //connect(&m_btn_plot, SIGNAL(clicked()), this, SLOT(openPlot()));
 
-    layout->addWidget(&m_btn_close, 1, 2);
+    layout_btn->addWidget(&m_btn_close);
     connect(&m_btn_close, SIGNAL(clicked()), this, SLOT(close()));
 
 
+    layout_main->addWidget(widget_btn);
 
 }
 
@@ -122,6 +177,58 @@ void InspectorReservoir::saveAndClose()
     close();
 }
 
+
+//-----------------------------------------------------------------------------------------------
+// opens the file browser for the reservoir input file
+//-----------------------------------------------------------------------------------------------
+void InspectorReservoir::browseResFile()
+{
+    QDir dir(p_sim->folder());
+
+    dir.cdUp();
+
+
+
+    QString name = QFileDialog::getOpenFileName(this, "Reservoir Input File", dir.absolutePath(), "Reservoir Input File (*.*)");
+
+    p_led_res_file->setText(dir.relativeFilePath(name));
+}
+
+//-----------------------------------------------------------------------------------------------
+// opens the file browser for the mrst path
+//-----------------------------------------------------------------------------------------------
+void InspectorReservoir::browseMrst()
+{
+    QDir dir(p_sim->folder());
+
+    dir.cdUp();
+
+
+
+
+    QString name = QFileDialog::getExistingDirectory(this, "MRST Path", dir.absolutePath());
+
+    p_led_mrst->setText(name);
+
+}
+
+//-----------------------------------------------------------------------------------------------
+// opens the file browser for the matlab path
+//-----------------------------------------------------------------------------------------------
+void InspectorReservoir::browseMatlab()
+{
+    QDir dir(p_sim->folder());
+
+    dir.cdUp();
+
+
+    QString name = QFileDialog::getOpenFileName(this, "MATLAB Executable", dir.absolutePath(), "Matlab executable (*)");
+
+
+
+    p_led_matlab->setText(name);
+
+}
 
 
 

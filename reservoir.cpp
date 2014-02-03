@@ -26,6 +26,7 @@ namespace ResOpt
 
 Reservoir::Reservoir()
     : m_use_mrst_script(false),
+      m_keep_mat_file(false),
       m_gas_phase(false),
       m_oil_phase(false),
       m_wat_phase(false),

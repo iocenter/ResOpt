@@ -22,17 +22,20 @@
 #include "modelitemreservoir.h"
 #include "modelscene.h"
 #include "inspectorreservoir.h"
+#include "reservoirsimulator.h"
+
 
 namespace ResOptGui
 {
 
-ModelItemReservoir::ModelItemReservoir(Reservoir *res, const QString &file_name, QGraphicsItem *parent)
+ModelItemReservoir::ModelItemReservoir(Reservoir *res, ReservoirSimulator *sim, const QString &file_name, QGraphicsItem *parent)
     : ModelItem(file_name, parent),
-      p_res(res)
+      p_res(res),
+      p_sim(sim)
 
 {
 
-    setScale(0.3);
+    setScale(0.9);
 
     setToolTip("Reservoir");
 
@@ -43,7 +46,7 @@ ModelItemReservoir::ModelItemReservoir(Reservoir *res, const QString &file_name,
 //-----------------------------------------------------------------------------------------------
 void ModelItemReservoir::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *event)
 {
-    InspectorReservoir *inspector = new InspectorReservoir(p_res);
+    InspectorReservoir *inspector = new InspectorReservoir(p_res, p_sim);
 
     ModelScene *m_scene = dynamic_cast<ModelScene*>(scene());
     connect(inspector, SIGNAL(sendMsg(QString)), m_scene, SIGNAL(sendMsg(QString)));

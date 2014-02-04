@@ -50,6 +50,7 @@
 #include "casequeue.h"
 #include "case.h"
 #include "cost.h"
+#include "logger.h"
 
 // needed for debug
 #include "productionwell.h"
@@ -86,6 +87,7 @@ Runner::Runner(const QString &driver_file, QObject *parent)
 
 {
     p_reader = new ModelReader(driver_file);
+    p_logger = new Logger(0, this);
 }
 
 Runner::~Runner()

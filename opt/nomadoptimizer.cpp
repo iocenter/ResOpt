@@ -99,7 +99,7 @@ void NomadOptimizer::start()
             // sending it to the runner
             sendBestCaseToRunner(c);
 
-            delete c;
+            //delete c;
         }
 
     }

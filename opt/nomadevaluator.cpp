@@ -68,7 +68,7 @@ bool NomadEvaluator::eval_x(NOMAD::Eval_Point &x, const NOMAD::Double &h_max, bo
     }
 
     // deleting the case from the heap
-    delete c;
+    //delete c;
 
     return true;
 

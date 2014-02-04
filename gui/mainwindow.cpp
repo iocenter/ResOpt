@@ -36,6 +36,7 @@
 #include "userconstraint.h"
 #include "reservoirsimulator.h"
 #include "reservoir.h"
+#include "logger.h"
 
 #include <QtWidgets/QAction>
 #include <QKeySequence>
@@ -67,6 +68,7 @@ using ResOpt::Capacity;
 using ResOpt::UserConstraint;
 using ResOpt::ReservoirSimulator;
 using ResOpt::Reservoir;
+using ResOpt::Logger;
 
 namespace ResOptGui
 {
@@ -210,10 +212,21 @@ void MainWindow::loadModel()
     QString fileName = QFileDialog::getOpenFileName(this, "Load Project", "/Users", "ResOpt Driver File (*.dat)");
 
 
+    if(p_runner != 0)
+    {
+        p_model_scene->clear();
+
+        //delete p_runner;
+        //p_runner = 0;
+    }
+
     // setting up the runner with the specified driver file
     if(p_runner == 0)
     {
         p_runner = new Runner(fileName);
+
+        p_runner->logger()->setMainWindow(this);
+
 
         p_runner->initialize();
 
@@ -226,6 +239,8 @@ void MainWindow::loadModel()
         // connecting to finished signal
         connect(p_runner, SIGNAL(runnerFinished(Runner*, Case*)), this, SLOT(onOptimizationFinished(Runner*, Case*)));
     }
+
+
 
 }
 
@@ -579,5 +594,11 @@ void MainWindow::onLastCaseBeforePause(Case *c)
     p_act_startbutton->setText("Resume Optimization");
 
 }
+
+//-----------------------------------------------------------------------------------------------
+// runtime error
+//-----------------------------------------------------------------------------------------------
+void MainWindow::error(QString &message)
+{}
 
 } // namespace

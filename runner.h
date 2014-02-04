@@ -53,7 +53,7 @@ class Launcher;
 class CaseQueue;
 class Case;
 class Component;
-
+class Logger;
 
 /**
  * @brief Main execution class.
@@ -87,6 +87,8 @@ private:
     int m_debug_case;
 
     Case *p_best_case;
+
+    Logger *p_logger;
 
 
 
@@ -153,6 +155,8 @@ public:
     QString debugFileName() const {return m_debug_filename;}
 
     ModelReader* modelReader() {return p_reader;}
+
+    Logger* logger() {return p_logger;}
 
 
 

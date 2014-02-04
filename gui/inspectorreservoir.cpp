@@ -25,6 +25,9 @@
 
 #include "reservoir.h"
 #include "reservoirsimulator.h"
+#include "mrstbatchsimulator.h"
+#include "vlpsimulator.h"
+#include "gprssimulator.h"
 
 
 
@@ -37,6 +40,10 @@
 #include <QDoubleValidator>
 #include <QFileDialog>
 
+
+using ResOpt::MrstBatchSimulator;
+using ResOpt::VlpSimulator;
+using ResOpt::GprsSimulator;
 
 namespace ResOptGui
 {
@@ -69,36 +76,39 @@ void InspectorReservoir::construct()
 
     setLayout(layout_main);
 
-    QWidget *widget = new QWidget(widget);
+    QWidget *widget = new QWidget(this);
     QGridLayout *layout = new QGridLayout(widget);
     widget->setLayout(layout);
 
     int row = 0;
     // ---- setting up the reservoir simulator  -----
     QLabel *lbl_sim = new QLabel("Reservoir simulator: ", widget);
-    layout->addWidget(lbl_sim, row, 0);
+    layout->addWidget(lbl_sim, row, 1);
 
-    p_cbx_sim = new QComboBox(this);
-    p_cbx_sim->addItem("MRST");
-    p_cbx_sim->addItem("GPRS");
-    p_cbx_sim->addItem("VLP");
 
-    layout->addWidget(p_cbx_sim, row, 1);
+    p_lbl_sim_type = new QLabel(widget);
+    p_lbl_sim_type->setText("Unknown...");
+
+    if(dynamic_cast<MrstBatchSimulator*>(p_sim) != 0) p_lbl_sim_type->setText("MRST");
+    else if(dynamic_cast<VlpSimulator*>(p_sim) != 0) p_lbl_sim_type->setText("VLP");
+    else if(dynamic_cast<GprsSimulator*>(p_sim) != 0) p_lbl_sim_type->setText("GPRS");
+
+    layout->addWidget(p_lbl_sim_type, row, 2);
 
     ++row;
 
     // ---- setting up the reservoir file  -----
     QLabel *lbl_res_file = new QLabel(widget);
     lbl_res_file->setText("Reservoir input file: ");
-    layout->addWidget(lbl_res_file, row, 0);
+    layout->addWidget(lbl_res_file, row, 1);
 
     p_led_res_file = new QLineEdit(widget);
     p_led_res_file->setText(p_res->file());
     p_led_res_file->setMinimumWidth(300);
-    layout->addWidget(p_led_res_file, row, 1);
+    layout->addWidget(p_led_res_file, row, 2);
 
     p_btn_res_file = new QPushButton("...", widget);
-    layout->addWidget(p_btn_res_file, row, 2);
+    layout->addWidget(p_btn_res_file, row, 3);
     connect(p_btn_res_file, SIGNAL(clicked()), this, SLOT(browseResFile()));
 
     ++row;
@@ -107,16 +117,50 @@ void InspectorReservoir::construct()
     // ---- setting up the mrst path  -----
     QLabel *lbl_mrst = new QLabel(widget);
     lbl_mrst->setText("MRST path: ");
-    layout->addWidget(lbl_mrst, row, 0);
+    layout->addWidget(lbl_mrst, row, 1);
 
     p_led_mrst = new QLineEdit(widget);
     p_led_mrst->setText(p_res->mrstPath());
     p_led_mrst->setMinimumWidth(300);
-    layout->addWidget(p_led_mrst, row, 1);
+    layout->addWidget(p_led_mrst, row, 2);
 
     p_btn_mrst = new QPushButton("...", widget);
-    layout->addWidget(p_btn_mrst, row, 2);
+    layout->addWidget(p_btn_mrst, row, 3);
     connect(p_btn_mrst, SIGNAL(clicked()), this, SLOT(browseMrst()));
+
+    ++row;
+
+
+    // ---- setting up the custom mrst script  -----
+    QLabel *lbl_script = new QLabel(widget);
+    lbl_script->setText("Custom MRST script: ");
+    layout->addWidget(lbl_script, row, 1);
+
+    p_led_script = new QLineEdit(widget);
+    p_led_script->setText(p_res->mrstScript());
+    p_led_script->setMinimumWidth(300);
+    layout->addWidget(p_led_script, row, 2);
+
+    p_btn_script = new QPushButton("...", widget);
+    layout->addWidget(p_btn_script, row, 3);
+    connect(p_btn_script, SIGNAL(clicked()), this, SLOT(browseScript()));
+
+    p_chk_script = new QCheckBox(widget);
+    layout->addWidget(p_chk_script, row, 0);
+
+    if(p_res->useMrstScript())
+    {
+        p_chk_script->setChecked(true);
+    }
+    else
+    {
+        p_led_script->setDisabled(true);
+        p_btn_script->setDisabled(true);
+    }
+
+    connect(p_chk_script, SIGNAL(clicked(bool)), this, SLOT(onScriptStatusChanged(bool)));
+
+
 
     ++row;
 
@@ -124,16 +168,29 @@ void InspectorReservoir::construct()
     // ---- setting up the mrst path  -----
     QLabel *lbl_matlab = new QLabel(widget);
     lbl_matlab->setText("MATLAB executable: ");
-    layout->addWidget(lbl_matlab, row, 0);
+    layout->addWidget(lbl_matlab, row, 1);
 
     p_led_matlab = new QLineEdit(widget);
     p_led_matlab->setText(p_res->matlabPath());
     p_led_matlab->setMinimumWidth(300);
-    layout->addWidget(p_led_matlab, row, 1);
+    layout->addWidget(p_led_matlab, row, 2);
 
     p_btn_matlab = new QPushButton("...", widget);
-    layout->addWidget(p_btn_matlab, row, 2);
+    layout->addWidget(p_btn_matlab, row, 3);
     connect(p_btn_matlab, SIGNAL(clicked()), this, SLOT(browseMatlab()));
+
+    ++row;
+
+    // ---- setting up the keep .mat file  -----
+    QLabel *lbl_keep_mat = new QLabel(widget);
+    lbl_keep_mat->setText("Keep .mat file: ");
+    layout->addWidget(lbl_keep_mat, row, 1);
+
+    p_chk_keep_mat = new QCheckBox(widget);
+    p_chk_keep_mat->setChecked(p_res->keepMatFile());
+    layout->addWidget(p_chk_keep_mat, row, 2);
+
+
 
     ++row;
 
@@ -167,11 +224,29 @@ void InspectorReservoir::saveAndClose()
 
     emit sendMsg("Saving reservoir properties to model...");
 
-    // saving outlet pressure
-    //p_pipe->setOutletPressure(m_led_pout.text().replace(",",".").toDouble());
+    // saving the reservoir input file
+    p_res->setFile(p_led_res_file->text());
 
-    //if(m_cbx_pout.itemData(m_cbx_pout.currentIndex()) == Stream::METRIC) p_pipe->setOutletUnit(Stream::METRIC);
-    //else p_pipe->setOutletUnit(Stream::FIELD);
+    // saving the mrst path
+    p_res->setMrstPath(p_led_mrst->text());
+
+    // saving the matlab path
+    p_res->setMatlabPath(p_led_matlab->text());
+
+    // saving the mrst script
+    if(p_chk_script->isChecked())
+    {
+        p_res->setMrstScript(p_led_script->text());
+    }
+    else
+    {
+        p_res->setUseMrstScript(false);
+    }
+
+    // keep mat file?
+    p_res->setKeepMatFile(p_chk_keep_mat->isChecked());
+
+
 
 
     close();
@@ -213,6 +288,28 @@ void InspectorReservoir::browseMrst()
 }
 
 //-----------------------------------------------------------------------------------------------
+// opens the file browser for the custom mrst script
+//-----------------------------------------------------------------------------------------------
+void InspectorReservoir::browseScript()
+{
+    QDir dir(p_sim->folder());
+
+    dir.cdUp();
+
+
+
+    QString name = QFileDialog::getOpenFileName(this, "Custom MRST script", dir.absolutePath(), "Matlab file (*.m)");
+
+    if(name.contains("..") == 0)
+    {
+        p_led_script->setText(dir.absoluteFilePath(name));
+    }
+
+    else p_led_script->setText(dir.relativeFilePath(name));
+}
+
+
+//-----------------------------------------------------------------------------------------------
 // opens the file browser for the matlab path
 //-----------------------------------------------------------------------------------------------
 void InspectorReservoir::browseMatlab()
@@ -228,6 +325,17 @@ void InspectorReservoir::browseMatlab()
 
     p_led_matlab->setText(name);
 
+}
+
+
+//-----------------------------------------------------------------------------------------------
+// enables/disables the scrip button and line edit
+//-----------------------------------------------------------------------------------------------
+void InspectorReservoir::onScriptStatusChanged(bool b)
+{
+
+    p_led_script->setEnabled(b);
+    p_btn_script->setEnabled(b);
 }
 
 

@@ -933,19 +933,29 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
         if(m->reservoir()->useMrstScript())
         {
             m_script = m->reservoir()->mrstScript().split(".").at(0);
+            m_script = m_script.split("/").last();
 
             // removing old versions of the file
             QFile::remove(folder() + "/" + m->reservoir()->mrstScript());
 
             // copy original
-            bool ok_cpy = QFile::copy(m->driverPath() + "/" + m->reservoir()->mrstScript(), folder() + "/" + m->reservoir()->mrstScript());
-
+            bool ok_cpy = false;
+            if(m->reservoir()->mrstScript().startsWith("/"))
+            {
+                QString script_new = m->reservoir()->mrstScript().split("/").last();
+                ok_cpy = QFile::copy(m->reservoir()->mrstScript(), folder() + "/" + script_new);
+            }
+            else
+            {
+                ok_cpy = QFile::copy(m->driverPath() + "/" + m->reservoir()->mrstScript(), folder() + "/" + m->reservoir()->mrstScript());
+            }
             if(!ok_cpy)
             {
+
+
                 cout << endl << "### Runtime Error ###" << endl
                      << "Did not find user specified MRST script... " << endl
                      << "SCRIPT: " << m->reservoir()->mrstScript().toStdString() <<  endl;
-
                 exit(1);
             }
         }

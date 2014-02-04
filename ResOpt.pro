@@ -132,7 +132,8 @@ SOURCES += main.cpp \
     gui/inspectorheelvariable.cpp \
     gui/inspectorconstant.cpp \
     gui/modelitemreservoir.cpp \
-    gui/inspectorreservoir.cpp
+    gui/inspectorreservoir.cpp \
+    logger.cpp
 
 HEADERS += \
     well.h \
@@ -239,7 +240,8 @@ HEADERS += \
     gui/inspectorheelvariable.h \
     gui/inspectorconstant.h \
     gui/modelitemreservoir.h \
-    gui/inspectorreservoir.h
+    gui/inspectorreservoir.h \
+    logger.h
 
 RESOURCES += \
     gui/images.qrc

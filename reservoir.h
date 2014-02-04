@@ -84,6 +84,7 @@ public:
     void setMatlabPath(const QString &p) {m_matlab_path = p;}
     void setMrstScript(const QString &s) {m_mrst_script = s; m_use_mrst_script = true;}
     void setKeepMatFile(bool b) {m_keep_mat_file = b;}
+    void setUseMrstScript(bool b) {m_use_mrst_script = b;}
 
     /**
      * @brief Sets the end time of the simulation

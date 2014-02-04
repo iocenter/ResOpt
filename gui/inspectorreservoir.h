@@ -28,6 +28,7 @@
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QLabel>
 #include <QVector>
+#include <QCheckBox>
 
 
 
@@ -52,15 +53,19 @@ private:
 
 
 
-    QComboBox *p_cbx_sim;
+    QLabel *p_lbl_sim_type;
     QLineEdit *p_led_res_file;
     QLineEdit *p_led_mrst;
+    QLineEdit *p_led_script;
     QLineEdit *p_led_matlab;
 
     QPushButton *p_btn_res_file;
     QPushButton *p_btn_mrst;
+    QPushButton *p_btn_script;
     QPushButton *p_btn_matlab;
 
+    QCheckBox *p_chk_script;
+    QCheckBox *p_chk_keep_mat;
 
 
 
@@ -83,6 +88,9 @@ public slots:
     void browseResFile();
     void browseMrst();
     void browseMatlab();
+    void browseScript();
+
+    void onScriptStatusChanged(bool b);
 
 
 };

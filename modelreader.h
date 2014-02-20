@@ -49,6 +49,7 @@ class ModelReader
 {
 private:
 
+    QString m_driver_file_name;
     QFile m_driver_file;
     QString m_path;
 

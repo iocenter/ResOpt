@@ -87,7 +87,7 @@ Runner::Runner(const QString &driver_file, QObject *parent)
 
 {
     p_reader = new ModelReader(driver_file);
-    p_logger = new Logger(0, this);
+    p_logger = new Logger(Logger::CONSOLE, this);
 }
 
 Runner::~Runner()
@@ -240,6 +240,9 @@ void Runner::initializeLaunchers()
 
         // copying the base model to the launcher
         l->setModel(model()->clone());
+
+        // connecting the model logger to the runner logger
+        connect(l->model()->logger(), SIGNAL(sendError(QString)), p_logger, SLOT(error(QString)));
 
         // setting up the reservoir simulator
         ReservoirSimulator *r = p_simulator->clone();

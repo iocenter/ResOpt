@@ -47,6 +47,7 @@ class Constraint;
 class Component;
 class UserConstraint;
 class Cost;
+class Logger;
 
 
 /**
@@ -69,6 +70,8 @@ private:
     bool m_up_to_date;      // true if the model has been evaluated
 
     QString m_driver_path;
+
+    Logger *p_logger;
 
 
 
@@ -429,6 +432,8 @@ public:
     UserConstraint* userDefinedConstraint(int i) {return m_user_constraints.at(i);}
     int numberOfUserDefinedConstraints() {return m_user_constraints.size();}
 
+
+    Logger* logger() {return p_logger;}
 
     /**
      * @brief Returns the Objective

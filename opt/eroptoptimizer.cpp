@@ -161,61 +161,6 @@ void EroptOptimizer::start()
 
 
 
-    // old loop:
-
-
-    /*
-    bool converged = false;
-
-    // starting the algorithm
-    Case *result;
-
-    //cout << "EROPT: staring opt with step length 1" << endl;
-    while(!converged && maxIterations() >= p_evaluator->iterations())
-    {
-        converged = true;
-
-        result = solve(result_base_case, 0, &converged, 1);
-        result_base_case = result;
-
-
-    }
-
-    cout << "#################################" << endl;
-    cout << "###      Starting EROPT       ###" << endl;
-    cout << "###      step length = 2      ###" << endl;
-    cout << "#################################" << endl;
-
-    converged = false;
-    while(!converged && maxIterations() >= p_evaluator->iterations())
-    {
-        converged = true;
-
-        result = solve(result_base_case, 0, &converged, 2);
-        result_base_case = result;
-
-
-    }
-
-    cout << "#################################" << endl;
-    cout << "###      Starting EROPT       ###" << endl;
-    cout << "###      step length = 1      ###" << endl;
-    cout << "###       second round        ###" << endl;
-    cout << "#################################" << endl;
-
-    converged = false;
-    while(!converged && maxIterations() >= p_evaluator->iterations())
-    {
-        converged = true;
-
-        result = solve(result_base_case, 0, &converged, 1);
-        result_base_case = result;
-
-
-    }
-
-*/
-
 
     if(converged)
     {
@@ -248,9 +193,6 @@ void EroptOptimizer::start()
 //-----------------------------------------------------------------------------------------------
 Case* EroptOptimizer::solve(Case *base_case, int start_var, bool *converged, int step_length)
 {
-    // debug printing
-
-    //cout << "EROPT: solve start" << endl;
 
     QTextStream out(p_debug_file);
 
@@ -269,26 +211,17 @@ Case* EroptOptimizer::solve(Case *base_case, int start_var, bool *converged, int
     out.flush();
     p_debug_file->flush();
 
-    //cout << "EROPT: done writing to debug file" << endl;
 
     if(start_var >= base_case->numberOfIntegerVariables()) return base_case;
 
-    //cout << "EROPT: setting up results case" << endl;
 
     Case *result = new Case();
-    //cout << "EROPT: done setting up results case" << endl;
 
     Case *c = new Case(*base_case);
 
-    //cout << "EROPT: done setting up int variables case" << endl;
-
-    //cout << "startvar = " << start_var << endl;
-
-    //if(start_var >= m_directions.size()) cout << "startvar too big!" << endl;
 
     perturbVariable(c, start_var, m_directions.at(start_var), step_length);
 
-    //cout << "EROPT: done perturbing variable" << endl;
 
     // solving the contineous sub-problem
     Case *result_i = p_evaluator->solveContineousProblem(c);

@@ -49,6 +49,7 @@
 #include <QtWidgets/QToolBar>
 #include <QtWidgets/QLabel>
 #include <QMovie>
+#include <QMessageBox>
 
 #include <QDir>
 
@@ -126,8 +127,11 @@ MainWindow::MainWindow(QWidget *parent) :
     addDockWidget(Qt::BottomDockWidgetArea, p_console);
 
 
+    setWindowIcon(QIcon(":new/images/res_svg"));
+
     // creating the menus
     createMenus();
+
 
 
 
@@ -162,6 +166,12 @@ void MainWindow::createMenus()
     // save plot
     QAction *p_act_saveplot = p_file_menu->addAction("Save Plot");
     connect(p_act_saveplot, SIGNAL(triggered()), this, SLOT(savePlot()));
+
+    // about
+    QAction *p_act_about = p_file_menu->addAction("About");
+    connect(p_act_about, SIGNAL(triggered()), this, SLOT(about()));
+
+
 
 
     // ---------- create optimization menu -------------------
@@ -225,7 +235,9 @@ void MainWindow::loadModel()
     {
         p_runner = new Runner(fileName);
 
-        p_runner->logger()->setMainWindow(this);
+        p_runner->logger()->setType(Logger::GUI);
+        connect(p_runner->logger(), SIGNAL(sendError(QString)), this, SLOT(error(QString)));
+
 
 
         p_runner->initialize();
@@ -596,9 +608,20 @@ void MainWindow::onLastCaseBeforePause(Case *c)
 }
 
 //-----------------------------------------------------------------------------------------------
+// about
+//-----------------------------------------------------------------------------------------------
+void MainWindow::about()
+{
+    QString s = "Reservoir Optimization Framework\n\nProgrammed by Aleksander O. Juell\naleksander.juell@gmail.com";
+    QMessageBox::about(this, "About ResOpt", s);
+}
+
+//-----------------------------------------------------------------------------------------------
 // runtime error
 //-----------------------------------------------------------------------------------------------
-void MainWindow::error(QString &message)
-{}
+void MainWindow::error(QString message)
+{
+    emit sendMsg(message);
+}
 
 } // namespace

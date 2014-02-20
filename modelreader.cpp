@@ -70,7 +70,7 @@
 #include "gprssimulator.h"
 #include "vlpsimulator.h"
 #include "mrstbatchsimulator.h"
-
+#include "logger.h"
 
 using std::tr1::shared_ptr;
 using std::cout;
@@ -81,20 +81,8 @@ namespace ResOpt
 {
 
 ModelReader::ModelReader(const QString &driver)
-    : m_driver_file(driver)
+    : m_driver_file_name(driver)
 {
-    // setting the path of the driver file
-    QFileInfo info(m_driver_file);
-    m_path = info.absoluteDir().absolutePath();
-    cout << "path to driver file: " << m_path.toLatin1().constData() << endl;
-
-    //checking if file opened ok...
-
-    if(!m_driver_file.open(QIODevice::ReadOnly | QIODevice::Text))
-    {
-        qWarning("Could not open driver file: %s", driver.toLatin1().constData());
-        exit(1);
-    }
 
 }
 
@@ -105,6 +93,37 @@ ModelReader::ModelReader(const QString &driver)
 //-----------------------------------------------------------------------------------------------
 Model* ModelReader::readDriverFile(Runner *r)
 {
+
+    if(m_driver_file_name.isEmpty())
+    {
+
+        r->logger()->error("Could not open driver file!!");
+
+        return 0;
+    }
+
+    m_driver_file.setFileName(m_driver_file_name);
+
+    //checking if file opened ok...
+    if(!m_driver_file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        //qWarning("Could not open driver file: %s", m_driver_file.fileName().toStdString());
+        //qWarning("Could not open driver file!");
+        //exit(1);
+
+        r->logger()->error("Could not open driver file!!");
+
+        return 0;
+    }
+
+    // setting the path of the driver file
+    QFileInfo info(m_driver_file);
+    m_path = info.absoluteDir().absolutePath();
+    cout << "path to driver file: " << m_path.toLatin1().constData() << endl;
+
+
+
+
     Model *p_model = 0;
 
     cout << "****  Reading driver file: " << m_driver_file.fileName().toLatin1().constData() << "  ****" << endl;

@@ -36,7 +36,7 @@
 #include "well.h"
 #include "pipe.h"
 #include "separator.h"
-
+#include "logger.h"
 #include "pressuredropcalculator.h"
 
 
@@ -88,6 +88,10 @@ bool Launcher::initialize()
 
         // resolving the pipe routing
         p_model->resolvePipeRouting();
+
+        // connecting logger
+
+
 
         return true;
 
@@ -204,7 +208,13 @@ void Launcher::evaluateEntireModel(Case *c)
     {
         emit runningReservoirSimulator();
 
-        p_simulator->generateInputFiles(p_model);                   // generating input based on the current Model
+        bool ok_input = p_simulator->generateInputFiles(p_model);    // generating input based on the current Model
+        if(!ok_input)
+        {
+            p_model->logger()->error("Reservoir simulator input files not generated propperly");
+            return;
+        }
+
         bool ok_launch = p_simulator->launchSimulator();            // running the simulator
         if(!ok_launch)
         {

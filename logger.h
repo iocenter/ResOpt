@@ -38,20 +38,22 @@ class Logger : public QObject
 {
     Q_OBJECT
 public:
-    explicit Logger(MainWindow *mw = 0, QObject *parent = 0);
+    enum Type {CONSOLE, GUI, DELEGATE};
 
-    void setMainWindow(MainWindow *mw);
+    explicit Logger(Type t = CONSOLE, QObject *parent = 0);
+
+    void setType(Type t) {m_type = t;}
 
 signals:
-    void sendError(QString &message);
+    void sendError(QString message);
 
 public slots:
-    void error(QString &message);
-    void warning(QString &message);
+    void error(QString message);
+    void warning(QString message);
 
 
 private:
-    MainWindow *p_mw;
+    Type m_type;
 
 };
 

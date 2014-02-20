@@ -254,6 +254,8 @@ int main(int argc, char *argv[])
 //*
         a = new QApplication(argc, argv);
 
+
+
         MainWindow *p_mw = new MainWindow();
 
 

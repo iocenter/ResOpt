@@ -114,8 +114,9 @@ public slots:
     void savePlot();
     void saveModelAs();
     void onLastCaseBeforePause(Case *c);
+    void about();
 
-    void error(QString &message);
+    void error(QString message);
     
 };
 

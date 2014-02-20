@@ -39,6 +39,7 @@
 #include "productionwell.h"
 #include "pipeconnection.h"
 #include "userconstraint.h"
+#include "logger.h"
 
 using std::cout;
 using std::endl;
@@ -54,6 +55,8 @@ Model::Model()
       p_obj(0),
       m_up_to_date(false)
 {
+    p_logger = new Logger(Logger::DELEGATE);
+
 }
 
 //-----------------------------------------------------------------------------------------------
@@ -61,6 +64,9 @@ Model::Model()
 //-----------------------------------------------------------------------------------------------
 Model::Model(const Model &m)
 {
+    // logger
+    p_logger = new Logger(Logger::DELEGATE);
+
     // setting the up to date status
     m_up_to_date = false;
 
@@ -106,6 +112,8 @@ Model::Model(const Model &m)
 
 Model::~Model()
 {
+    delete p_logger;
+
     if(p_reservoir != 0) delete p_reservoir;
 
     for(int i = 0; i < m_wells.size(); i++) delete m_wells.at(i);

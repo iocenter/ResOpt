@@ -31,30 +31,22 @@ using std::endl;
 namespace ResOpt
 {
 
-Logger::Logger(MainWindow *mw, QObject *parent) :
+Logger::Logger(Type t, QObject *parent) :
     QObject(parent),
-    p_mw(mw)
+    m_type(t)
 {
-    if(p_mw != 0) connect(this, SIGNAL(sendError(QString&)), p_mw, SLOT(error(QString&)));
+
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// set main window
-//-----------------------------------------------------------------------------------------------
-void Logger::setMainWindow(MainWindow *mw)
-{
-    p_mw = mw;
-    connect(this, SIGNAL(sendError(QString&)), p_mw, SLOT(error(QString&)));
-}
 
 //-----------------------------------------------------------------------------------------------
 // error
 //-----------------------------------------------------------------------------------------------
-void Logger::error(QString &message)
+void Logger::error(QString message)
 {
 
-    if(p_mw == 0)
+    if(m_type == CONSOLE)
     {
         cout << endl
             << "### Runtime Error ###" << endl
@@ -71,7 +63,7 @@ void Logger::error(QString &message)
 //-----------------------------------------------------------------------------------------------
 // warning
 //-----------------------------------------------------------------------------------------------
-void Logger::warning(QString &message)
+void Logger::warning(QString message)
 {}
 
 

@@ -101,21 +101,6 @@ void RunonceOptimizer::start()
 }
 
 
-//-----------------------------------------------------------------------------------------------
-// builds a case for a pipe
-//-----------------------------------------------------------------------------------------------
-Case* RunonceOptimizer::buildCase(Pipe *p)
-{
-    Case *c = new Case();
-
-    c->addRealVariableValue(0);
-    c->addRealVariableValue(100);
-    c->addRealVariableValue(0);
-    c->addRealVariableValue(200);
-
-    return c;
-}
-
 
 //-----------------------------------------------------------------------------------------------
 // generates a description for driver file

@@ -42,7 +42,7 @@
 #include "adjoint.h"
 #include "adjointcollection.h"
 #include "wellpath.h"
-
+#include "logger.h"
 
 namespace ResOpt
 {
@@ -853,7 +853,8 @@ bool MrstBatchSimulator::generateEclIncludeFile(Model *m)
 //-----------------------------------------------------------------------------------------------
 void MrstBatchSimulator::writeWellPaths(Model *m)
 {
-    QFile path_file(folder() + "/wellpaths.txt");
+
+    QFile path_file(folder() + "/" + m->reservoir()->file().split(".").at(0) + "_WELLPATHS.TXT");
 
     if(!path_file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
@@ -952,11 +953,14 @@ bool MrstBatchSimulator::generateInputFiles(Model *m)
             if(!ok_cpy)
             {
 
+                m->logger()->error("Did not find user specified MRST script...");
 
+                /*
                 cout << endl << "### Runtime Error ###" << endl
                      << "Did not find user specified MRST script... " << endl
                      << "SCRIPT: " << m->reservoir()->mrstScript().toStdString() <<  endl;
                 exit(1);
+                */
             }
         }
         else
@@ -1220,9 +1224,13 @@ bool MrstBatchSimulator::readAdjoints(AdjointsCoupledModel *m)
     // checking if file opened ok...
     if(!input.open(QIODevice::ReadOnly | QIODevice::Text))
     {
+        /*
         cout << "### File Error! ###" << endl;
         cout << "Could not open MRST adjoints file: " << input.fileName().toLatin1().constData() << endl;
         exit(1);
+        */
+
+        m->logger()->error("Could not open MRST adjoints file");
     }
 
    // cout << "starting to read" << endl;

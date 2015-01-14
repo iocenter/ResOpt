@@ -1,0 +1,1234 @@
+RUN # 1
+CURRENT MODEL STATE:
+###############################
+
+------------------------------
+RATE MATRIX:
+------------------------------
+
+time = 547.5 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+i1	0	0	-150	437.932
+i2	0	0	-130	515.7
+p1	22.9967	0	-1.49187e-08	299.964
+p2	35.0919	0	0.146988	299.964
+p3	26.1074	0	-1.49995e-08	299.964
+p4	42.6095	0	0.0373719	299.964
+p5	4.26351e-22	0	-4.26351e-22	356.364
+#1	22.9967	0	-1.49187e-08	198.563
+#2	22.9967	0	-1.49187e-08	198.563
+#3	22.9967	0	-1.49187e-08	198.563
+#4	35.0919	0	0.146988	268.234
+#5	35.0919	0	0.146988	199.465
+#6	35.0919	0	0.146988	199.465
+#7	26.1074	0	-1.49995e-08	198.563
+#8	26.1074	0	-1.49995e-08	198.563
+#9	26.1074	0	-1.49995e-08	198.563
+#10	42.6095	0	0.0373719	267.245
+#11	42.6095	0	0.0373719	198.566
+#12	42.6095	0	0.0373719	198.566
+#13	4.26351e-22	0	-4.26351e-22	198.563
+#14	4.26351e-22	0	-4.26351e-22	198.563
+#15	4.26351e-22	0	-4.26351e-22	198.563
+#16	126.805	0	0.18436	198.563
+#17	126.805	0	0.18436	198.563
+
+time = 1095 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+i1	0	0	-150	475.82
+i2	0	0	-130	528.079
+p1	49.3072	0	0	300
+p2	48.6098	0	30.0337	300
+p3	53.357	0	0.436605	300
+p4	72.014	0	15.94	300
+p5	0	0	0	426.046
+#1	49.3072	0	0	280.331
+#2	49.3072	0	0	211.67
+#3	49.3072	0	0	211.67
+#4	48.6098	0	30.0337	292.67
+#5	48.6098	0	30.0337	212.723
+#6	48.6098	0	30.0337	212.723
+#7	53.357	0	0.436605	280.576
+#8	53.357	0	0.436605	211.67
+#9	53.357	0	0.436605	211.67
+#10	72.014	0	15.94	285.736
+#11	72.014	0	15.94	211.676
+#12	72.014	0	15.94	211.676
+#13	0	0	0	211.666
+#14	0	0	0	211.666
+#15	0	0	0	211.666
+#16	223.288	0	46.4103	211.666
+#17	223.288	0	46.4103	211.666
+
+time = 1642.5 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+i1	0	0	-150	439.113
+i2	0	0	-130	478.162
+p1	43.1164	0	0.000161598	300
+p2	29.051	0	71.0187	300
+p3	42.6792	0	8.84142	300
+p4	51.6865	0	44.6426	300
+p5	0	0	0	404.749
+#1	43.1164	0	0.000161598	224.527
+#2	43.1164	0	0.000161598	155.873
+#3	43.1164	0	0.000161598	211.873
+#4	29.051	0	71.0187	246.706
+#5	29.051	0	71.0187	157.062
+#6	29.051	0	71.0187	213.062
+#7	42.6792	0	8.84142	212.187
+#8	42.6792	0	8.84142	138.474
+#9	42.6792	0	8.84142	211.874
+#10	51.6865	0	44.6426	240.569
+#11	51.6865	0	44.6426	158.183
+#12	51.6865	0	44.6426	211.883
+#13	0	0	0	211.87
+#14	0	0	0	211.87
+#15	0	0	0	211.87
+#16	166.533	0	124.503	211.87
+#17	166.533	0	35.3588	211.87
+
+time = 2555 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+i1	0	0	-150	405.951
+i2	0	0	-130	433.483
+p1	33.6963	0	3.09707	300
+p2	18.9475	0	84.7597	300
+p3	29.1714	0	20.4233	300
+p4	36.7614	0	57.2701	300
+p5	0	0	0	378.369
+#1	33.6963	0	3.09707	235.304
+#2	33.6963	0	3.09707	164.18
+#3	33.6963	0	3.09707	220.18
+#4	18.9475	0	84.7597	258.234
+#5	18.9475	0	84.7597	165.412
+#6	18.9475	0	84.7597	221.412
+#7	29.1714	0	20.4233	227.559
+#8	29.1714	0	20.4233	146.781
+#9	29.1714	0	20.4233	220.181
+#10	36.7614	0	57.2701	253.157
+#11	36.7614	0	57.2701	166.49
+#12	36.7614	0	57.2701	220.19
+#13	0	0	0	220.178
+#14	0	0	0	220.178
+#15	0	0	0	220.178
+#16	118.577	0	165.55	220.178
+#17	118.577	0	47.0162	220.178
+
+time = 3650 days
+COMP	QO	QG	QW	P
+----	--	--	--	-
+i1	0	0	-150	382.337
+i2	0	0	-130	402.745
+p1	22.6712	0	14.2883	300
+p2	12.7313	0	90.4194	300
+p3	20.5572	0	28.8729	300
+p4	26.5184	0	64.9485	300
+p5	0	0	0	359.245
+#1	22.6712	0	14.2883	259.217
+#2	22.6712	0	14.2883	179.197
+#3	22.6712	0	14.2883	235.197
+#4	12.7313	0	90.4194	275.017
+#5	12.7313	0	90.4194	180.452
+#6	12.7313	0	90.4194	236.452
+#7	20.5572	0	28.8729	247.645
+#8	20.5572	0	28.8729	161.798
+#9	20.5572	0	28.8729	235.198
+#10	26.5184	0	64.9485	271.14
+#11	26.5184	0	64.9485	181.507
+#12	26.5184	0	64.9485	235.207
+#13	0	0	0	235.195
+#14	0	0	0	235.195
+#15	0	0	0	235.195
+#16	82.4781	0	198.529	235.195
+#17	82.4781	0	76.229	235.195
+
+------------------------------
+WELL: i1
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 150
+type       = WATER
+
+time       = 1095
+value      = 150
+type       = WATER
+
+time       = 1642.5
+value      = 150
+type       = WATER
+
+time       = 2555
+value      = 150
+type       = WATER
+
+time       = 3650
+value      = 150
+type       = WATER
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -150 (m^3/d)
+pressure   = 437.932 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -150 (m^3/d)
+pressure   = 475.82 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -150 (m^3/d)
+pressure   = 439.113 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -150 (m^3/d)
+pressure   = 405.951 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -150 (m^3/d)
+pressure   = 382.337 (bara)
+
+------------------------------
+WELL: i2
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 130
+type       = WATER
+
+time       = 1095
+value      = 130
+type       = WATER
+
+time       = 1642.5
+value      = 130
+type       = WATER
+
+time       = 2555
+value      = 130
+type       = WATER
+
+time       = 3650
+value      = 130
+type       = WATER
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -130 (m^3/d)
+pressure   = 515.7 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -130 (m^3/d)
+pressure   = 528.079 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -130 (m^3/d)
+pressure   = 478.162 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -130 (m^3/d)
+pressure   = 433.483 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = -130 (m^3/d)
+pressure   = 402.745 (bara)
+
+------------------------------
+WELL: p1
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 300
+type       = BHP
+
+time       = 1095
+value      = 300
+type       = BHP
+
+time       = 1642.5
+value      = 300
+type       = BHP
+
+time       = 2555
+value      = 300
+type       = BHP
+
+time       = 3650
+value      = 300
+type       = BHP
+
+------Routing-------
+destination pipe = 1
+value            = 1
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 22.9967 (m^3/d)
+water rate = -1.49187e-08 (m^3/d)
+pressure   = 299.964 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 49.3072 (m^3/d)
+water rate = 0 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 43.1164 (m^3/d)
+water rate = 0.000161598 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 33.6963 (m^3/d)
+water rate = 3.09707 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 22.6712 (m^3/d)
+water rate = 14.2883 (m^3/d)
+pressure   = 300 (bara)
+
+------------------------------
+WELL: p2
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 300
+type       = BHP
+
+time       = 1095
+value      = 300
+type       = BHP
+
+time       = 1642.5
+value      = 300
+type       = BHP
+
+time       = 2555
+value      = 300
+type       = BHP
+
+time       = 3650
+value      = 300
+type       = BHP
+
+------Routing-------
+destination pipe = 4
+value            = 1
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 35.0919 (m^3/d)
+water rate = 0.146988 (m^3/d)
+pressure   = 299.964 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 48.6098 (m^3/d)
+water rate = 30.0337 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 29.051 (m^3/d)
+water rate = 71.0187 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 18.9475 (m^3/d)
+water rate = 84.7597 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 12.7313 (m^3/d)
+water rate = 90.4194 (m^3/d)
+pressure   = 300 (bara)
+
+------------------------------
+WELL: p3
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 300
+type       = BHP
+
+time       = 1095
+value      = 300
+type       = BHP
+
+time       = 1642.5
+value      = 300
+type       = BHP
+
+time       = 2555
+value      = 300
+type       = BHP
+
+time       = 3650
+value      = 300
+type       = BHP
+
+------Routing-------
+destination pipe = 7
+value            = 1
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 26.1074 (m^3/d)
+water rate = -1.49995e-08 (m^3/d)
+pressure   = 299.964 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 53.357 (m^3/d)
+water rate = 0.436605 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 42.6792 (m^3/d)
+water rate = 8.84142 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 29.1714 (m^3/d)
+water rate = 20.4233 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 20.5572 (m^3/d)
+water rate = 28.8729 (m^3/d)
+pressure   = 300 (bara)
+
+------------------------------
+WELL: p4
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 300
+type       = BHP
+
+time       = 1095
+value      = 300
+type       = BHP
+
+time       = 1642.5
+value      = 300
+type       = BHP
+
+time       = 2555
+value      = 300
+type       = BHP
+
+time       = 3650
+value      = 300
+type       = BHP
+
+------Routing-------
+destination pipe = 10
+value            = 1
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 42.6095 (m^3/d)
+water rate = 0.0373719 (m^3/d)
+pressure   = 299.964 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 72.014 (m^3/d)
+water rate = 15.94 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 51.6865 (m^3/d)
+water rate = 44.6426 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 36.7614 (m^3/d)
+water rate = 57.2701 (m^3/d)
+pressure   = 300 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 26.5184 (m^3/d)
+water rate = 64.9485 (m^3/d)
+pressure   = 300 (bara)
+
+------------------------------
+WELL: p5
+------------------------------
+
+------Controls-------
+time       = 547.5
+value      = 0
+type       = OIL
+
+time       = 1095
+value      = 0
+type       = OIL
+
+time       = 1642.5
+value      = 0
+type       = OIL
+
+time       = 2555
+value      = 0
+type       = OIL
+
+time       = 3650
+value      = 0
+type       = OIL
+
+------Routing-------
+destination pipe = 13
+value            = 1
+
+------Rate Data-------
+time       = 547.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 4.26351e-22 (m^3/d)
+water rate = -4.26351e-22 (m^3/d)
+pressure   = 356.364 (bara)
+
+time       = 1095 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = 0 (m^3/d)
+pressure   = 426.046 (bara)
+
+time       = 1642.5 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = 0 (m^3/d)
+pressure   = 404.749 (bara)
+
+time       = 2555 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = 0 (m^3/d)
+pressure   = 378.369 (bara)
+
+time       = 3650 (days)
+gas rate   = 0 (m^3/d)
+oil rate   = 0 (m^3/d)
+water rate = 0 (m^3/d)
+pressure   = 359.245 (bara)
+
+------------------------------
+MID PIPE: 1
+------------------------------
+
+------Routing-------
+destination pipe = 2
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 22.9967 (m^3/d)
+water rate      = -1.49187e-08 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 49.3072 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 280.331 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 43.1164 (m^3/d)
+water rate      = 0.000161598 (m^3/d)
+inlet pressure  = 224.527 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 33.6963 (m^3/d)
+water rate      = 3.09707 (m^3/d)
+inlet pressure  = 235.304 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 22.6712 (m^3/d)
+water rate      = 14.2883 (m^3/d)
+inlet pressure  = 259.217 (bara)
+
+------------------------------
+BOOSTER: 2
+------------------------------
+
+Downstream pipe   = 3
+Installation time = 1642.5
+Boost Pressure    = 56
+Max capacity      = 106.2
+Current cost      = 0.49059
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 22.9967 (m^3/d)
+water rate      = -1.49187e-08 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 49.3072 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.67 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 43.1164 (m^3/d)
+water rate      = 0.000161598 (m^3/d)
+inlet pressure  = 155.873 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 33.6963 (m^3/d)
+water rate      = 3.09707 (m^3/d)
+inlet pressure  = 164.18 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 22.6712 (m^3/d)
+water rate      = 14.2883 (m^3/d)
+inlet pressure  = 179.197 (bara)
+
+------------------------------
+MID PIPE: 3
+------------------------------
+
+------Routing-------
+destination pipe = 16
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 22.9967 (m^3/d)
+water rate      = -1.49187e-08 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 49.3072 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.67 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 43.1164 (m^3/d)
+water rate      = 0.000161598 (m^3/d)
+inlet pressure  = 211.873 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 33.6963 (m^3/d)
+water rate      = 3.09707 (m^3/d)
+inlet pressure  = 220.18 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 22.6712 (m^3/d)
+water rate      = 14.2883 (m^3/d)
+inlet pressure  = 235.197 (bara)
+
+------------------------------
+MID PIPE: 4
+------------------------------
+
+------Routing-------
+destination pipe = 5
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 35.0919 (m^3/d)
+water rate      = 0.146988 (m^3/d)
+inlet pressure  = 268.234 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 48.6098 (m^3/d)
+water rate      = 30.0337 (m^3/d)
+inlet pressure  = 292.67 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 29.051 (m^3/d)
+water rate      = 71.0187 (m^3/d)
+inlet pressure  = 246.706 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 18.9475 (m^3/d)
+water rate      = 84.7597 (m^3/d)
+inlet pressure  = 258.234 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 12.7313 (m^3/d)
+water rate      = 90.4194 (m^3/d)
+inlet pressure  = 275.017 (bara)
+
+------------------------------
+BOOSTER: 5
+------------------------------
+
+Downstream pipe   = 6
+Installation time = 1642.5
+Boost Pressure    = 56
+Max capacity      = 106.2
+Current cost      = 0.49059
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 35.0919 (m^3/d)
+water rate      = 0.146988 (m^3/d)
+inlet pressure  = 199.465 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 48.6098 (m^3/d)
+water rate      = 30.0337 (m^3/d)
+inlet pressure  = 212.723 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 29.051 (m^3/d)
+water rate      = 71.0187 (m^3/d)
+inlet pressure  = 157.062 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 18.9475 (m^3/d)
+water rate      = 84.7597 (m^3/d)
+inlet pressure  = 165.412 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 12.7313 (m^3/d)
+water rate      = 90.4194 (m^3/d)
+inlet pressure  = 180.452 (bara)
+
+------------------------------
+MID PIPE: 6
+------------------------------
+
+------Routing-------
+destination pipe = 16
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 35.0919 (m^3/d)
+water rate      = 0.146988 (m^3/d)
+inlet pressure  = 199.465 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 48.6098 (m^3/d)
+water rate      = 30.0337 (m^3/d)
+inlet pressure  = 212.723 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 29.051 (m^3/d)
+water rate      = 71.0187 (m^3/d)
+inlet pressure  = 213.062 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 18.9475 (m^3/d)
+water rate      = 84.7597 (m^3/d)
+inlet pressure  = 221.412 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 12.7313 (m^3/d)
+water rate      = 90.4194 (m^3/d)
+inlet pressure  = 236.452 (bara)
+
+------------------------------
+MID PIPE: 7
+------------------------------
+
+------Routing-------
+destination pipe = 8
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 26.1074 (m^3/d)
+water rate      = -1.49995e-08 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 53.357 (m^3/d)
+water rate      = 0.436605 (m^3/d)
+inlet pressure  = 280.576 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 42.6792 (m^3/d)
+water rate      = 8.84142 (m^3/d)
+inlet pressure  = 212.187 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 29.1714 (m^3/d)
+water rate      = 20.4233 (m^3/d)
+inlet pressure  = 227.559 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 20.5572 (m^3/d)
+water rate      = 28.8729 (m^3/d)
+inlet pressure  = 247.645 (bara)
+
+------------------------------
+BOOSTER: 8
+------------------------------
+
+Downstream pipe   = 9
+Installation time = 1642.5
+Boost Pressure    = 73.4
+Max capacity      = 98
+Current cost      = 0.75568
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 26.1074 (m^3/d)
+water rate      = -1.49995e-08 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 53.357 (m^3/d)
+water rate      = 0.436605 (m^3/d)
+inlet pressure  = 211.67 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 42.6792 (m^3/d)
+water rate      = 8.84142 (m^3/d)
+inlet pressure  = 138.474 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 29.1714 (m^3/d)
+water rate      = 20.4233 (m^3/d)
+inlet pressure  = 146.781 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 20.5572 (m^3/d)
+water rate      = 28.8729 (m^3/d)
+inlet pressure  = 161.798 (bara)
+
+------------------------------
+MID PIPE: 9
+------------------------------
+
+------Routing-------
+destination pipe = 16
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 26.1074 (m^3/d)
+water rate      = -1.49995e-08 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 53.357 (m^3/d)
+water rate      = 0.436605 (m^3/d)
+inlet pressure  = 211.67 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 42.6792 (m^3/d)
+water rate      = 8.84142 (m^3/d)
+inlet pressure  = 211.874 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 29.1714 (m^3/d)
+water rate      = 20.4233 (m^3/d)
+inlet pressure  = 220.181 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 20.5572 (m^3/d)
+water rate      = 28.8729 (m^3/d)
+inlet pressure  = 235.198 (bara)
+
+------------------------------
+MID PIPE: 10
+------------------------------
+
+------Routing-------
+destination pipe = 11
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 42.6095 (m^3/d)
+water rate      = 0.0373719 (m^3/d)
+inlet pressure  = 267.245 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 72.014 (m^3/d)
+water rate      = 15.94 (m^3/d)
+inlet pressure  = 285.736 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 51.6865 (m^3/d)
+water rate      = 44.6426 (m^3/d)
+inlet pressure  = 240.569 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 36.7614 (m^3/d)
+water rate      = 57.2701 (m^3/d)
+inlet pressure  = 253.157 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 26.5184 (m^3/d)
+water rate      = 64.9485 (m^3/d)
+inlet pressure  = 271.14 (bara)
+
+------------------------------
+BOOSTER: 11
+------------------------------
+
+Downstream pipe   = 12
+Installation time = 1642.5
+Boost Pressure    = 53.7
+Max capacity      = 206.1
+Current cost      = 0.795789
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 42.6095 (m^3/d)
+water rate      = 0.0373719 (m^3/d)
+inlet pressure  = 198.566 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 72.014 (m^3/d)
+water rate      = 15.94 (m^3/d)
+inlet pressure  = 211.676 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 51.6865 (m^3/d)
+water rate      = 44.6426 (m^3/d)
+inlet pressure  = 158.183 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 36.7614 (m^3/d)
+water rate      = 57.2701 (m^3/d)
+inlet pressure  = 166.49 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 26.5184 (m^3/d)
+water rate      = 64.9485 (m^3/d)
+inlet pressure  = 181.507 (bara)
+
+------------------------------
+MID PIPE: 12
+------------------------------
+
+------Routing-------
+destination pipe = 16
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 42.6095 (m^3/d)
+water rate      = 0.0373719 (m^3/d)
+inlet pressure  = 198.566 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 72.014 (m^3/d)
+water rate      = 15.94 (m^3/d)
+inlet pressure  = 211.676 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 51.6865 (m^3/d)
+water rate      = 44.6426 (m^3/d)
+inlet pressure  = 211.883 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 36.7614 (m^3/d)
+water rate      = 57.2701 (m^3/d)
+inlet pressure  = 220.19 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 26.5184 (m^3/d)
+water rate      = 64.9485 (m^3/d)
+inlet pressure  = 235.207 (bara)
+
+------------------------------
+MID PIPE: 13
+------------------------------
+
+------Routing-------
+destination pipe = 14
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 4.26351e-22 (m^3/d)
+water rate      = -4.26351e-22 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.666 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.87 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 220.178 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 235.195 (bara)
+
+------------------------------
+BOOSTER: 14
+------------------------------
+
+Downstream pipe   = 15
+Installation time = 3650
+Boost Pressure    = 12
+Max capacity      = 50000
+Current cost      = 16.2781
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 4.26351e-22 (m^3/d)
+water rate      = -4.26351e-22 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.666 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.87 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 220.178 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 235.195 (bara)
+
+------------------------------
+MID PIPE: 15
+------------------------------
+
+------Routing-------
+destination pipe = 16
+value            = 1
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 4.26351e-22 (m^3/d)
+water rate      = -4.26351e-22 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.666 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 211.87 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 220.178 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 0 (m^3/d)
+water rate      = 0 (m^3/d)
+inlet pressure  = 235.195 (bara)
+
+------------------------------
+SEPARATOR: 16
+------------------------------
+
+type              = WATER
+Downstream pipe   = 17
+Installation time = 2
+Remove fraction   = 0.716
+Max capacity      = 122.3
+Current cost      = 1.92225
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 126.805 (m^3/d)
+water rate      = 0.18436 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 223.288 (m^3/d)
+water rate      = 46.4103 (m^3/d)
+inlet pressure  = 211.666 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 166.533 (m^3/d)
+water rate      = 124.503 (m^3/d)
+inlet pressure  = 211.87 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 118.577 (m^3/d)
+water rate      = 165.55 (m^3/d)
+inlet pressure  = 220.178 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 82.4781 (m^3/d)
+water rate      = 198.529 (m^3/d)
+inlet pressure  = 235.195 (bara)
+
+------------------------------
+END PIPE: 17
+------------------------------
+
+Minimum outlet pressure = 20 (bara)
+
+------Rate Data-------
+time            = 547.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 126.805 (m^3/d)
+water rate      = 0.18436 (m^3/d)
+inlet pressure  = 198.563 (bara)
+
+time            = 1095 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 223.288 (m^3/d)
+water rate      = 46.4103 (m^3/d)
+inlet pressure  = 211.666 (bara)
+
+time            = 1642.5 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 166.533 (m^3/d)
+water rate      = 35.3588 (m^3/d)
+inlet pressure  = 211.87 (bara)
+
+time            = 2555 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 118.577 (m^3/d)
+water rate      = 47.0162 (m^3/d)
+inlet pressure  = 220.178 (bara)
+
+time            = 3650 (days)
+gas rate        = 0 (m^3/d)
+oil rate        = 82.4781 (m^3/d)
+water rate      = 76.229 (m^3/d)
+inlet pressure  = 235.195 (bara)
+

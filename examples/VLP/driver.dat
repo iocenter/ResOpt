@@ -1,0 +1,191 @@
+!-------------------------------------------------------------------
+! Driver file for ResOpt
+!-------------------------------------------------------------------
+COUPLED MODEL ! this _must_ be the first keyword, either COUPLED or DECOUPLED 
+
+SIMULATOR VLP ! GPRS VLP
+
+DEBUG simulator.out
+
+!---------------- Optimization Algorithm ---------------------------
+START OPTIMIZER
+ TYPE NOMAD  ! IPOPT, BONMIN, RUNONCE, NOMAD
+ ITERATIONS 1000
+ PERTURBATION 0.0001
+ PARALLELRUNS 1 !integer, or "IDEAL" for the ideal number of parallel runs on this machine
+END OPTIMIZER
+
+
+!------------------- Objective definition -------------------------
+START OBJECTIVE
+ TYPE CUMOIL  !NPV, CUMOIL, CUMGAS
+ 
+ ! these keywords are only needed for NPV:
+ DCF 10
+ OILPRICE   	100
+ GASPRICE     	0
+ WATERPRICE 	0 
+END OBJECTIVE
+
+!------------------- Master Schedule -------------------------------
+START MASTERSCHEDULE
+ 1
+END MASTERSCHEDULE
+
+
+
+!----------------- Reservoir Definition ----------------------------
+START RESERVOIR
+ NAME RES1
+ FILE wpcs.dat ! Well Performance Curves
+ TIME 3650
+ PHASES 1 1 1             ! gas oil water
+ DENS 0.06054 49.1 64.79  ! gas oil water
+END RESERVOIR 
+
+!SUBSEA WELLS
+
+!-------------------- Well: WELL01 ----------------------------------
+START WELL
+ NAME WELL05
+ TYPE P
+ GROUP grp1
+ BHPLIMIT 100  ! Only used when well is on rate control 
+
+ START OUTLETPIPES
+! pipe#  fraction
+  1      1.0
+ END OUTLETPIPES
+
+ START SCHEDULE
+! t_end  value   max   min     type
+  1   	80     	 190   18.01      BHP !BHP, GAS, OIL, WAT
+ END SCHEDULE
+
+! START GASLIFT
+! t_end  value   max   min  
+!  1   0   0  0 
+! END GASLIFT
+
+END WELL
+
+!-------------------- Well: WELL02 ----------------------------------
+START WELL
+ NAME WELL06
+ TYPE P
+ GROUP grp1
+ BHPLIMIT 100  ! Only used when well is on rate control 
+
+ START OUTLETPIPES
+! pipe#  fraction
+  1      1.0
+ END OUTLETPIPES
+ 
+ START CONNECTIONS
+  299  9410
+ END CONNECTIONS
+
+ START SCHEDULE
+! t_end  value   max   min     type
+  1   	80   	 190   18.01     BHP !BHP, GAS, OIL, WAT
+ END SCHEDULE
+
+! START GASLIFT
+! t_end  value   max   min  
+!  1   0   0  0 
+! END GASLIFT
+
+END WELL
+
+!----------------------- Pipe 1 -----------------------------------
+START PIPE
+ NUMBER 1
+ FILE pipe1.dat
+ !FILE pipe1_bb73.dat
+
+ OUTLETPRESSURE 10
+
+END PIPE
+
+EOF
+
+!------------------- Capacity: cap1 ------------------------------
+START CAPACITY
+ NAME cap1
+
+ PIPES 1  
+
+ WATER 300 
+
+END CAPACITY
+
+EOF
+
+!----------------------- Pipe 2 -----------------------------------
+START PIPE
+NUMBER 2
+ FILE pipe2.dat
+
+ START OUTLETPIPES
+! pipe#  fraction
+  3      1.0
+  END OUTLETPIPES
+
+END PIPE
+
+!----------------------- Pipe 3 -----------------------------------
+START PIPE
+ NUMBER 3
+ FILE pipe3.dat
+
+ OUTLETPRESSURE 18
+END PIPE
+
+
+
+!------------------- Capacity: cap1 ------------------------------
+START CAPACITY
+ NAME cap1
+
+ PIPES 3  
+
+ WATER 1e9 
+ GAS   1e9
+ OIL   1e9
+ LIQ   1e9 
+
+END CAPACITY
+
+! START CONSTRAINTS
+! 0 < PIPE_3_REMOVED_0 - WELL_inj1_W_0 < 1e6
+! END CONSTRAINTS
+
+EOF
+
+!-------------------- Well: WELL03 ----------------------------------
+START WELL
+ NAME WELL03
+ TYPE P
+ GROUP grp1
+ BHPLIMIT 100  ! Only used when well is on rate control 
+
+ START OUTLETPIPES
+! pipe#  fraction
+  2      1.0
+ END OUTLETPIPES
+ 
+ START CONNECTIONS
+  299  9410
+ END CONNECTIONS
+
+ START SCHEDULE
+! t_end  value   max   min     type
+  1  	 80      190   30      BHP !BHP, GAS, OIL, WAT
+ END SCHEDULE
+
+! START GASLIFT
+! t_end  value   max   min  
+!  1   0   0  0 
+! END GASLIFT
+
+END WELL

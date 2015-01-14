@@ -32,6 +32,7 @@
 #include "minlpevaluator.h"
 
 #include <QTextStream>
+#include <QDir>
 
 #include <tr1/memory>
 #include <iostream>
@@ -73,6 +74,11 @@ void EroptOptimizer::initialize()
 
     // setting up the initial prefered move directions
     setInitialDirections();
+
+    // checking if the output folder exists, creating if not.
+    QDir dir(runner()->reservoirSimulator()->folder());
+    if(!dir.exists()) dir.mkpath(runner()->reservoirSimulator()->folder());
+
 
     // setting up the debug file
     p_debug_file = new QFile(runner()->reservoirSimulator()->folder() + "/eropt.out");

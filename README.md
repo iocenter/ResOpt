@@ -30,18 +30,29 @@ parent_folder (any name)
 ### 1.2. Download the ResOpt code
 
 1. Create a parent directory which will contain the ResOpt code, as well as the libraries it needs.
-2. Clone the ResOpt repository by running `git clone git@github.com:iocenter/ResOpt.git`.
+2. Clone the ResOpt repository by running 
+```
+git clone git@github.com:iocenter/ResOpt.git
+```
 
 ### 1.3. Required packages for compilation
 You will need some packages to compile the libraries. Download these by running the following:
-```sudo apt-get install git subversion make libblas-dev liblapack-dev \
+```
+sudo apt-get install git subversion make libblas-dev liblapack-dev \
 libmumps-dev gcc g++ gfortran fis-gtm libgl1-mesa-dev libglu1-mesa-dev \
-libglew-dev```
+libglew-dev
+```
 
 ### 1.4. Install Qt
 1. [Download Qt Online Installer](http://qt-project.org/downloads)
-2. Navigate to the folder the installer was downloaded to and make it executable by running `chmod +x qt-opensource-linux-x64-VERSION.run`.
-3. Start the installer by running `./qt-opensource-linux-x64-VERSION.run`.
+2. Navigate to the folder the installer was downloaded to and make it executable by running 
+  ```
+  chmod +x qt-opensource-linux-x64-VERSION.run
+  ```
+3. Start the installer by running 
+  ```
+  ./qt-opensource-linux-x64-VERSION.run
+  ```
 4. Select Qt 5.0.2 Tools; unselect newer versions (unless you need them for something else), and install.
 
 ### 1.5. Get the Bonmin library
@@ -52,7 +63,9 @@ Bonmin needs to be compiled from source. The official guide for installing bonmi
 2. We need to fetch some third-party dependencies to be able to compile Bonmin. In v1.5, some of the links in the `get.*` scripts inside `Bonmin-stable/ThirdParty/*` are dead and need fixed. (The scripts in the more recent v1.7 work, but v1.7 results in compile errors with ResOpt.)
   
   1. **ASL:** The .tgz file `Bonmin-stable/ThirdParty/ASL/get.ASL` wants to download no longer exists, so the files need to be downloaded manually. All the required files are downloaded by running the following command:
-  ```wget -r -l 1 http://www.netlib.org/ampl/solvers/```
+  ```
+  wget -r -l 1 http://www.netlib.org/ampl/solvers/
+  ```
   
     After downloading the files, copy the `solvers` dierctory from the downloaded `www.netlib.org/ampl/` directory into the `Bonmin-stable/ThirdParty/ASL' directory. 
 
@@ -104,9 +117,9 @@ Bonmin needs to be compiled from source. The official guide for installing bonmi
     echo " "
     ```
 
-  2. The url in `Bonmin-stable/ThirdParty/Blas/get.Blas` is dead, and needs to be fixed. Simply change the address `ftp://www.netlib.org/blas/blas.tgz` in the script to `http://www.netlib.org/blas/blas.tgz`.
+  2. **Blas:** The url in `Bonmin-stable/ThirdParty/Blas/get.Blas` is dead, and needs to be fixed. Simply change the address `ftp://www.netlib.org/blas/blas.tgz` in the script to `http://www.netlib.org/blas/blas.tgz`.
 
-  3. The same goes for get.Lapack. Change the address `ftp://www.netlib.org/lapack/lapack-${lapack_ver}.tgz`  to `http://www.netlib.org/lapack/lapack-${lapack_ver}.tgz`.
+  3. **Lapack:** The same goes for get.Lapack. Change the address `ftp://www.netlib.org/lapack/lapack-${lapack_ver}.tgz`  to `http://www.netlib.org/lapack/lapack-${lapack_ver}.tgz`.
 
 3. We now download the required third-party code by executing
   ```

@@ -58,9 +58,12 @@ libglew-dev
 ### 1.5. Get the Bonmin library
 Bonmin needs to be compiled from source. The official guide for installing bonmin is found [here](https://projects.coin-or.org/Bonmin/wiki/GettingStarted) and the guide to get the third party dependencies is found [here](https://projects.coin-or.org/Bonmin/wiki/ThirdParty).
 
-1. Enter the parent directory and download the Bonmin source by running `svn co https://projects.coin-or.org/svn/Bonmin/stable/1.5 Bonmin-stable`.
+1. Enter the parent directory and download the Bonmin source by running 
+  ```
+  svn co https://projects.coin-or.org/svn/Bonmin/stable/1.5 Bonmin-stable
+  ```
 
-2. We need to fetch some third-party dependencies to be able to compile Bonmin. In v1.5, some of the links in the `get.*` scripts inside `Bonmin-stable/ThirdParty/*` are dead and need fixed. (The scripts in the more recent v1.7 work, but v1.7 results in compile errors with ResOpt.)
+2. We need to fetch some third-party dependencies to be able to compile Bonmin. In v1.5, some of the links in the `get.*` scripts inside `Bonmin-stable/ThirdParty/*` are dead and need to be fixed. (The scripts in the more recent v1.7 work, but v1.7 results in compile errors with ResOpt.)
   
   1. **ASL:** The .tgz file `Bonmin-stable/ThirdParty/ASL/get.ASL` wants to download no longer exists, so the files need to be downloaded manually. All the required files are downloaded by running the following command:
   ```

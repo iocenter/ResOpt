@@ -70,54 +70,54 @@ Bonmin needs to be compiled from source. The official guide for installing bonmi
   wget -r -l 1 http://www.netlib.org/ampl/solvers/
   ```
   
-    After downloading the files, copy the `solvers` dierctory from the downloaded `www.netlib.org/ampl/` directory into the `Bonmin-stable/ThirdParty/ASL' directory. 
+    After downloading the files, copy the `solvers` dierctory from the downloaded `www.netlib.org/ampl/` directory into the `Bonmin-stable/ThirdParty/ASL` directory. 
 
-    When the files have been downloaded, the lines in `get.ASL' responslible for downloading, untaring and cleanup need to be commented out. The result shoud look like this:
+    When the files have been downloaded, the lines in `get.ASL` responslible for downloading, untaring and cleanup need to be commented out. The result shoud look like this:
     ```
-    #!/bin/sh
-  
-    set -e
-  
-    wgetcmd=wget
-    wgetcount=`which wget 2>/dev/null | wc -l`
-    if test ! $wgetcount = 1; then
-      echo "Utility wget not found in your PATH."
-      if test `uname` = Darwin; then
-        wgetcmd=ftp
-        echo "Using ftp command instead."
-      else
-        exit -1
-      fi
-    fi
-  
-    echo " "
-    echo "Running script for downloading the source code for the ASL"
-    echo " "
-  
-    #rm -f solvers.tar
-    #echo "Downloading the source code from www.netlib.org..."
-    #$wgetcmd http://www.netlib.org/ampl/solvers.tar
-  
-    #rm -rf solvers
-  
-    #echo "Unpacking the source code..."
-    #tar xf solvers.tar
-  
-    #echo "Uncompressing the source files..."
-    #gunzip -fr solvers
-  
-    echo "Adding No_dtoa to CFLAGS..."
-    cd solvers
-    mv makefile.u makefile.u.orig
-    sed -e 's/CFLAGS = /CFLAGS = -DNo_dtoa /g' makefile.u.orig > makefile.u
-    cd ..
-  
-    #echo "Deleting the tar file..."
-    #rm solvers.tar
-  
-    echo " "
-    echo "Done downloading the source code for ASL."
-    echo " "
+#!/bin/sh
+
+set -e
+
+wgetcmd=wget
+wgetcount=`which wget 2>/dev/null | wc -l`
+if test ! $wgetcount = 1; then
+  echo "Utility wget not found in your PATH."
+  if test `uname` = Darwin; then
+    wgetcmd=ftp
+    echo "Using ftp command instead."
+  else
+    exit -1
+  fi
+fi
+
+echo " "
+echo "Running script for downloading the source code for the ASL"
+echo " "
+
+#rm -f solvers.tar
+#echo "Downloading the source code from www.netlib.org..."
+#$wgetcmd http://www.netlib.org/ampl/solvers.tar
+
+#rm -rf solvers
+
+#echo "Unpacking the source code..."
+#tar xf solvers.tar
+
+#echo "Uncompressing the source files..."
+#gunzip -fr solvers
+
+echo "Adding No_dtoa to CFLAGS..."
+cd solvers
+mv makefile.u makefile.u.orig
+sed -e 's/CFLAGS = /CFLAGS = -DNo_dtoa /g' makefile.u.orig > makefile.u
+cd ..
+
+#echo "Deleting the tar file..."
+#rm solvers.tar
+
+echo " "
+echo "Done downloading the source code for ASL."
+echo " "
     ```
 
   2. **Blas:** The url in `Bonmin-stable/ThirdParty/Blas/get.Blas` is dead, and needs to be fixed. Simply change the address `ftp://www.netlib.org/blas/blas.tgz` in the script to `http://www.netlib.org/blas/blas.tgz`.

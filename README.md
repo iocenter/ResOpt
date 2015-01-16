@@ -1,6 +1,6 @@
 # ResOpt
 
-From the manual:
+From the ResOpt User Guide:
 
 > ResOpt is an optimization framework for integrated production networks in the petroleum industry. The framework makes it easy to connect a reservoir simulator to a production network consisting of pipe lines, separators, pumps, and compressors. The integrated reservoir-network model can be optimized with respect to:
 
@@ -30,7 +30,7 @@ parent_folder (any name)
 ### 1.2. Download the ResOpt code
 
 1. Create a parent directory which will contain the ResOpt code, as well as the libraries it needs.
-2. Clone the ResOpt repository by running 
+2. Clone the ResOpt repository by running
 ```
 git clone git@github.com:iocenter/ResOpt.git
 ```
@@ -45,11 +45,11 @@ libglew-dev
 
 ### 1.4. Install Qt
 1. [Download Qt Online Installer](http://qt-project.org/downloads)
-2. Navigate to the folder the installer was downloaded to and make it executable by running 
+2. Navigate to the folder the installer was downloaded to and make it executable by running
   ```
   chmod +x qt-opensource-linux-x64-VERSION.run
   ```
-3. Start the installer by running 
+3. Start the installer by running
   ```
   ./qt-opensource-linux-x64-VERSION.run
   ```
@@ -58,19 +58,19 @@ libglew-dev
 ### 1.5. Get the Bonmin library
 Bonmin needs to be compiled from source. The official guide for installing bonmin is found [here](https://projects.coin-or.org/Bonmin/wiki/GettingStarted) and the guide to get the third party dependencies is found [here](https://projects.coin-or.org/Bonmin/wiki/ThirdParty).
 
-1. Enter the parent directory and download the Bonmin source by running 
+1. Enter the parent directory and download the Bonmin source by running
   ```
   svn co https://projects.coin-or.org/svn/Bonmin/stable/1.5 Bonmin-stable
   ```
 
 2. We need to fetch some third-party dependencies to be able to compile Bonmin. In v1.5, some of the links in the `get.*` scripts inside `Bonmin-stable/ThirdParty/*` are dead and need to be fixed. (The scripts in the more recent v1.7 work, but v1.7 results in compile errors with ResOpt.)
-  
+
   1. **ASL:** The .tgz file `Bonmin-stable/ThirdParty/ASL/get.ASL` wants to download no longer exists, so the files need to be downloaded manually. All the required files are downloaded by running the following command:
   ```
   wget -r -l 1 http://www.netlib.org/ampl/solvers/
   ```
-  
-    After downloading the files, copy the `solvers` dierctory from the downloaded `www.netlib.org/ampl/` directory into the `Bonmin-stable/ThirdParty/ASL` directory. 
+
+    After downloading the files, copy the `solvers` dierctory from the downloaded `www.netlib.org/ampl/` directory into the `Bonmin-stable/ThirdParty/ASL` directory.
 
     When the files have been downloaded, the lines in `get.ASL` responslible for downloading, untaring and cleanup need to be commented out. The result shoud look like this:
     ```
@@ -163,6 +163,24 @@ cd nomad/install
 
 3. You should now be able to compile ResOpt.
 
-## 2. Use
+## 2. Third-party dependencies
+ResOpt requires some third-party applications to perform optimizations. Mainly, it requires a reservoir simulator. The supported simulators are MRST (developed by SINTEF) and GPRS (developed at Stanford). The preferred simulator is MRST.
 
-## 3. Example
+### MRST
+MRST, or MATLAB Reservoir Simulation Toolbox, can be downloaded [here](http://www.sintef.no/Projectweb/MRST/Downloadable-Resources/Download/). Simply extract the archive to some convenient place. The MRST keyword in the ResOpt driver file will need to point to this location. In the example driver files, the keyword is set as follows:
+```
+MRST ~/Documents/MATLAB/mrst-2014b/
+```
+
+### MATLAB
+MATLAB from MathWorks must be installed in order to use MRST as the reservoir simulator in ResOpt. The location of the MATLAB executable must be set in the driver file when running MATLAB with MRST. The default in the supported operating systems is as follows:
+
+```
+MATLAB /usr/local/MATLAB/R2014a/bin/matlab         ! Linux
+MATLAB /Applications/MATLAB_R2014a.app/bin/matlab  ! Mac OS X
+MATLAB matlab                                      ! Windows
+```
+
+## 3. Use
+
+## 4. Example

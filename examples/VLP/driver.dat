@@ -62,10 +62,10 @@ START WELL
   1   	80     	 190   18.01      BHP !BHP, GAS, OIL, WAT
  END SCHEDULE
 
- START GASLIFT
+! START GASLIFT
 ! t_end  value   max   min  
-   1      10      20     0 
- END GASLIFT
+!  1   0   0  0 
+! END GASLIFT
 
 END WELL
 
@@ -90,10 +90,10 @@ START WELL
   1   	80   	 190   18.01     BHP !BHP, GAS, OIL, WAT
  END SCHEDULE
 
- START GASLIFT
+! START GASLIFT
 ! t_end  value   max   min  
-  1   0   0  0 
- END GASLIFT
+!  1   0   0  0 
+! END GASLIFT
 
 END WELL
 

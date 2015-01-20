@@ -245,3 +245,6 @@ HEADERS += \
 
 RESOURCES += \
     gui/images.qrc
+
+OTHER_FILES += \
+    resopt_libs.pri

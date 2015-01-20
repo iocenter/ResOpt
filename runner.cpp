@@ -112,13 +112,14 @@ Runner::~Runner()
 //-----------------------------------------------------------------------------------------------
 void Runner::initialize()
 {
+
+    // reading the driver file
+    p_model = p_reader->readDriverFile(this);
+
     // checking if the output folder exists, creating if not.
     QDir dir(p_reader->driverFilePath());
     if(!dir.exists("output")) dir.mkdir("output");
 
-
-    // reading the driver file
-    p_model = p_reader->readDriverFile(this);
 
     // reading the pipe pressure drop definition files
     p_model->readPipeFiles();

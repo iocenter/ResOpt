@@ -15,6 +15,13 @@ ResOpt is an open source framework, and is released under the terms of the GNU G
 
 ResOpt was created by Alexander Oma Juell.
 
+## 0. Doxygen documentation
+There is some doxygen documentation present in the headers. This may be compiled to html by running
+```
+doxygen Doxyfile
+```
+in the root folder. Note that this requires *doxygen* to be installed on your system.
+
 ## 1. Compilation
 
 To compile ResOpt you need the Qt framework (v5.0.2) and two libraries: Bonmin (v1.5) and NOMAD. You will also need to install some packages available using `apt-get`. The following steps have been tested on Ubuntu.

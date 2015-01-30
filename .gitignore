@@ -1,1 +1,4 @@
 ResOpt.pro.user
+html/*
+latex/*
+doxygen_sqlite3.db
